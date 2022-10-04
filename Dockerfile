@@ -1,9 +1,15 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
-RUN python3 -m pip install --upgrade pip
+# install PDM
+RUN pip install -U pip setuptools wheel
+RUN pip install pdm
 
-RUN python3 -m pip install \
-    fastapi \
-    uvicorn
+# copy configuration files
+COPY pyproject.toml pdm.lock README.md /app/
 
+# install dependencies and project
+WORKDIR /app
+RUN pdm install --prod --no-lock --no-editable
+
+# copy application
 COPY ./app /app
