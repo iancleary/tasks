@@ -14,17 +14,20 @@ help:
 
 .DEFAULT_GOAL := help
 
-IMAGE="myimage"
-CONTAINER="mycontainer"
-
 build:
 build: ## build the docker image
-	docker build -t $(IMAGE) .
+	docker-compose build
+
+up:
+up: ## Run the docker image
+	docker-compose up -d
 
 run:
-run: ## Run the docker image
-	docker run -d --name $(CONTAINER) -p 80:80 $(IMAGE)
+run: up
+
+down:
+down: ## Stop the docker image by name
+	docker-compose down
 
 stop:
-stop: ## Stop the docker image by name
-	docker stop $(CONTAINER) && docker rm $(CONTAINER)
+stop: down

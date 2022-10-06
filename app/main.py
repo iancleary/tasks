@@ -18,4 +18,4 @@ def read_item(item_id: int, q: Union[str, None] = None):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8888, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=80, log_level="info")
