@@ -18,7 +18,7 @@ SELECT_UPCOMING_MOVIES = "SELECT * FROM movies WHERE release_timestamp > ?;" # n
 SELECT_WATCHED_MOVIES = "SELECT * FROM movies WHERE watched = 1;"
 SET_MOVIE_WATCHED = "UPDATE movies SET watched = 1 WHERE title = ?;"
 
-connection = sqlite3.connect("/app/data/data.db")
+connection = sqlite3.connect("/data/data.db")
 
 def create_tables():
     with connection:
