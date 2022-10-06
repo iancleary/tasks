@@ -20,7 +20,7 @@ build: ## build the docker image
 
 up:
 up: ## Run the docker image
-	docker-compose up -d
+	docker-compose up
 
 run:
 run: up
