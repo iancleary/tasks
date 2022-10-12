@@ -15,18 +15,18 @@ help:
 .DEFAULT_GOAL := help
 
 build:
-build: ## build the docker image
+build: ## Build the docker image (via docker-compose)
 	docker-compose build
 
 up:
-up: ## Run the docker image
+up: ## Run the docker image (via docker-compose)
 	docker-compose up
 
 run:
 run: up
 
 down:
-down: ## Stop the docker image by name
+down: ## Stop the docker image (via docker-compose)
 	docker-compose down
 
 stop:
