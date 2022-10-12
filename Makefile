@@ -16,18 +16,18 @@ help:
 
 build:
 build: ## Build the docker image (via docker-compose)
-	docker-compose build
+	docker-compose build || docker compose build
 
 up:
 up: ## Run the docker image (via docker-compose)
-	docker-compose up
+	docker-compose up || docker compose up
 
 run:
 run: up
 
 down:
 down: ## Stop the docker image (via docker-compose)
-	docker-compose down
+	docker-compose down || docker compose down
 
 stop:
 stop: down
