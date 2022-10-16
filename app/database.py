@@ -1,12 +1,8 @@
 import datetime
-import sqlite3
 
-
-from sqlalchemy import Table, Column, Integer, String, Real
-
-from sqlalchemy import create_engine, sessionmaker
-
-from .models import Base, Movie
+from sqlalchemy import create_engine
+from sqlalchemy import insert, select, update
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 # Pick one feature that will be useful for users
 # and then go about implementing it in the simplest way possible
@@ -28,39 +24,37 @@ from .models import Base, Movie
 
 
 # connection = sqlite3.connect("/data/data.db")
-engine = create_engine("sqlite+pysqlite:///data/data.db", echo=True, future=True)
-Session = sessionmaker()
-Session.configure(bind=engine)
-session = Session()
+# need 4 slashes (https://docs.sqlalchemy.org/en/13/core/engines.html#sqlite)
+engine = create_engine('sqlite:////data/data.db', echo=True)
+global db_session
+db_session = scoped_session(sessionmaker(bind=engine))
+import models
 
-
-def create_tables():
-    Base.metadata.create_all(engine)
-
-from sqlalchemy import insert
+def create_tables():    
+    print(engine)
+    models.Base.metadata.create_all(engine)
 
 def add_movie(title:str, release_timestamp:float):
-    stmt = insert(Movie).values(title=title, release_timestamp=release_timestamp)
+    stmt = insert(models.Movie).values(title=title, release_timestamp=release_timestamp)
     with engine.connect() as conn:
         result = conn.execute(stmt)
         conn.commit()
 
 def get_movies(upcoming:bool=False):
-    with connection:
-        cursor = connection.cursor()
+    with engine.connect() as conn:
         if upcoming:
             today_timestamp = datetime.datetime.today().timestamp()
-            cursor.execute(SELECT_UPCOMING_MOVIES, (today_timestamp,)) # needs to be a tuple
+            stmt = select(models.Movie).where(models.Movie.c.release_timestamp >= today_timestamp)
         else:
-            cursor.execute(SELECT_ALL_MOVIES)
-        return cursor.fetchall()
+            stmt = select(models.Movie)
+        return conn.execute(stmt)
 
 def watch_movie(title:str):
-    with connection:
-        connection.execute(SET_MOVIE_WATCHED, (title,))
+    with engine.connect() as conn:
+        stmt = update(models.Movie).where(models.Movie.c.title == title).values(watched = 1)
+        conn.execute(stmt)
 
 def get_watched_movies():
-    with connection:
-        cursor = connection.cursor()
-        cursor.execute(SELECT_WATCHED_MOVIES)
-        return cursor.fetchall()
+    with engine.connect() as conn:
+        stmt = select(models.Movie).where(models.Movie.c.watched == 1)
+        return conn.execute(stmt)

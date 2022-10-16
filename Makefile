@@ -14,7 +14,11 @@ help:
 
 .DEFAULT_GOAL := help
 
-build:
+requirements:
+requirements: ## Export the pdm requirements to a txt file
+	pdm export -o requirements.txt --without-hashes
+
+build: requirements
 build: ## Build the docker image (via docker-compose)
 	docker-compose build || docker compose build
 
