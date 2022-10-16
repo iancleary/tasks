@@ -3,21 +3,18 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-class Movie(Base):
+class Project(Base):
     __tablename__ = "movies"
-    title = Column(String, primary_key=True)
-    release_timestamp = Column(Float)
-    watched = Column(Integer)
-    
-    def __init__(self, title, release_timestamp, watched=0):
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    active = Column(Integer, default=1)
 
-        self.title = title
-        self.release_timestamp = release_timestamp
-        self.watched = watched
+    def __init__(self, name):
+        self.name = name
 
     def to_dict(self):
         return {
-            "title": self.title,
-            "released_timestamp": self.release_timestamp,
-            "watched": self.watched
+            "id": self.id,
+            "name": self.name,
+            "active": self.active
         }

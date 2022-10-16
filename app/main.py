@@ -1,4 +1,4 @@
-import datetime
+# import datetime
 import json
 # from typing import Union
 
@@ -8,75 +8,41 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-menu = """Please select one of the following options:
-1) Add new movie.
-2) View upcoming movies.
-3) View all movies
-4) Watch a movie
-5) View watched movies.
-6) Exit.
-Your selection: """
-welcome = "Welcome to the watchlist app!"
-
-
-print(welcome)
 database.create_tables()
 
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
-def prompt_add_movie():
-    title = input("Movie title: ")
-    release_date = input("Release date (dd-mm-YYYY): ")
+class AlchemyEncoder(json.JSONEncoder):
 
-    parsed_date = datetime.datetime.strptime(release_date, "%d-%m-%Y")
-    timestamp = parsed_date.timestamp()
+    def default(self, obj):
+        if isinstance(obj.__class__, DeclarativeMeta):
+            # an SQLAlchemy class
+            fields = {}
+            for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
+                data = obj.__getattribute__(field)
+                try:
+                    json.dumps(data) # this will fail on non-encodable values, like other classes
+                    fields[field] = data
+                except TypeError:
+                    fields[field] = None
+            # a json-encodable dict
+            return fields
 
-    database.add_movie(title=title, release_timestamp=timestamp)
-
-def print_movie_list(heading, movies):
-    print(f"---{heading} Movies---")
-    for movie in movies:
-        release_date = datetime.datetime.fromtimestamp(movie[1])
-        human_date = release_date.strftime("%b %d %Y")
-        print(f"{movie[0]} (on {human_date})")
-    print("---- \n")
-
-
-def prompt_watch_movie():
-    movie_title = input("Enter movie title you've watched: ")
-    database.watch_movie(title=movie_title)
-
-# while (user_input := input(menu)) != "6":
-#     if user_input == "1":
-#         prompt_add_movie()
-#     elif user_input == "2":
-#         movies = database.get_movies(upcoming=True)
-#         print_movie_list("Upcoming", movies)
-#     elif user_input == "3":
-#         movies = database.get_movies(upcoming=False)
-#         print_movie_list("All", movies)
-#     elif user_input == "4":
-#         prompt_watch_movie()
-#     elif user_input == "5":
-#         movies = database.get_watched_movies()
-#         print_movie_list("Watched", movies)
-#     else:
-#         print("Invalid input, please try again!")
+        return json.JSONEncoder.default(self, obj)
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/movies")
-def get_movies():
-    rows = database.get_movies(upcoming=False)
-    return json.dumps([row.to_dict() for row in rows])
+@app.get("/projects")
+def get_projects(active:bool = True):
+    rows = database.get_projects(active=active)
+    return [json.dumps(c, cls=AlchemyEncoder) for c in rows]
 
-@app.put("/movie")
-def add_movie(title: str, release_date: str):
-    parsed_date = datetime.datetime.strptime(release_date, "%d-%m-%Y")
-    timestamp = parsed_date.timestamp()
-    database.add_movie(title=title, release_timestamp=timestamp)
+@app.put("/project")
+def add_project(name: str):
+    database.add_project(name=name)
 
 
 if __name__ == "__main__":
