@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class Project(Base):
-    __tablename__ = "movies"
+    __tablename__ = "projects"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     active = Column(Integer, default=1)
@@ -12,9 +12,9 @@ class Project(Base):
     def __init__(self, name):
         self.name = name
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "active": self.active
-        }
+    # def _to_dict(self):
+    #     return {
+    #         "id": self.id,
+    #         "name": self.name,
+    #         "active": self.active
+    #     }

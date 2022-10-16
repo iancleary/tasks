@@ -39,11 +39,9 @@ def add_project(name:str):
         project = models.Project(name=name)
         session.add_all([project])
 
-def get_projects(active:bool=True):
-
-    
+def get_projects(only_active:bool=True):
     session = Session()
-    if active == True:
+    if only_active == True:
         column = getattr(models.Project, "active")
         stmt = select(models.Project).where(column == 1)
     else:
@@ -52,7 +50,24 @@ def get_projects(active:bool=True):
 
 
 def activate_project(id:int):
-    with engine.connect() as conn:
-        stmt = update(models.Project).where(models.Project.c.id == id).values(active = 1)
-        conn.execute(stmt)
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = update(models.Project).where(column == id).values(active = 1)
+        session.execute(stmt)
 
+def deactivate_project(id:int):
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = update(models.Project).where(column == id).values(active = 0)
+        session.execute(stmt)
+
+def patch_project(id:int, name: str, active:bool):
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = update(models.Project).where(column == id).values(name=name, active=active)
+        session.execute(stmt)
+
+
+def delete_project(id:int):
+    # don't allow deletion, only deactivations
+    deactivate_project(id=id)

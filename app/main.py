@@ -12,23 +12,40 @@ database.create_tables()
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
-class AlchemyEncoder(json.JSONEncoder):
-    # https://stackoverflow.com/a/10664192
-    def default(self, obj):
-        if isinstance(obj.__class__, DeclarativeMeta):
-            # an SQLAlchemy class
-            fields = {}
-            for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
-                data = obj.__getattribute__(field)
-                try:
-                    json.dumps(data) # this will fail on non-encodable values, like other classes
-                    fields[field] = data
-                except TypeError:
-                    fields[field] = None
-            # a json-encodable dict
-            return fields
+# https://stackoverflow.com/a/10664192
+def new_alchemy_encoder(revisit_self = False, fields_to_expand = []):
+    _visited_objs = []
 
-        return json.JSONEncoder.default(self, obj)
+    class AlchemyEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj.__class__, DeclarativeMeta):
+                # don't re-visit self
+                if revisit_self:
+                    if obj in _visited_objs:
+                        return None
+                    _visited_objs.append(obj)
+
+                # go through each field in this SQLalchemy class
+                fields = {}
+                for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata' and x!='registry']:
+                    val = obj.__getattribute__(field)
+
+                    # is this field another SQLalchemy object, or a list of SQLalchemy objects?
+                    if isinstance(val.__class__, DeclarativeMeta) or (isinstance(val, list) and len(val) > 0 and isinstance(val[0].__class__, DeclarativeMeta)):
+                        # unless we're expanding this field, stop here
+                        if field not in fields_to_expand:
+                            # not expanding this field: set it to None and continue
+                            fields[field] = None
+                            continue
+
+                    fields[field] = val
+                # a json-encodable dict
+                return fields
+
+            return json.JSONEncoder.default(self, obj)
+
+    return AlchemyEncoder
+
 
 @app.get("/")
 def read_root():
@@ -36,13 +53,21 @@ def read_root():
 
 
 @app.get("/projects")
-def get_projects(active:bool = True):
-    rows = database.get_projects(active=active)
-    return [json.dumps(c, cls=AlchemyEncoder) for c in rows]
+def get_projects(only_active:bool = True):
+    rows = database.get_projects(only_active=only_active)
+    return [json.dumps(c, cls=new_alchemy_encoder(False, ['id', 'name', 'active']), check_circular=False) for c in rows]
 
 @app.put("/project")
 def add_project(name: str):
     database.add_project(name=name)
+
+@app.patch("/project")
+def patch_project(id: int, name:str, active:bool):
+    database.update_project(id=id, name=name, active=active)
+
+@app.delete("/project")
+def delete_project(id:int):
+    database.deactivate_project(id=id)
 
 
 if __name__ == "__main__":
