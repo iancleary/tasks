@@ -131,3 +131,5 @@ dmypy.json
 # pdm
 .pdm.toml
 __pypackages__/
+
+*DS_Store
