@@ -1,5 +1,6 @@
 import datetime
-from typing import Union
+import json
+# from typing import Union
 
 import database
 
@@ -66,9 +67,16 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/movies")
+def get_movies():
+    rows = database.get_movies(upcoming=False)
+    return json.dumps([row.to_dict() for row in rows])
+
+@app.put("/movie")
+def add_movie(title: str, release_date: str):
+    parsed_date = datetime.datetime.strptime(release_date, "%d-%m-%Y")
+    timestamp = parsed_date.timestamp()
+    database.add_movie(title=title, release_timestamp=timestamp)
 
 
 if __name__ == "__main__":

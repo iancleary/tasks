@@ -3,6 +3,7 @@ import datetime
 from sqlalchemy import create_engine
 from sqlalchemy import insert, select, update
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import Session
 
 # Pick one feature that will be useful for users
 # and then go about implementing it in the simplest way possible
@@ -25,9 +26,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 # connection = sqlite3.connect("/data/data.db")
 # need 4 slashes (https://docs.sqlalchemy.org/en/13/core/engines.html#sqlite)
-engine = create_engine('sqlite:////data/data.db', echo=True)
-global db_session
-db_session = scoped_session(sessionmaker(bind=engine))
+engine = create_engine('sqlite:////data/data.db', echo=True, future=True)
+Session = sessionmaker(engine)
 import models
 
 def create_tables():    
@@ -35,19 +35,20 @@ def create_tables():
     models.Base.metadata.create_all(engine)
 
 def add_movie(title:str, release_timestamp:float):
-    stmt = insert(models.Movie).values(title=title, release_timestamp=release_timestamp)
-    with engine.connect() as conn:
-        result = conn.execute(stmt)
-        conn.commit()
+    with Session.begin() as session:
+        doesn't handle if it's not a unique title
+        movie = models.Movie(title=title, release_timestamp=release_timestamp)
+        session.add_all([movie])
 
 def get_movies(upcoming:bool=False):
-    with engine.connect() as conn:
-        if upcoming:
-            today_timestamp = datetime.datetime.today().timestamp()
-            stmt = select(models.Movie).where(models.Movie.c.release_timestamp >= today_timestamp)
-        else:
-            stmt = select(models.Movie)
-        return conn.execute(stmt)
+    session = Session()
+    if upcoming == True:
+        today_timestamp = datetime.datetime.today().timestamp()
+        stmt = select(models.Movie).where(models.Movie.c.release_timestamp >= today_timestamp)
+    else:
+        stmt = select(models.Movie)
+    return session.scalars(stmt)
+
 
 def watch_movie(title:str):
     with engine.connect() as conn:
