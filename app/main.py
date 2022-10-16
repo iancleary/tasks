@@ -13,7 +13,7 @@ database.create_tables()
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
 class AlchemyEncoder(json.JSONEncoder):
-
+    # https://stackoverflow.com/a/10664192
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
             # an SQLAlchemy class
