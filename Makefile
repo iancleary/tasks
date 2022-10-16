@@ -22,6 +22,10 @@ up:
 up: ## Run the docker image (via docker-compose)
 	docker-compose up || docker compose up
 
+detached:
+detached: ## Run the docker image (via docker-compose) detached
+	docker-compose up -d || docker compose up -d
+
 run:
 run: up
 
