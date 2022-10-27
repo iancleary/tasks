@@ -15,7 +15,7 @@ help:
 .DEFAULT_GOAL := help
 
 venv:  ## Create a venv (python3 -m venv venv)
-venv: requirements
+venv:
 	python3 -m venv venv
 	echo "source venv/bin/activate"
 
