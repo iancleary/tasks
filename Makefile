@@ -30,7 +30,7 @@ clean:
 clean:
 	scripts/clean.sh
 
-build: clean requirements copy
+build: requirements copy
 build: ## Build the docker image (via docker-compose)
 	docker-compose build || docker compose build
 

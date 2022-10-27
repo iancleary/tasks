@@ -1,6 +1,6 @@
 FROM python:3.10.8-slim
 
-RUN adduser --system --no-create-home nonroot
+# RUN adduser --system --no-create-home nonroot
 
 # MIT License Credit: 
 # https://github.com/tiangolo/uvicorn-gunicorn-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/docker-images/python3.9-slim.dockerfile#L1-L25
@@ -27,6 +27,6 @@ EXPOSE 80
 # Run the start script, it will check for an /app/prestart.sh script (e.g. for migrations)
 # And then will start Gunicorn with Uvicorn
 
-USER nonroot
+# USER nonroot
 
 CMD ["/start.sh"]
