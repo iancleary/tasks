@@ -2,7 +2,10 @@
 version: "3.9"
 services:
   web:
-    build: .
+    image: main/backend
+    build:
+      context: .
+      dockerfile: ./docker-images/python3.10.8-slim.dockerfile
     ports:
       - "80:80"
     volumes:
