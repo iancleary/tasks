@@ -14,17 +14,18 @@ help:
 
 .DEFAULT_GOAL := help
 
-venv:
+venv:  ## Create a venv (python3 -m venv venv)
 venv: requirements
 	python3 -m venv venv
+	echo "source venv/bin/activate"
 
 run:
-run: ## Run the 
+run: ## Run the app (assuming within a venv)
 	scripts/start_app_venv.sh
 
 requirements:
 requirements: ## Export the pdm requirements to a txt file
-	scripts/pdm_export.sh
+	scripts/create_requirements.sh
 
 copy:
 copy: ## Copy app for docker-image builds
