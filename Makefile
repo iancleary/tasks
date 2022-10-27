@@ -14,6 +14,10 @@ help:
 
 .DEFAULT_GOAL := help
 
+venv:
+venv: requirements
+	python3 -m venv venv
+
 requirements:
 requirements: ## Export the pdm requirements to a txt file
 	scripts/pdm_export.sh
