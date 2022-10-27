@@ -14,11 +14,28 @@ help:
 
 .DEFAULT_GOAL := help
 
+venv:  ## Create a venv (python3 -m venv venv)
+venv: requirements
+	python3 -m venv venv
+	echo "source venv/bin/activate"
+
+run:
+run: ## Run the app (assuming within a venv)
+	scripts/start_app_venv.sh
+
 requirements:
 requirements: ## Export the pdm requirements to a txt file
-	pdm export -o requirements.txt --without-hashes
+	scripts/create_requirements.sh
 
-build: requirements
+copy:
+copy: ## Copy app for docker-image builds
+	scripts/copy_app.sh
+
+clean:
+clean:
+	scripts/clean.sh
+
+build: requirements copy
 build: ## Build the docker image (via docker-compose)
 	docker-compose build || docker compose build
 
@@ -29,9 +46,6 @@ up: ## Run the docker image (via docker-compose)
 detached:
 detached: ## Run the docker image (via docker-compose) detached
 	docker-compose up -d || docker compose up -d
-
-run:
-run: up
 
 down:
 down: ## Stop the docker image (via docker-compose)

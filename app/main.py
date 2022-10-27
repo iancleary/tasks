@@ -72,5 +72,8 @@ def delete_project(id:int):
 
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=80, log_level="info")
+    import os
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 80))
+    
+    uvicorn.run(app, host=host, port=port, log_level="info")

@@ -1,9 +1,15 @@
+import os
 import datetime
+from multiprocessing.sharedctypes import Value
 
 from sqlalchemy import create_engine
 from sqlalchemy import insert, select, update
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.orm import Session
+
+from pathlib import Path
+
+
 
 # Pick one feature that will be useful for users
 # and then go about implementing it in the simplest way possible
@@ -26,7 +32,11 @@ from sqlalchemy.orm import Session
 
 # connection = sqlite3.connect("/data/data.db")
 # need 4 slashes (https://docs.sqlalchemy.org/en/13/core/engines.html#sqlite)
-engine = create_engine('sqlite:////data/data.db', echo=True, future=True)
+
+# Create engine based upon venv or docker volue
+
+DATABASE = os.getenv("DATABASE", "/data/data.db")
+engine = create_engine(f'sqlite:///{DATABASE}', echo=True, future=True)
 Session = sessionmaker(engine)
 import models
 
