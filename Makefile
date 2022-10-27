@@ -16,9 +16,17 @@ help:
 
 requirements:
 requirements: ## Export the pdm requirements to a txt file
-	pdm export -o requirements.txt --without-hashes
+	scripts/pdm_export.sh
 
-build: requirements
+copy:
+copy: ## Copy app for docker-image builds
+	scripts/copy_app.sh
+
+clean:
+clean:
+	scripts/clean.sh
+
+build: clean requirements copy
 build: ## Build the docker image (via docker-compose)
 	docker-compose build || docker compose build
 

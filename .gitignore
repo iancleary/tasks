@@ -133,3 +133,5 @@ dmypy.json
 __pypackages__/
 
 *DS_Store
+
+docker-images/app
