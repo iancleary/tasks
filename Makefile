@@ -18,6 +18,10 @@ venv:
 venv: requirements
 	python3 -m venv venv
 
+run:
+run: ## Run the 
+	scripts/start_app_venv.sh
+
 requirements:
 requirements: ## Export the pdm requirements to a txt file
 	scripts/pdm_export.sh
@@ -41,9 +45,6 @@ up: ## Run the docker image (via docker-compose)
 detached:
 detached: ## Run the docker image (via docker-compose) detached
 	docker-compose up -d || docker compose up -d
-
-run:
-run: up
 
 down:
 down: ## Stop the docker image (via docker-compose)

@@ -73,13 +73,7 @@ def delete_project(id:int):
 if __name__ == "__main__":
     import uvicorn
     import os
-    def is_docker():
-        path = '/proc/self/cgroup'
-        return (
-            os.path.exists('/.dockerenv') or
-            os.path.isfile(path) and any('docker' in line for line in open(path))
-        )
-    if is_docker():
-        uvicorn.run(app, host="0.0.0.0", port=80, log_level="info")
-    else:
-        uvicorn.run(app, host="0.0.0.0", port=8080, log_level="info")
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 80))
+    
+    uvicorn.run(app, host=host, port=port, log_level="info")

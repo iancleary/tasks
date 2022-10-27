@@ -35,23 +35,8 @@ from pathlib import Path
 
 # Create engine based upon venv or docker volue
 
-DOCKER_ABSOLUTE_DATABASE_FILE = Path("/data/data.db")
-VENV_RELATIVE_DATABASE_FILE = Path("data/venv_data.db")
-
-def is_docker():
-    path = '/proc/self/cgroup'
-    return (
-        os.path.exists('/.dockerenv') or
-        os.path.isfile(path) and any('docker' in line for line in open(path))
-    )
-
-if is_docker():
-    # https://docs.sqlalchemy.org/en/13/core/engines.html#sqlite
-    engine = create_engine('sqlite:////data/data.db', echo=True, future=True)
-else:
-    # Create relative file
-    engine = create_engine('sqlite:///data/data.db', echo=True, future=True)
-
+DATABASE = os.getenv("DATABASE", "/data/data.db")
+engine = create_engine(f'sqlite:///{DATABASE}', echo=True, future=True)
 Session = sessionmaker(engine)
 import models
 
