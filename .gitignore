@@ -135,3 +135,6 @@ __pypackages__/
 *DS_Store
 
 docker-images/app
+
+#frontend
+node_modules
