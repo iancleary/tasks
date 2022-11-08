@@ -7,6 +7,19 @@
 SHELL := /bin/bash
 PATH := $(PATH)
 
+# Docker namespace, image name and version/tag
+NS?= iancleary
+IMAGE_NAME?= backend-main
+LATEST?= latest
+
+IMAGE=$(NS)/$(IMAGE_NAME)
+
+# Shell that make should use
+SHELL:=bash
+
+# - to suppress if it doesn't exist
+include make.env
+
 help:
 # http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 # adds anything that has a double # comment to the phony help list
@@ -36,8 +49,13 @@ clean:
 	scripts/clean.sh
 
 build: requirements copy
-build: ## Build the docker image (via docker-compose)
-	docker-compose build || docker compose build
+build: ## Make the latest build of the image (version is defined in make.env)
+	cd docker-images && docker build --no-cache -f ${DOCKERFILE} --build-arg VERSION=${VERSION} -t ${IMAGE}:${VERSION} .
+
+push:
+push: ## push the latest version to docker hub (version is defined in make.env)
+	docker push $(IMAGE):$(VERSION)
+	docker push $(IMAGE):$(LATEST)
 
 up:
 up: ## Run the docker image (via docker-compose)
