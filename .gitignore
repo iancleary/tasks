@@ -131,3 +131,10 @@ dmypy.json
 # pdm
 .pdm.toml
 __pypackages__/
+
+*DS_Store
+
+docker-images/app
+
+#frontend
+node_modules

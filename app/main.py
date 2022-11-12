@@ -1,5 +1,6 @@
-import datetime
-from typing import Union
+# import datetime
+import json
+# from typing import Union
 
 import database
 
@@ -7,71 +8,72 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-menu = """Please select one of the following options:
-1) Add new movie.
-2) View upcoming movies.
-3) View all movies
-4) Watch a movie
-5) View watched movies.
-6) Exit.
-Your selection: """
-welcome = "Welcome to the watchlist app!"
-
-
-print(welcome)
 database.create_tables()
 
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
-def prompt_add_movie():
-    title = input("Movie title: ")
-    release_date = input("Release date (dd-mm-YYYY): ")
+# https://stackoverflow.com/a/10664192
+def new_alchemy_encoder(revisit_self = False, fields_to_expand = []):
+    _visited_objs = []
 
-    parsed_date = datetime.datetime.strptime(release_date, "%d-%m-%Y")
-    timestamp = parsed_date.timestamp()
+    class AlchemyEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj.__class__, DeclarativeMeta):
+                # don't re-visit self
+                if revisit_self:
+                    if obj in _visited_objs:
+                        return None
+                    _visited_objs.append(obj)
 
-    database.add_movie(title=title, release_timestamp=timestamp)
+                # go through each field in this SQLalchemy class
+                fields = {}
+                for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata' and x!='registry']:
+                    val = obj.__getattribute__(field)
 
-def print_movie_list(heading, movies):
-    print(f"---{heading} Movies---")
-    for movie in movies:
-        release_date = datetime.datetime.fromtimestamp(movie[1])
-        human_date = release_date.strftime("%b %d %Y")
-        print(f"{movie[0]} (on {human_date})")
-    print("---- \n")
+                    # is this field another SQLalchemy object, or a list of SQLalchemy objects?
+                    if isinstance(val.__class__, DeclarativeMeta) or (isinstance(val, list) and len(val) > 0 and isinstance(val[0].__class__, DeclarativeMeta)):
+                        # unless we're expanding this field, stop here
+                        if field not in fields_to_expand:
+                            # not expanding this field: set it to None and continue
+                            fields[field] = None
+                            continue
 
+                    fields[field] = val
+                # a json-encodable dict
+                return fields
 
-def prompt_watch_movie():
-    movie_title = input("Enter movie title you've watched: ")
-    database.watch_movie(title=movie_title)
+            return json.JSONEncoder.default(self, obj)
 
-# while (user_input := input(menu)) != "6":
-#     if user_input == "1":
-#         prompt_add_movie()
-#     elif user_input == "2":
-#         movies = database.get_movies(upcoming=True)
-#         print_movie_list("Upcoming", movies)
-#     elif user_input == "3":
-#         movies = database.get_movies(upcoming=False)
-#         print_movie_list("All", movies)
-#     elif user_input == "4":
-#         prompt_watch_movie()
-#     elif user_input == "5":
-#         movies = database.get_watched_movies()
-#         print_movie_list("Watched", movies)
-#     else:
-#         print("Invalid input, please try again!")
+    return AlchemyEncoder
+
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/projects")
+def get_projects(only_active:bool = True):
+    rows = database.get_projects(only_active=only_active)
+    return [json.dumps(c, cls=new_alchemy_encoder(False, ['id', 'name', 'active']), check_circular=False) for c in rows]
+
+@app.put("/project")
+def add_project(name: str):
+    database.add_project(name=name)
+
+@app.patch("/project")
+def patch_project(id: int, name:str, active:bool):
+    database.update_project(id=id, name=name, active=active)
+
+@app.delete("/project")
+def delete_project(id:int):
+    database.deactivate_project(id=id)
 
 
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=80, log_level="info")
+    import os
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 80))
+    
+    uvicorn.run(app, host=host, port=port, log_level="info")

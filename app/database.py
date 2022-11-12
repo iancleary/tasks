@@ -1,49 +1,83 @@
+import os
 import datetime
-import sqlite3
+from multiprocessing.sharedctypes import Value
+
+from sqlalchemy import create_engine
+from sqlalchemy import insert, select, update
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import Session
+
+from pathlib import Path
+
+
 
 # Pick one feature that will be useful for users
 # and then go about implementing it in the simplest way possible
 
-# title, release_date, watched
+# name, release_date, watched
 
-CREATE_MOVIES_TABLE = """CREATE TABLE IF NOT EXISTS movies (
-    title TEXT,
-    release_timestamp REAL,
-    watched INTEGER
-);"""
+# CREATE_MOVIES_TABLE = """CREATE TABLE IF NOT EXISTS projects (
+#     name TEXT,
+#     release_timestamp REAL,
+#     watched INTEGER
+# );"""
 
-INSERT_MOVIES = "INSERT INTO movies (title, release_timestamp, watched) VALUES (?, ?, 0);" # good practice to include columns, leave empty does all
-SELECT_ALL_MOVIES = "SELECT * FROM movies;"
-SELECT_UPCOMING_MOVIES = "SELECT * FROM movies WHERE release_timestamp > ?;" # number of seconds since 1st of January 1970 right now
-SELECT_WATCHED_MOVIES = "SELECT * FROM movies WHERE watched = 1;"
-SET_MOVIE_WATCHED = "UPDATE movies SET watched = 1 WHERE title = ?;"
+# INSERT_MOVIES = "INSERT INTO projects (name, release_timestamp, watched) VALUES (?, ?, 0);" # good practice to include columns, leave empty does all
+# SELECT_ALL_MOVIES = "SELECT * FROM projects;"
+# SELECT_UPCOMING_MOVIES = "SELECT * FROM projects WHERE release_timestamp > ?;" # number of seconds since 1st of January 1970 right now
+# SELECT_WATCHED_MOVIES = "SELECT * FROM projects WHERE watched = 1;"
+# SET_MOVIE_WATCHED = "UPDATE projects SET watched = 1 WHERE name = ?;"
 
-connection = sqlite3.connect("/data/data.db")
 
-def create_tables():
-    with connection:
-        connection.execute(CREATE_MOVIES_TABLE)
 
-def add_movie(title:str, release_timestamp:float):
-    with connection:
-        connection.execute(INSERT_MOVIES, (title, release_timestamp))
+# connection = sqlite3.connect("/data/data.db")
+# need 4 slashes (https://docs.sqlalchemy.org/en/13/core/engines.html#sqlite)
 
-def get_movies(upcoming:bool=False):
-    with connection:
-        cursor = connection.cursor()
-        if upcoming:
-            today_timestamp = datetime.datetime.today().timestamp()
-            cursor.execute(SELECT_UPCOMING_MOVIES, (today_timestamp,)) # needs to be a tuple
-        else:
-            cursor.execute(SELECT_ALL_MOVIES)
-        return cursor.fetchall()
+# Create engine based upon venv or docker volue
 
-def watch_movie(title:str):
-    with connection:
-        connection.execute(SET_MOVIE_WATCHED, (title,))
+DATABASE = os.getenv("DATABASE", "/data/data.db")
+engine = create_engine(f'sqlite:///{DATABASE}', echo=True, future=True)
+Session = sessionmaker(engine)
+import models
 
-def get_watched_movies():
-    with connection:
-        cursor = connection.cursor()
-        cursor.execute(SELECT_WATCHED_MOVIES)
-        return cursor.fetchall()
+def create_tables():    
+    print(engine)
+    models.Base.metadata.create_all(engine)
+
+def add_project(name:str):
+    with Session.begin() as session:
+        project = models.Project(name=name)
+        session.add_all([project])
+
+def get_projects(only_active:bool=True):
+    session = Session()
+    if only_active == True:
+        column = getattr(models.Project, "active")
+        stmt = select(models.Project).where(column == 1)
+    else:
+        stmt = select(models.Project)
+    return session.scalars(stmt)
+
+
+def activate_project(id:int):
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = update(models.Project).where(column == id).values(active = 1)
+        session.execute(stmt)
+
+def deactivate_project(id:int):
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = update(models.Project).where(column == id).values(active = 0)
+        session.execute(stmt)
+
+def patch_project(id:int, name: str, active:bool):
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = update(models.Project).where(column == id).values(name=name, active=active)
+        session.execute(stmt)
+
+
+def delete_project(id:int):
+    # don't allow deletion, only deactivations
+    deactivate_project(id=id)
