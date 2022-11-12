@@ -2,7 +2,7 @@
 
 set -e
 
-use_tag="iancleary/uvicorn-gunicorn:$NAME"
+use_tag="iancleary/backend-main:$NAME"
 use_dated_tag="${use_tag}-$(date -I)"
 
 bash scripts/build.sh
