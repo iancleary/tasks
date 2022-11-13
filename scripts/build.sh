@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -x
 
+scripts/copy_app.sh
+
 use_tag="iancleary/backend-main:$NAME"
 
 DOCKERFILE="$NAME"
