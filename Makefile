@@ -40,15 +40,11 @@ requirements:
 requirements: ## Export the pdm requirements to a txt file
 	scripts/create_requirements.sh
 
-copy:
-copy: ## Copy app for docker-image builds
-	scripts/copy_app.sh
-
 clean:
 clean:
 	scripts/clean.sh
 
-build: requirements copy
+build: requirements
 build: ## Make the latest build of the image (version is defined in make.env)
 	cd docker-images && docker build --no-cache -f ${DOCKERFILE} --build-arg VERSION=${VERSION} -t ${IMAGE}:${VERSION} .
 
