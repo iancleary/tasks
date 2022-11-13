@@ -2,12 +2,13 @@
 import json
 from typing import Any, Dict, List, Union
 
-import database
 from fastapi import FastAPI
+
+from app.database import tables, projects
 
 app = FastAPI()
 
-database.create_tables()
+tables.create_tables()
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
@@ -64,7 +65,7 @@ def read_root() -> dict[str, str]:
 
 @app.get("/projects")
 def get_projects(only_active: bool = True) -> List[str]:
-    rows = database.get_projects(only_active=only_active)
+    rows = projects.get_projects(only_active=only_active)
     return [
         json.dumps(
             c,
@@ -77,17 +78,17 @@ def get_projects(only_active: bool = True) -> List[str]:
 
 @app.put("/project")
 def add_project(name: str) -> None:
-    database.add_project(name=name)
+    projects.add_project(name=name)
 
 
 @app.patch("/project")
 def patch_project(id: int, name: str, active: bool) -> None:
-    database.update_project(id=id, name=name, active=active)
+    projects.update_project(id=id, name=name, active=active)
 
 
 @app.delete("/project")
 def delete_project(id: int) -> None:
-    database.deactivate_project(id=id)
+    projects.deactivate_project(id=id)
 
 
 if __name__ == "__main__":
