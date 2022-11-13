@@ -5,31 +5,23 @@ on:
   pull_request:
     types: [opened, synchronize]
 
-jobs:
-  build:
-    strategy:
-      matrix:
-        image:
-          - name: latest
-            python_version: "3.10.8"
-          - name: python3.10.8
-            python_version: "3.10.8"
-          - name: python3.10.8-slim
-            python_version: "3.10.8-slim"
-      fail-fast: true
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: "3.7"
-      - name: Install pdm
-        run: python3.7 -m pip install pdm
-      - name: Install Dependencies
-        run: python3.7 -m pdm install
-      - name: Test App
-        run: bash scripts/test.sh
-        env:
-          NAME: ${{ matrix.image.name }}
-          PYTHON_VERSION: ${{ matrix.image.python_version }}
+Testing:
+  runs-on: ${{ matrix.os }}
+  strategy:
+    matrix:
+      python-version: [3.7, 3.8, 3.9, '3.10']
+      os: [ubuntu-latest]
+
+  steps:
+    - uses: actions/checkout@v3
+    - name: Set up PDM
+      uses: pdm-project/setup-pdm@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        pdm sync -d -G test
+    - name: Run Tests
+      run: |
+        pdm run -v pytest tests
