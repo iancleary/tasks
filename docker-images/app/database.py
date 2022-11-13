@@ -1,15 +1,9 @@
 import os
-import datetime
-from multiprocessing.sharedctypes import Value
+from typing import Any
 
-from sqlalchemy import create_engine
-from sqlalchemy import insert, select, update
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.orm import Session
-
-from pathlib import Path
-
-
+from sqlalchemy import create_engine, select, update
+from sqlalchemy.engine.result import ScalarResult
+from sqlalchemy.orm import Session, sessionmaker
 
 # Pick one feature that will be useful for users
 # and then go about implementing it in the simplest way possible
@@ -29,27 +23,29 @@ from pathlib import Path
 # SET_MOVIE_WATCHED = "UPDATE projects SET watched = 1 WHERE name = ?;"
 
 
-
 # connection = sqlite3.connect("/data/data.db")
 # need 4 slashes (https://docs.sqlalchemy.org/en/13/core/engines.html#sqlite)
 
 # Create engine based upon venv or docker volue
 
 DATABASE = os.getenv("DATABASE", "/data/data.db")
-engine = create_engine(f'sqlite:///{DATABASE}', echo=True, future=True)
+engine = create_engine(f"sqlite:///{DATABASE}", echo=True, future=True)
 Session = sessionmaker(engine)
 import models
 
-def create_tables():    
+
+def create_tables() -> None:
     print(engine)
     models.Base.metadata.create_all(engine)
 
-def add_project(name:str):
+
+def add_project(name: str) -> None:
     with Session.begin() as session:
         project = models.Project(name=name)
         session.add_all([project])
 
-def get_projects(only_active:bool=True):
+
+def get_projects(only_active: bool = True) -> ScalarResult[Any]:
     session = Session()
     if only_active == True:
         column = getattr(models.Project, "active")
@@ -59,25 +55,29 @@ def get_projects(only_active:bool=True):
     return session.scalars(stmt)
 
 
-def activate_project(id:int):
+def activate_project(id: int) -> None:
     with Session.begin() as session:
         column = getattr(models.Project, "id")
-        stmt = update(models.Project).where(column == id).values(active = 1)
-        session.execute(stmt)
-
-def deactivate_project(id:int):
-    with Session.begin() as session:
-        column = getattr(models.Project, "id")
-        stmt = update(models.Project).where(column == id).values(active = 0)
-        session.execute(stmt)
-
-def patch_project(id:int, name: str, active:bool):
-    with Session.begin() as session:
-        column = getattr(models.Project, "id")
-        stmt = update(models.Project).where(column == id).values(name=name, active=active)
+        stmt = update(models.Project).where(column == id).values(active=1)
         session.execute(stmt)
 
 
-def delete_project(id:int):
+def deactivate_project(id: int) -> None:
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = update(models.Project).where(column == id).values(active=0)
+        session.execute(stmt)
+
+
+def patch_project(id: int, name: str, active: bool) -> None:
+    with Session.begin() as session:
+        column = getattr(models.Project, "id")
+        stmt = (
+            update(models.Project).where(column == id).values(name=name, active=active)
+        )
+        session.execute(stmt)
+
+
+def delete_project(id: int) -> None:
     # don't allow deletion, only deactivations
     deactivate_project(id=id)

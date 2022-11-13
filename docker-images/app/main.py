@@ -1,9 +1,8 @@
 # import datetime
 import json
-# from typing import Union
+from typing import Any, Dict, List, Union
 
 import database
-
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -12,12 +11,15 @@ database.create_tables()
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
+
 # https://stackoverflow.com/a/10664192
-def new_alchemy_encoder(revisit_self = False, fields_to_expand = []):
+def new_alchemy_encoder(
+    revisit_self: bool = False, fields_to_expand: List[str] = []
+) -> Any:
     _visited_objs = []
 
     class AlchemyEncoder(json.JSONEncoder):
-        def default(self, obj):
+        def default(self, obj: object) -> Union[List[str], object]:
             if isinstance(obj.__class__, DeclarativeMeta):
                 # don't re-visit self
                 if revisit_self:
@@ -26,12 +28,20 @@ def new_alchemy_encoder(revisit_self = False, fields_to_expand = []):
                     _visited_objs.append(obj)
 
                 # go through each field in this SQLalchemy class
-                fields = {}
-                for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata' and x!='registry']:
+                fields: Dict[str, Any] = {}
+                for field in [
+                    x
+                    for x in dir(obj)
+                    if not x.startswith("_") and x != "metadata" and x != "registry"
+                ]:
                     val = obj.__getattribute__(field)
 
                     # is this field another SQLalchemy object, or a list of SQLalchemy objects?
-                    if isinstance(val.__class__, DeclarativeMeta) or (isinstance(val, list) and len(val) > 0 and isinstance(val[0].__class__, DeclarativeMeta)):
+                    if isinstance(val.__class__, DeclarativeMeta) or (
+                        isinstance(val, list)
+                        and len(val) > 0
+                        and isinstance(val[0].__class__, DeclarativeMeta)
+                    ):
                         # unless we're expanding this field, stop here
                         if field not in fields_to_expand:
                             # not expanding this field: set it to None and continue
@@ -48,32 +58,44 @@ def new_alchemy_encoder(revisit_self = False, fields_to_expand = []):
 
 
 @app.get("/")
-def read_root():
+def read_root() -> dict[str, str]:
     return {"Hello": "World"}
 
 
 @app.get("/projects")
-def get_projects(only_active:bool = True):
+def get_projects(only_active: bool = True) -> List[str]:
     rows = database.get_projects(only_active=only_active)
-    return [json.dumps(c, cls=new_alchemy_encoder(False, ['id', 'name', 'active']), check_circular=False) for c in rows]
+    return [
+        json.dumps(
+            c,
+            cls=new_alchemy_encoder(False, ["id", "name", "active"]),
+            check_circular=False,
+        )
+        for c in rows
+    ]
+
 
 @app.put("/project")
-def add_project(name: str):
+def add_project(name: str) -> None:
     database.add_project(name=name)
 
+
 @app.patch("/project")
-def patch_project(id: int, name:str, active:bool):
+def patch_project(id: int, name: str, active: bool) -> None:
     database.update_project(id=id, name=name, active=active)
 
+
 @app.delete("/project")
-def delete_project(id:int):
+def delete_project(id: int) -> None:
     database.deactivate_project(id=id)
 
 
 if __name__ == "__main__":
-    import uvicorn
     import os
+
+    import uvicorn
+
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", 80))
-    
+
     uvicorn.run(app, host=host, port=port, log_level="info")

@@ -6,18 +6,13 @@ environments = [
     {"NAME": "latest", "PYTHON_VERSION": "3.10.8"},
     {"NAME": "python3.10.8", "PYTHON_VERSION": "3.10.8"},
     {"NAME": "python3.10.8-slim", "PYTHON_VERSION": "3.10.8"},
-    {"NAME": "python3.8-slim", "PYTHON_VERSION": "3.8"},
-    {"NAME": "python3.9-alpine3.14", "PYTHON_VERSION": "3.9"},
-    {"NAME": "python3.8-alpine3.10", "PYTHON_VERSION": "3.8"},
-    {"NAME": "python3.7-alpine3.8", "PYTHON_VERSION": "3.7"},
-    {"NAME": "python3.6-alpine3.8", "PYTHON_VERSION": "3.6"},
 ]
 
 start_with = os.environ.get("START_WITH")
 build_push = os.environ.get("BUILD_PUSH")
 
 
-def process_tag(*, env: dict):
+def process_tag(*, env: dict) -> None:
     use_env = {**os.environ, **env}
     script = "scripts/test.sh"
     if build_push:
@@ -27,7 +22,7 @@ def process_tag(*, env: dict):
         sys.exit(return_code)
 
 
-def print_version_envs():
+def print_version_envs() -> None:
     env_lines = []
     for env in environments:
         env_vars = []
@@ -38,7 +33,7 @@ def print_version_envs():
         print(line)
 
 
-def main():
+def main() -> None:
     start_at = 0
     if start_with:
         start_at = [
