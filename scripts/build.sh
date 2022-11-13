@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
 
-use_tag="iancleary/uvicorn-gunicorn:$NAME"
+use_tag="iancleary/backend-main:$NAME"
 
 DOCKERFILE="$NAME"
 
