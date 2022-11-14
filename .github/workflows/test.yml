@@ -19,7 +19,9 @@ jobs:
         uses: pdm-project/setup-pdm@v2
         with:
           python-version: ${{ matrix.python-version }}
-
+      - namme: Disable venv
+        run: |
+          pdm config python.use_venv false
       - name: Install dependencies
         run: |
           pdm sync -d -G test
