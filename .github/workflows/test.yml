@@ -25,6 +25,6 @@ jobs:
       - name: Install dependencies
         run: |
           pdm sync -d -G test
-      - name: Run Tests
+      - name: Run Tests (on data/test.db)
         run: |
           export DATABASE=data/test.db && pdm run -v pytest tests
