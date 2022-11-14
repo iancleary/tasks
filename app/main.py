@@ -1,10 +1,14 @@
 # import datetime
 import json
-from typing import Any, Dict, List, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
 from fastapi import FastAPI
 
-from app.database import projects, tables
+from app.database import projects
+from app.database import tables
 
 app = FastAPI()
 

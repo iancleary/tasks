@@ -1,7 +1,8 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 # Pick one feature that will be useful for users
 # and then go about implementing it in the simplest way possible
