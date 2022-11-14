@@ -5,23 +5,24 @@ on:
   pull_request:
     types: [opened, synchronize]
 
-Testing:
-  runs-on: ${{ matrix.os }}
-  strategy:
-    matrix:
-      python-version: [3.7, 3.8, 3.9, '3.10']
-      os: [ubuntu-latest]
+jobs:
+  Testing:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, '3.10']
+        os: [ubuntu-latest]
 
-  steps:
-    - uses: actions/checkout@v3
-    - name: Set up PDM
-      uses: pdm-project/setup-pdm@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: |
-        pdm sync -d -G test
-    - name: Run Tests
-      run: |
-        export DATABASE=data/test.db && pdm run -v pytest tests
+      - name: Install dependencies
+        run: |
+          pdm sync -d -G test
+      - name: Run Tests
+        run: |
+          export DATABASE=data/test.db && pdm run -v pytest tests
