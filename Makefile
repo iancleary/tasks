@@ -36,13 +36,25 @@ run:
 run: ## Run the app (assuming within a venv)
 	scripts/start_app_venv.sh
 
-requirements:
+requirements: clean
 requirements: ## Export the pdm requirements to a txt file
 	scripts/create_requirements.sh
 
 clean:
-clean:
+clean: ## clean pdm exported requirements.txt
 	scripts/clean.sh
+
+lint:
+lint: ## lint the code
+	pdm run -v scripts/lint.sh
+
+format:
+format: ## format the code
+	pdm run -v scripts/format.sh
+
+test:
+test:  ## Test app with pytest outside of docker
+	export DATABASE=data/test.db && pdm run -v pytest tests
 
 build: requirements
 build: ## Make the latest build of the image (version is defined in make.env)

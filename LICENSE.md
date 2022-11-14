@@ -23,9 +23,9 @@ THE SOFTWARE.
 
 ## Attribution
 
-### tiangolo/uvicorn-gunicorn-docker
+### iancleary/backend-main-docker
 
-<https://github.com/tiangolo/uvicorn-gunicorn-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/LICENSE#L1-L21>
+<https://github.com/iancleary/backend-main-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/LICENSE#L1-L21>
 
 The MIT License (MIT)
 
