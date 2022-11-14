@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Union
 
 from fastapi import FastAPI
 
-from app.database import tables, projects
+from app.database import projects, tables
 
 app = FastAPI()
 
@@ -83,7 +83,7 @@ def add_project(name: str) -> None:
 
 @app.patch("/project")
 def patch_project(id: int, name: str, active: bool) -> None:
-    projects.update_project(id=id, name=name, active=active)
+    projects.patch_project(id=id, name=name, active=active)
 
 
 @app.delete("/project")

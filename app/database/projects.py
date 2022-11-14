@@ -1,10 +1,8 @@
-from typing import Any
 from sqlalchemy import select, update
 from sqlalchemy.engine.result import ScalarResult
 
+import app.models.projects as models
 from app.database.tables import Session
-import app.models.projects as models 
-
 
 
 def add_project(name: str) -> None:

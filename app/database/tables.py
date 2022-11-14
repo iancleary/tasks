@@ -1,7 +1,6 @@
 import os
 
 from sqlalchemy import create_engine
-
 from sqlalchemy.orm import Session, sessionmaker
 
 # Pick one feature that will be useful for users
@@ -36,4 +35,3 @@ import app.models.projects as projects
 def create_tables() -> None:
     print(engine)
     projects.Base.metadata.create_all(engine)
-
