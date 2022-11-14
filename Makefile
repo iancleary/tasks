@@ -50,7 +50,7 @@ lint: ## lint the code
 
 format:
 format: ## format the code
-	pdm run -v scripts/format.sh
+	pdm run -v scripts/format-imports.sh
 
 test:
 test:  ## Test app with pytest outside of docker

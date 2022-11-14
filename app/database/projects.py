@@ -1,4 +1,5 @@
-from sqlalchemy import select, update
+from sqlalchemy import select
+from sqlalchemy import update
 from sqlalchemy.engine.result import ScalarResult
 
 import app.models.projects as models
