@@ -21,10 +21,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Disable venv
         run: |
-          pdm config python.use_venv false
+          pdm config python.use_venv true
       - name: Install dependencies
         run: |
           pdm sync -d -G test
-      - name: Run Lint (on data/test.db)
+      - name: Run scripts/lint (with pdm)
         run: |
           pdm run -v scripts/lint.sh
