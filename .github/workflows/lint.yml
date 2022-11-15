@@ -17,15 +17,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up PDM
-        uses: pdm-project/setup-pdm@v2
-        with:
-          python-version: ${{ matrix.python-version }}
+      - name: Setup pdm
+        run: |
+          python3 -m pip install pdm
+          pdm config python.use_venv false
       - name: Setup Venv outside of pdm to accomodate mypy's PEP
         # https://github.com/pdm-project/pdm/issues/811
         # https://github.com/python/mypy/issues/11477
         run: |
-          pdm config python.use_venv false
           python3 -m venv venv
           source venv/bin/activate
       - name: Install Requirements with pip
