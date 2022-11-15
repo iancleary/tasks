@@ -3,17 +3,17 @@ from sqlalchemy import update
 from sqlalchemy.engine.result import ScalarResult
 
 import app.models.projects as models
-from app.database.tables import Session
+from app.database.tables import SESSION
 
 
 def add_project(name: str) -> None:
-    with Session.begin() as session:
+    with SESSION.begin() as session:
         project = models.Project(name=name)
         session.add_all([project])
 
 
 def get_projects(only_active: bool = True) -> ScalarResult:
-    session = Session()
+    session = SESSION()
     if only_active == True:
         column = getattr(models.Project, "active")
         stmt = select(models.Project).where(column == 1)
@@ -23,21 +23,21 @@ def get_projects(only_active: bool = True) -> ScalarResult:
 
 
 def activate_project(id: int) -> None:
-    with Session.begin() as session:
+    with SESSION.begin() as session:
         column = getattr(models.Project, "id")
         stmt = update(models.Project).where(column == id).values(active=1)
         session.execute(stmt)
 
 
 def deactivate_project(id: int) -> None:
-    with Session.begin() as session:
+    with SESSION.begin() as session:
         column = getattr(models.Project, "id")
         stmt = update(models.Project).where(column == id).values(active=0)
         session.execute(stmt)
 
 
 def patch_project(id: int, name: str, active: bool) -> None:
-    with Session.begin() as session:
+    with SESSION.begin() as session:
         column = getattr(models.Project, "id")
         stmt = (
             update(models.Project).where(column == id).values(name=name, active=active)
