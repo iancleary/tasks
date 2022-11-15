@@ -1,0 +1,37 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  Linting:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: ['3.10']
+        os: [ubuntu-22.04]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Setup Venv outside of pdm to accomodate mypy's PEP
+        # https://github.com/pdm-project/pdm/issues/811
+        # https://github.com/python/mypy/issues/11477
+        run: |
+          pdm config python.use_venv false
+          python3 -m venv venv
+          source venv/bin/activate
+      - name: Install Requirements with pip
+        run: |
+          pdm export -o requirements.txt --without-hashes
+          python3 -m pip install -r requirements.txt
+      - name: Run scripts/lint (without pdm)
+        run: |
+          scripts/lint.sh
