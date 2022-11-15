@@ -3,7 +3,7 @@ from sqlalchemy import update
 from sqlalchemy.engine.result import ScalarResult
 
 import app.models.projects as models
-from app.database.tables import SESSION
+from app.database import SESSION
 
 
 def add_project(name: str) -> None:
