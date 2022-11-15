@@ -28,7 +28,8 @@ jobs:
           source venv/bin/activate
       - name: Install dependencies
         run: |
-          pdm install -d
+          pdm export -o requirements.txt --without-hashes
+          python3 -m pip install -r requirements.txt
       - name: Run scripts/lint (with pdm)
         run: |
-          pdm run -v scripts/lint.sh
+          scripts/lint.sh
