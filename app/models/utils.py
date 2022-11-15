@@ -4,7 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Union
 
-from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 
 # https://stackoverflow.com/a/10664192
