@@ -21,12 +21,14 @@ jobs:
         uses: pdm-project/setup-pdm@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Disable venv
+      - name: Setup Venv
         run: |
           pdm config python.use_venv false
+          python3 -m venv venv
+          source venv/bin/activate
       - name: Install dependencies
         run: |
-          pdm sync -d -G dev
+          pdm install -d
       - name: Run scripts/lint (with pdm)
         run: |
           pdm run -v scripts/lint.sh
