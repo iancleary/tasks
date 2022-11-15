@@ -28,9 +28,7 @@ jobs:
           pdm config python.use_venv false
           python3 -m venv venv
           source venv/bin/activate
-      - name: Install Requirements
-        # https://github.com/pdm-project/pdm/issues/811
-        # https://github.com/python/mypy/issues/11477
+      - name: Install Requirements with pip
         run: |
           pdm export -o requirements.txt --without-hashes
           python3 -m pip install -r requirements.txt
