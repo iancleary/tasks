@@ -24,7 +24,7 @@ jobs:
           pdm config python.use_venv false
       - name: Install dependencies
         run: |
-          pdm sync -d -G test
+          pdm sync -d -G dev
       - name: Run scripts/lint (with pdm)
         run: |
           pdm run -v scripts/lint.sh
