@@ -2,7 +2,7 @@
 version: "3.9"
 services:
   web:
-    image: iancleary/backend-main:python3.10.8-slim-2022-11-15
+    image: iancleary/backend-main:python3.10.8-slim-2022-11-17
     ports:
       - "80:80"
     volumes:

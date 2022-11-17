@@ -13,6 +13,7 @@ IMAGE_NAME?= backend-main
 LATEST?= latest
 
 IMAGE=$(NS)/$(IMAGE_NAME)
+PROD_DOCKER_COMPOSE?=-f docker-compose.prod.yml
 
 # Shell that make should use
 SHELL:=bash
@@ -83,3 +84,18 @@ down: ## Stop the docker image (via docker-compose)
 
 stop:
 stop: down
+
+prod-up:
+prod-up: ## Run the docker image (via docker-compose)
+	docker-compose $(PROD_DOCKER_COMPOSE) up || docker compose $(PROD_DOCKER_COMPOSE) up
+
+prod-detached:
+prod-detached: ## Run the docker image (via docker-compose) detached
+	docker-compose $(PROD_DOCKER_COMPOSE) up -d || docker compose $(PROD_DOCKER_COMPOSE) up -d
+
+prod-down:
+prod-down: ## Stop the docker image (via docker-compose)
+	docker-compose $(PROD_DOCKER_COMPOSE) down || docker compose $(PROD_DOCKER_COMPOSE) down
+
+prod-stop:
+prod-stop: prod-down
