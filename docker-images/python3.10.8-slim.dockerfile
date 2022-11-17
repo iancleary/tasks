@@ -17,7 +17,8 @@ COPY ./gunicorn_conf.py /gunicorn_conf.py
 COPY ./start-reload.sh /start-reload.sh
 RUN chmod +x /start-reload.sh
 
-COPY ./app /app
+# Needed /app/app for from app.database to be import path in dockerfile and in venv
+COPY ./app /app/app
 WORKDIR /app/
 
 ENV PYTHONPATH=/app
