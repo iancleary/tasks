@@ -40,6 +40,10 @@ requirements: clean
 requirements: ## Export the pdm requirements to a txt file
 	scripts/create_requirements.sh
 
+copy:
+copy: ## Copy app to docker-images for docker local build
+	scripts/copy_app.sh
+
 clean:
 clean: ## clean pdm exported requirements.txt
 	scripts/clean.sh
@@ -56,7 +60,7 @@ test:
 test:  ## Test app with pytest outside of docker
 	export DATABASE=data/test.db && pdm run -v pytest tests
 
-build: requirements
+build: requirements copy
 build: ## Make the latest build of the image (version is defined in make.env)
 	cd docker-images && docker build --no-cache -f ${DOCKERFILE} --build-arg VERSION=${VERSION} -t ${IMAGE}:${VERSION} .
 

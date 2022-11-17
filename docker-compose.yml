@@ -2,7 +2,10 @@
 version: "3.9"
 services:
   web:
-    image: iancleary/backend-main:python3.10.8-slim-2022-11-15
+    image: main/backend
+    build:
+      context: ./docker-images
+      dockerfile: python3.10.8-slim.dockerfile
     ports:
       - "80:80"
     volumes:
