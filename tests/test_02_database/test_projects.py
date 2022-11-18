@@ -44,7 +44,7 @@ def test_patch_project() -> None:
 
 def test_delete_project() -> None:
 
-    projects_engine.delete(id=1)
+    projects_engine.delete_project(id=1)
 
     project = projects_engine.get_project(id=1)
 
