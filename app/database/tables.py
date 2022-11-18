@@ -1,7 +1,7 @@
 import app.database as database
-import app.models.projects as projects
+from app.models import BASE
 
 
 def create_tables() -> None:
     print(database.ENGINE)
-    projects.Base.metadata.create_all(database.ENGINE)
+    BASE.metadata.create_all(database.ENGINE)

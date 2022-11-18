@@ -12,11 +12,27 @@ def add_project(name: str) -> None:
         session.add_all([project])
 
 
+def get_project(id: int) -> models.Project:
+    session = SESSION()
+    stmt = select(models.Project).where(models.Project.id == id)
+
+    # fetch all the records whose id == id
+    records = session.execute(stmt).fetchall()
+
+    # should be only 1 record
+    record = records[0]
+
+    # record is a tuple with the class inside it
+    project = record[0]
+
+    return project
+
+
 def get_projects(only_active: bool = True) -> ScalarResult:
     session = SESSION()
     if only_active == True:
-        column = getattr(models.Project, "active")
-        stmt = select(models.Project).where(column == 1)
+        getattr(models.Project, "active")
+        stmt = select(models.Project).where(models.Project == 1)
     else:
         stmt = select(models.Project)
     return session.scalars(stmt)
@@ -40,7 +56,9 @@ def patch_project(id: int, name: str, active: bool) -> None:
     with SESSION.begin() as session:
         column = getattr(models.Project, "id")
         stmt = (
-            update(models.Project).where(column == id).values(name=name, active=active)
+            update(models.Project)
+            .where(column == id)
+            .values(name=name, active=int(active))
         )
         session.execute(stmt)
 

@@ -58,7 +58,8 @@ format: ## format the code
 	pdm run -v scripts/format-imports.sh
 
 test:
-test:  ## Test app with pytest outside of docker
+test:  ## Test app with pytest outside of docker (with fresh data/test.db)
+	rm data/test.db
 	export DATABASE=data/test.db && pdm run -v pytest tests
 
 build: requirements copy

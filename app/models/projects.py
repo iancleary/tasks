@@ -1,12 +1,12 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from app.models import BASE
+
 
 # mypy: ignore-errors
-class Project(Base):
+class Project(BASE):
     __tablename__ = "projects"
     id = Column(Integer, primary_key=True)
     name = Column(String)
