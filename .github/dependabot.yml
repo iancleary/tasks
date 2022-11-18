@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
   # Development/testing dependencies
   - package-ecosystem: "pip"
     directory: "/"
@@ -14,4 +14,4 @@ updates:
   - package-ecosystem: "pip"
     directory: "/docker-images"
     schedule:
-      interval: "daily"
+      interval: "monthly"
