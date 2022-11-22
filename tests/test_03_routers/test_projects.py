@@ -5,7 +5,6 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_read_main():
-    response = client.get("/")
+def test_add_project() -> None:
+    response = client.put("/project", json={"name": "Test Project"})
     assert response.status_code == 200
-    assert response.json() == {"msg": "Hello World"}
