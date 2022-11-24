@@ -1,6 +1,6 @@
 anyio==3.6.2
 attrs==22.1.0
-autoflake==1.7.7
+autoflake==1.7.8
 black==22.10.0
 cfgv==3.3.1
 click==8.1.3
