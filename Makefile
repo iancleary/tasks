@@ -59,7 +59,7 @@ format: ## format the code
 
 test:
 test:  ## Test app with pytest outside of docker (with fresh data/test.db)
-	rm data/test.db
+	-rm data/test.db
 	export DATABASE=data/test.db && pdm run -v pytest tests
 
 build: requirements copy

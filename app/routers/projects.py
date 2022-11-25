@@ -2,6 +2,7 @@ import json
 from typing import List
 
 from fastapi import APIRouter
+from pydantic import BaseModel
 
 import app.database.projects as projects_engine
 from app.models.utils import new_alchemy_encoder
@@ -22,16 +23,31 @@ def get_projects(only_active: bool = True) -> List[str]:
     ]
 
 
-@router.put("/project")
-def add_project(name: str) -> None:
-    projects_engine.add_project(name=name)
+class Project(BaseModel):
+    name: str
 
 
-@router.patch("/project")
-def patch_project(id: int, name: str, active: bool) -> None:
-    projects_engine.patch_project(id=id, name=name, active=active)
+@router.post("/project")
+def create_project(project: Project) -> None:
+    projects_engine.add_project(name=project.name)
+
+
+class PatchProject(BaseModel):
+    name: str
+    active: bool
+
+
+@router.patch("/project/{project_id}")
+def patch_project(project_id: int, project: PatchProject) -> None:
+    projects_engine.patch_project(
+        id=project_id, name=project.name, active=project.active
+    )
+
+
+class DeleteProject(BaseModel):
+    id: int
 
 
 @router.delete("/project")
-def delete_project(id: int) -> None:
-    projects_engine.deactivate_project(id=id)
+def delete_project(project: DeleteProject) -> None:
+    projects_engine.deactivate_project(id=project.id)

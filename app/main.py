@@ -13,7 +13,7 @@ tables.create_tables()
 
 @app.get("/")
 def read_root() -> dict[str, str]:
-    return {"Hello": "World"}
+    return {"msg": "Hello World"}
 
 
 if __name__ == "__main__":
