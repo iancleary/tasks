@@ -139,6 +139,7 @@ node_modules
 
 # docker-images
 docker-images/app
+docker-images/requirements.txt
 
 # test
 data/test.db
