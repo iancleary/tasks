@@ -1,15 +1,26 @@
+import json
+
 from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.engine.result import ScalarResult
 
 import app.models.projects as models
 from app.database import SESSION
+from app.models.utils import new_alchemy_encoder
 
 
-def add_project(name: str) -> None:
-    with SESSION.begin() as session:
-        project = models.Project(name=name)
-        session.add_all([project])
+def add_project(name: str) -> dict:
+
+    session = SESSION()
+    project = models.Project(name=name)
+    session.add(project)
+    session.commit()
+    ret = project.id
+    session.close()
+    # with SESSION.begin() as session:
+    #     project = models.Project(name=name)
+    #     session.add_all([project])
+    return ret
 
 
 def get_project(id: int) -> models.Project:
@@ -29,13 +40,12 @@ def get_project(id: int) -> models.Project:
 
 
 def get_projects(only_active: bool = True) -> ScalarResult:
-    session = SESSION()
     if only_active == True:
         getattr(models.Project, "active")
         stmt = select(models.Project).where(models.Project == 1)
     else:
         stmt = select(models.Project)
-    return session.scalars(stmt)
+    return SESSION().scalars(stmt)
 
 
 def activate_project(id: int) -> None:

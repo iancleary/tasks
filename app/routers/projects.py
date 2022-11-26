@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from typing import List
 
 from fastapi import APIRouter
@@ -10,8 +11,14 @@ from app.models.utils import new_alchemy_encoder
 router = APIRouter()
 
 
+class Project(BaseModel):
+    name: str
+    id: int
+    active: bool
+
+
 @router.get("/projects")
-def get_projects(only_active: bool = True) -> List[str]:
+def get_projects(only_active: bool = True) -> List[Project]:
     rows = projects_engine.get_projects(only_active=only_active)
     return [
         json.dumps(
@@ -23,13 +30,24 @@ def get_projects(only_active: bool = True) -> List[str]:
     ]
 
 
-class Project(BaseModel):
+@router.get("/project/{project_id}")
+def get_projects(project_id: int) -> List[str]:
+    project = projects_engine.get_project(id=project_id)
+    return json.dumps(
+        project,
+        cls=new_alchemy_encoder(False, ["id", "name", "active"]),
+        check_circular=False,
+    )
+
+
+class NewProject(BaseModel):
     name: str
 
 
 @router.post("/project")
-def create_project(project: Project) -> None:
-    projects_engine.add_project(name=project.name)
+def create_project(project: NewProject) -> dict[str:int]:
+    id = projects_engine.add_project(name=project.name)
+    return json.dumps({"id": id})
 
 
 class PatchProject(BaseModel):
@@ -44,10 +62,6 @@ def patch_project(project_id: int, project: PatchProject) -> None:
     )
 
 
-class DeleteProject(BaseModel):
-    id: int
-
-
-@router.delete("/project")
-def delete_project(project: DeleteProject) -> None:
-    projects_engine.deactivate_project(id=project.id)
+@router.delete("/project/{project_id}")
+def delete_project(project_id: int) -> None:
+    projects_engine.deactivate_project(id=project_id)

@@ -3,7 +3,8 @@ import app.database.projects as projects_engine
 
 def test_create_project() -> None:
 
-    projects_engine.add_project(name="Example Project")
+    project_id = projects_engine.add_project(name="Example Project")
+    assert isinstance(project_id, int)
 
 
 def test_get_projects() -> None:
