@@ -18,7 +18,7 @@ class Project(BaseModel):
 
 
 @router.get("/projects")
-def get_projects(only_active: bool = True) -> List[Project]:
+def get_projects(only_active: bool = True) -> List[str]:
     rows = projects_engine.get_projects(only_active=only_active)
     return [
         json.dumps(
@@ -31,7 +31,7 @@ def get_projects(only_active: bool = True) -> List[Project]:
 
 
 @router.get("/project/{project_id}")
-def get_projects(project_id: int) -> List[str]:
+def get_project(project_id: int) -> str:
     project = projects_engine.get_project(id=project_id)
     return json.dumps(
         project,
@@ -45,7 +45,7 @@ class NewProject(BaseModel):
 
 
 @router.post("/project")
-def create_project(project: NewProject) -> dict[str:int]:
+def create_project(project: NewProject) -> str:
     id = projects_engine.add_project(name=project.name)
     return json.dumps({"id": id})
 
