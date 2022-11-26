@@ -1,12 +1,9 @@
-import json
-
 from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.engine.result import ScalarResult
 
 import app.models.projects as models
 from app.database import SESSION
-from app.models.utils import new_alchemy_encoder
 
 
 def add_project(name: str) -> dict:
