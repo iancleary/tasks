@@ -78,12 +78,12 @@ summary = "Backport of PEP 654 (exception groups)"
 
 [[package]]
 name = "fastapi"
-version = "0.87.0"
+version = "0.88.0"
 requires_python = ">=3.7"
 summary = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 dependencies = [
     "pydantic!=1.7,!=1.7.1,!=1.7.2,!=1.7.3,!=1.8,!=1.8.1,<2.0.0,>=1.6.2",
-    "starlette==0.21.0",
+    "starlette==0.22.0",
 ]
 
 [[package]]
@@ -318,7 +318,7 @@ dependencies = [
 
 [[package]]
 name = "starlette"
-version = "0.21.0"
+version = "0.22.0"
 requires_python = ">=3.7"
 summary = "The little ASGI library that shines."
 dependencies = [
@@ -405,7 +405,7 @@ summary = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:5f1d16b5acb9ab033c1f0b966fe30c5efe77d0bf229c4236ce7f014bbf898822"
+content_hash = "sha256:262970d399673aee10e2bb8f12a091d826c65d8851661de02a6449793dd793ec"
 
 [metadata.files]
 "anyio 3.6.2" = [
@@ -467,9 +467,9 @@ content_hash = "sha256:5f1d16b5acb9ab033c1f0b966fe30c5efe77d0bf229c4236ce7f014bb
     {url = "https://files.pythonhosted.org/packages/ce/2e/9a327cc0d2d674ee2d570ee30119755af772094edba86d721dda94404d1a/exceptiongroup-1.0.4-py3-none-any.whl", hash = "sha256:542adf9dea4055530d6e1279602fa5cb11dab2395fa650b8674eaec35fc4a828"},
     {url = "https://files.pythonhosted.org/packages/fa/e1/4f89a2608978a78876a76e69e82fa1fc5ce3fb346297eed2a51dd3df2dcf/exceptiongroup-1.0.4.tar.gz", hash = "sha256:bd14967b79cd9bdb54d97323216f8fdf533e278df937aa2a90089e7d6e06e5ec"},
 ]
-"fastapi 0.87.0" = [
-    {url = "https://files.pythonhosted.org/packages/18/f6/5b65188446030f0adfa95f74dd7d6506c064c261e34567876713f4a1661c/fastapi-0.87.0.tar.gz", hash = "sha256:07032e53df9a57165047b4f38731c38bdcc3be5493220471015e2b4b51b486a4"},
-    {url = "https://files.pythonhosted.org/packages/8c/f5/68a7a099ae3674e85e2de11d3859ebffd7fe32a8cda0d11bd4d43f32437b/fastapi-0.87.0-py3-none-any.whl", hash = "sha256:254453a2e22f64e2a1b4e1d8baf67d239e55b6c8165c079d25746a5220c81bb4"},
+"fastapi 0.88.0" = [
+    {url = "https://files.pythonhosted.org/packages/d8/09/ce090f6d53ce8b6335954488087210fa1e054c4a65f74d5f76aed254c159/fastapi-0.88.0-py3-none-any.whl", hash = "sha256:263b718bb384422fe3d042ffc9a0c8dece5e034ab6586ff034f6b4b1667c3eee"},
+    {url = "https://files.pythonhosted.org/packages/f0/d1/55559f6b09ac336cbb4640ab4c2da0fd79a955eed31f475f0a5ba2ad102e/fastapi-0.88.0.tar.gz", hash = "sha256:915bf304180a0e7c5605ec81097b7d4cd8826ff87a02bb198e336fb9f3b5ff02"},
 ]
 "filelock 3.8.0" = [
     {url = "https://files.pythonhosted.org/packages/94/b3/ff2845971788613e646e667043fdb5f128e2e540aefa09a3c55be8290d6d/filelock-3.8.0-py3-none-any.whl", hash = "sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4"},
@@ -823,9 +823,9 @@ content_hash = "sha256:5f1d16b5acb9ab033c1f0b966fe30c5efe77d0bf229c4236ce7f014bb
     {url = "https://files.pythonhosted.org/packages/fc/3f/9789b0ed62202e3d0f3aeb9415c572fb97aaa8be10b2a941874b5ff8096b/SQLAlchemy-1.4.44-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:68e0cd5d32a32c4395168d42f2fefbb03b817ead3a8f3704b8bd5697c0b26c24"},
     {url = "https://files.pythonhosted.org/packages/fd/0c/0f1538602c4f0f0c6d445bd457e73cb62672bd16fd1a52c03d6cd69300e4/SQLAlchemy-1.4.44-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:393f51a09778e8984d735b59a810731394308b4038acdb1635397c2865dae2b6"},
 ]
-"starlette 0.21.0" = [
-    {url = "https://files.pythonhosted.org/packages/94/a3/777d1749aa0db3f9da12a8cc5f89fe01c95548909d012f0e419299c6d8a3/starlette-0.21.0-py3-none-any.whl", hash = "sha256:0efc058261bbcddeca93cad577efd36d0c8a317e44376bcfc0e097a2b3dc24a7"},
-    {url = "https://files.pythonhosted.org/packages/b9/41/f72bdaf61d5254da110866361b0d0da8694f7b5d0909b78337f6ebe17f0d/starlette-0.21.0.tar.gz", hash = "sha256:b1b52305ee8f7cfc48cde383496f7c11ab897cd7112b33d998b1317dc8ef9027"},
+"starlette 0.22.0" = [
+    {url = "https://files.pythonhosted.org/packages/1d/4e/30eda84159d5b3ad7fe663c40c49b16dd17436abe838f10a56c34bee44e8/starlette-0.22.0-py3-none-any.whl", hash = "sha256:b5eda991ad5f0ee5d8ce4c4540202a573bb6691ecd0c712262d0bc85cf8f2c50"},
+    {url = "https://files.pythonhosted.org/packages/f7/ff/64bd3362f80e81402f21e0f1ba55f8801cd899ad3f2a1bcc4a94d284c786/starlette-0.22.0.tar.gz", hash = "sha256:b092cbc365bea34dd6840b42861bdabb2f507f8671e642e8272d2442e08ea4ff"},
 ]
 "toml 0.10.2" = [
     {url = "https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
