@@ -2,9 +2,14 @@ import json
 from typing import List
 
 from fastapi import APIRouter
+from fastapi import Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from sqlalchemy import update
 
-import app.database.projects as projects_engine
+
+from app.database import get_db
+from app.models.projects import Project
 from app.models.utils import new_alchemy_encoder
 
 router = APIRouter()
@@ -17,21 +22,27 @@ class Project(BaseModel):
 
 
 @router.get("/projects")
-def get_projects(only_active: bool = True) -> List[str]:
-    rows = projects_engine.get_projects(only_active=only_active)
+def get_projects(
+    db: Session = Depends(get_db), *, only_active: bool = True
+) -> List[str]:
+    if only_active == True:
+        projects = db.query(Project).filter(Project.only_active == 1)
+    else:
+        projects = db.query(Project)
+
     return [
         json.dumps(
             c,
             cls=new_alchemy_encoder(False, ["id", "name", "active"]),
             check_circular=False,
         )
-        for c in rows
+        for c in projects
     ]
 
 
 @router.get("/project/{project_id}")
-def get_project(project_id: int) -> str:
-    project = projects_engine.get_project(id=project_id)
+def get_project(db: Session = Depends(get_db), *, project_id: int) -> str:
+    project = db.query(Project).get(project_id)
     return json.dumps(
         project,
         cls=new_alchemy_encoder(False, ["id", "name", "active"]),
@@ -44,9 +55,10 @@ class NewProject(BaseModel):
 
 
 @router.post("/project")
-def create_project(project: NewProject) -> str:
-    id = projects_engine.add_project(name=project.name)
-    return json.dumps({"id": id})
+def create_project(db: Session = Depends(get_db), *, project: NewProject) -> str:
+    project = Project(name=project.name)
+    db.add(project)
+    return json.dumps({"id": project.id})
 
 
 class PatchProject(BaseModel):
@@ -55,12 +67,23 @@ class PatchProject(BaseModel):
 
 
 @router.patch("/project/{project_id}")
-def patch_project(project_id: int, project: PatchProject) -> None:
-    projects_engine.patch_project(
-        id=project_id, name=project.name, active=project.active
+def patch_project(
+    db: Session = Depends(get_db), *, project_id: int, project: PatchProject
+) -> None:
+    project = db.query(Project).get(project_id)
+
+    column = getattr(Project, "id")
+    stmt = (
+        update(Project)
+        .where(column == id)
+        .values(name=project.name, active=int(project.active))
     )
+
+    db.execute(stmt)
 
 
 @router.delete("/project/{project_id}")
-def delete_project(project_id: int) -> None:
-    projects_engine.deactivate_project(id=project_id)
+def delete_project(db: Session = Depends(get_db), *, project_id: int) -> None:
+    column = getattr(Project, "id")
+    stmt = update(Project).where(column == project_id).values(active=0)
+    db.execute(stmt)
