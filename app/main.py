@@ -2,13 +2,13 @@
 
 from fastapi import FastAPI
 
-from app.database import tables
+# from app.database import tables
 from app.routers import projects
 
 app = FastAPI()
 app.include_router(projects.router)
 
-tables.create_tables()
+# tables.create_tables()
 
 
 @app.get("/")
