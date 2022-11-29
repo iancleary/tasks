@@ -1,11 +1,11 @@
-import os
-# import datetime
-
-from fastapi import FastAPI
 import uvicorn
+from fastapi import FastAPI
 
 from app.database import tables
 from app.routers import projects
+
+# import datetime
+
 
 app = FastAPI()
 app.include_router(projects.router)

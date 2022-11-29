@@ -4,9 +4,8 @@ from typing import List
 from fastapi import APIRouter
 from fastapi import Depends
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
 from sqlalchemy import update
-
+from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.projects import Project
@@ -15,10 +14,10 @@ from app.models.utils import new_alchemy_encoder
 router = APIRouter()
 
 
-class Project(BaseModel):
-    name: str
-    id: int
-    active: bool
+# class ProjectInput(BaseModel):
+#     name: str
+#     id: int
+#     active: bool
 
 
 @router.get("/projects")

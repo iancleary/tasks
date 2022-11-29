@@ -2,11 +2,10 @@ import os
 from functools import lru_cache
 from typing import Iterator
 
+import sqlalchemy
 from fastapi_restful.session import FastAPISessionMaker
 from pydantic import BaseSettings
 from sqlalchemy.orm import Session
-import sqlalchemy
-
 
 DATABASE = os.getenv("DATABASE", "data/data.db")
 DATABASE_URI = f"sqlite:///{DATABASE}"
