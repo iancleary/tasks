@@ -32,7 +32,7 @@ def get_projects(
     return [
         json.dumps(
             c,
-            cls=new_alchemy_encoder(False, ["id", "number", "name", "active"]),
+            cls=new_alchemy_encoder(False, ["id", "name", "active"]),
             check_circular=False,
         )
         for c in projects
@@ -44,7 +44,7 @@ def get_project(db: Session = Depends(get_db), *, project_id: str) -> str:
     project = db.query(Project).get(project_id)
     return json.dumps(
         project,
-        cls=new_alchemy_encoder(False, ["id", "number", "name", "active"]),
+        cls=new_alchemy_encoder(False, ["id", "name", "active"]),
         check_circular=False,
     )
 
@@ -59,24 +59,18 @@ def create_project(db: Session = Depends(get_db), *, project: NewProject) -> str
     db.add(project)
 
 
-class PatchProject(BaseModel):
+class NewName(BaseModel):
     name: str
-    active: bool
 
 
 @router.patch("/project/{project_id}")
 def patch_project(
-    db: Session = Depends(get_db), *, project_id: str, project: PatchProject
+    db: Session = Depends(get_db), *, project_id: str, updates: NewName
 ) -> None:
-    project = db.query(Project).get(project_id)
-
-    # column = getattr(Project, "id")
-    stmt = (
-        update(Project)
-        .where(Project.id == project_id)
-        .values(name=project.name, active=int(project.active))
-    )
-
+    # rename project
+    stmt = update(Project)
+    stmt = stmt.values({"name": updates.name})
+    stmt = stmt.where(Project.id == project_id)
     db.execute(stmt)
 
 
