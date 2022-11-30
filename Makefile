@@ -33,13 +33,13 @@ venv:
 	python3 -m venv venv
 	echo "source venv/bin/activate"
 
-run:
+run: copy
 run: ## Run the app (assuming within a venv)
 	scripts/start_app_venv.sh
 
-requirements: clean
+requirements:
 requirements: ## Export the pdm requirements to a txt file
-	scripts/create_requirements.sh
+	scripts/create_production_requirements.sh
 
 copy:
 copy: ## Copy app to docker-images for docker local build

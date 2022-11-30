@@ -9,6 +9,10 @@
             "type": "python",
             "request": "launch",
             "module": "app.main",
+            "env": {
+                "PYTHONIOENCODING": "UTF-8",
+                "PYTHONBUFFERED": "1"
+            },
             "envFile": "${workspaceFolder}/._dev.env",
             "python": "${command:python.interpreterPath}",
             "justMyCode": true
@@ -18,6 +22,10 @@
             "type": "python",
             "request": "launch",
             "module": "app.main",
+            "env": {
+                "PYTHONIOENCODING": "UTF-8",
+                "PYTHONBUFFERED": "1"
+            },
             "envFile": "${workspaceFolder}/._test.env",
             "python": "${command:python.interpreterPath}",
             "justMyCode": true
@@ -27,7 +35,11 @@
             "type": "python",
             "request": "launch",
             "module": "app.main",
-            "envFile": "${workspaceFolder}/._test.env",
+            "env": {
+                "PYTHONIOENCODING": "UTF-8",
+                "PYTHONBUFFERED": "1"
+            },
+            "envFile": "${workspaceFolder}/._prod.env",
             "python": "${command:python.interpreterPath}",
             "justMyCode": true
         }
