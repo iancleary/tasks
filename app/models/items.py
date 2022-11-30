@@ -1,3 +1,6 @@
+import datetime
+
+from sqlalchemy import REAL
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -6,24 +9,16 @@ from app.models import BASE
 
 
 # mypy: ignore-errors
-class Project(BASE):
-    __tablename__ = "projects"
-    # id = Column(String, primary_key=True)
+class Item(BASE):
+    __tablename__ = "items"
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String)
     description = Column(String, default="")
-    created_date = Column(Integer)
-    resolution_date = Column(Integer)
+    created_date = Column(REAL)
+    resolution_date = Column(REAL, default=None)
     status = Column(Integer, default=1)
 
-    def __init__(self, name: str) -> None:
-        # if self.id == None:
-        #     self.id = str(uuid.uuid4())
+    def __init__(self, name: str, created_date: float = None) -> None:
         self.name = name
-
-    # def _to_dict(self):
-    #     return {
-    #         "id": self.id,
-    #         "name": self.name,
-    #         "active": self.active
-    #     }
+        if self.created_date == None:
+            self.created_date = datetime.datetime.today().timestamp()
