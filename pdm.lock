@@ -16,11 +16,11 @@ summary = "Classes Without Boilerplate"
 
 [[package]]
 name = "autoflake"
-version = "1.7.7"
+version = "2.0.0"
 requires_python = ">=3.7"
 summary = "Removes unused imports and unused variables"
 dependencies = [
-    "pyflakes>=1.1.0",
+    "pyflakes>=3.0.0",
     "tomli>=2.0.1; python_version < \"3.11\"",
 ]
 
@@ -271,7 +271,7 @@ dependencies = [
 
 [[package]]
 name = "pyflakes"
-version = "2.5.0"
+version = "3.0.1"
 requires_python = ">=3.6"
 summary = "passive checker of Python programs"
 
@@ -433,7 +433,7 @@ summary = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:1f6f90aeead5af24d9a37ff3df6db2af6783f4d572e9ec7b50f049add00a361c"
+content_hash = "sha256:1530c4d47fef0928a211a0095a8abfacba66acb09adfbf679735514801677262"
 
 [metadata.files]
 "anyio 3.6.2" = [
@@ -444,9 +444,9 @@ content_hash = "sha256:1f6f90aeead5af24d9a37ff3df6db2af6783f4d572e9ec7b50f049add
     {url = "https://files.pythonhosted.org/packages/1a/cb/c4ffeb41e7137b23755a45e1bfec9cbb76ecf51874c6f1d113984ecaa32c/attrs-22.1.0.tar.gz", hash = "sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6"},
     {url = "https://files.pythonhosted.org/packages/f2/bc/d817287d1aa01878af07c19505fafd1165cd6a119e9d0821ca1d1c20312d/attrs-22.1.0-py2.py3-none-any.whl", hash = "sha256:86efa402f67bf2df34f51a335487cf46b1ec130d02b8d39fd248abfd30da551c"},
 ]
-"autoflake 1.7.7" = [
-    {url = "https://files.pythonhosted.org/packages/30/67/87494f5acb710faa4fb5688e2957150385eb610a4fdad6c2848ef374fe30/autoflake-1.7.7.tar.gz", hash = "sha256:c8e4fc41aa3eae0f5c94b939e3a3d50923d7a9306786a6cbf4866a077b8f6832"},
-    {url = "https://files.pythonhosted.org/packages/da/7d/6cfefbc9db987d211526a62ea79a8bdc3fdde0e0c04282bc6db07be5fc58/autoflake-1.7.7-py3-none-any.whl", hash = "sha256:a9b43d08f8e455824e4f7b3f078399f59ba538ba53872f466c09e55c827773ef"},
+"autoflake 2.0.0" = [
+    {url = "https://files.pythonhosted.org/packages/0a/ef/9730d6b873d56ac8b3e53daaa10a5ca6a7e4bf7d42a3e9b3d5abb739d3ef/autoflake-2.0.0.tar.gz", hash = "sha256:7185b596e70d8970c6d4106c112ef41921e472bd26abf3613db99eca88cc8c2a"},
+    {url = "https://files.pythonhosted.org/packages/48/ec/a2761b7f2cb825f1e4e9073858c8111ac8c74fc0e945456a964e17353c1f/autoflake-2.0.0-py3-none-any.whl", hash = "sha256:d58ed4187c6b4f623a942b9a90c43ff84bf6a266f3682f407b42ca52073c9678"},
 ]
 "black 22.10.0" = [
     {url = "https://files.pythonhosted.org/packages/2c/11/f2737cd3b458d91401801e83a014e87c63e8904dc063200f77826c352f54/black-22.10.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:2039230db3c6c639bd84efe3292ec7b06e9214a2992cd9beb293d639c6402edb"},
@@ -758,9 +758,9 @@ content_hash = "sha256:1f6f90aeead5af24d9a37ff3df6db2af6783f4d572e9ec7b50f049add
     {url = "https://files.pythonhosted.org/packages/fe/5b/6f77e6ebc93e5e3c7fd480e1b171a6547407eba901a56a65d2745df24144/pydantic-1.10.2-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:bedf309630209e78582ffacda64a21f96f3ed2e51fbf3962d4d488e503420254"},
     {url = "https://files.pythonhosted.org/packages/fe/fd/8f7f8271d526378c927babd1229501e576760cef9a509909a3415eec3c0d/pydantic-1.10.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:bb6ad4489af1bac6955d38ebcb95079a836af31e4c4f74aba1ca05bb9f6027bd"},
 ]
-"pyflakes 2.5.0" = [
-    {url = "https://files.pythonhosted.org/packages/07/92/f0cb5381f752e89a598dd2850941e7f570ac3cb8ea4a344854de486db152/pyflakes-2.5.0.tar.gz", hash = "sha256:491feb020dca48ccc562a8c0cbe8df07ee13078df59813b83959cbdada312ea3"},
-    {url = "https://files.pythonhosted.org/packages/dc/13/63178f59f74e53acc2165aee4b002619a3cfa7eeaeac989a9eb41edf364e/pyflakes-2.5.0-py2.py3-none-any.whl", hash = "sha256:4579f67d887f804e67edb544428f264b7b24f435b263c4614f384135cea553d2"},
+"pyflakes 3.0.1" = [
+    {url = "https://files.pythonhosted.org/packages/af/4c/b1c7008aa7788b3e26c06c60aa18da7d3aa1f00e344aa3f18ac92768854b/pyflakes-3.0.1-py2.py3-none-any.whl", hash = "sha256:ec55bf7fe21fff7f1ad2f7da62363d749e2a470500eab1b555334b67aa1ef8cf"},
+    {url = "https://files.pythonhosted.org/packages/f2/51/506ddcfab10d708e8460554cc1cf37c727a6a2cccbad8dfe57766cfce33c/pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
 ]
 "pyparsing 3.0.9" = [
     {url = "https://files.pythonhosted.org/packages/6c/10/a7d0fa5baea8fe7b50f448ab742f26f52b80bfca85ac2be9d35cdd9a3246/pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
