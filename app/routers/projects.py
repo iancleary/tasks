@@ -54,7 +54,7 @@ class NewProject(BaseModel):
 
 
 @router.post("/project")
-def create_project(db: Session = Depends(get_db), *, project: NewProject) -> str:
+def create_project(db: Session = Depends(get_db), *, project: NewProject) -> None:
     project = Project(name=project.name)
     db.add(project)
 
