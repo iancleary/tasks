@@ -14,10 +14,18 @@ from app.models.utils import new_alchemy_encoder
 router = APIRouter()
 
 
-# class ProjectInput(BaseModel):
-#     name: str
-#     id: int
-#     active: bool
+##~~ Create
+class NewProject(BaseModel):
+    name: str
+
+
+@router.post("/project")
+def create_project(db: Session = Depends(get_db), *, project: NewProject) -> None:
+    project = Project(name=project.name)
+    db.add(project)
+
+
+##~~ Read
 
 
 @router.get("/projects")
@@ -49,14 +57,7 @@ def get_project(db: Session = Depends(get_db), *, project_id: str) -> str:
     )
 
 
-class NewProject(BaseModel):
-    name: str
-
-
-@router.post("/project")
-def create_project(db: Session = Depends(get_db), *, project: NewProject) -> None:
-    project = Project(name=project.name)
-    db.add(project)
+##~~ Update
 
 
 class NewName(BaseModel):
@@ -74,8 +75,12 @@ def patch_project(
     db.execute(stmt)
 
 
+##~~ Delete
+
+
 @router.delete("/project/{project_id}")
 def delete_project(db: Session = Depends(get_db), *, project_id: int) -> None:
+    # Don't remove row, but deactivate project instead (design choice)
     column = getattr(Project, "id")
     stmt = update(Project).where(column == project_id).values(active=0)
     db.execute(stmt)
