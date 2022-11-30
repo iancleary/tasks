@@ -58,9 +58,8 @@ format: ## format the code
 	pdm run -v scripts/format-imports.sh
 
 test:
-test:  ## Test app with pytest outside of docker (with fresh data/test.db)
-	-rm data/test.db
-	export DATABASE=data/test.db && pdm run -v pytest tests
+test:  ## Test app with pytest outside of docker (with fresh data/test.db from tests/conftest.py)
+	pdm run -v pytest tests
 
 build: requirements copy
 build: ## Make the latest build of the image (version is defined in make.env)
