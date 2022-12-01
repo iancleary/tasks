@@ -31,7 +31,7 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 @router.get("/items")
 def get_items(db: Session = Depends(get_db), *, only_active: bool = True) -> List[str]:
     if only_active == True:
-        items = db.query(Item).filter(Item.active == 1)
+        items = db.query(Item).filter(Item.status == 1)
     else:
         items = db.query(Item)
 
@@ -80,5 +80,5 @@ def patch_item(
 def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     # Don't remove row, but deactivate item instead (design choice)
     column = getattr(Item, "id")
-    stmt = update(Item).where(column == item_id).values(active=0)
+    stmt = update(Item).where(column == item_id).values(status=0)
     db.execute(stmt)
