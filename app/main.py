@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.database import tables
+from app.routers import items
 from app.routers import projects
 
 # import datetime
@@ -9,6 +10,7 @@ from app.routers import projects
 
 app = FastAPI()
 app.include_router(projects.router)
+app.include_router(items.router)
 
 tables.create_tables()
 
