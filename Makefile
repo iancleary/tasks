@@ -58,13 +58,13 @@ format: ## format the code
 	pdm run -v scripts/format-imports.sh
 
 test:
-test:  ## Test app with pytest outside of docker (with fresh data/test.db)
-	-rm data/test.db
-	export DATABASE=data/test.db && pdm run -v pytest tests
+test:  ## Test app with pytest outside of docker (with fresh data/test.db from tests/conftest.py)
+	pdm run -v pytest tests
 
 build: requirements copy
 build: ## Make the latest build of the image (version is defined in make.env)
-	cd docker-images && docker build --no-cache -f ${DOCKERFILE} --build-arg VERSION=${VERSION} -t ${IMAGE}:${VERSION} .
+	#cd docker-images && docker build --no-cache -f ${DOCKERFILE} --build-arg VERSION=${VERSION} -t ${IMAGE}:${VERSION} .
+	docker-compose build || docker compose build
 
 push:
 push: ## push the latest version to docker hub (version is defined in make.env)

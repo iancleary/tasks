@@ -1,31 +1,35 @@
-
-
 repos:
 # export python requirements
 - repo: https://github.com/pdm-project/pdm
-  rev: 2.2.1 # a PDM release exposing the hook
+  rev: 2.3.2 # a PDM release exposing the hook
   hooks:
     - id: pdm-export
       # command arguments, e.g.:
       args: ['-o', 'docker-images/requirements.txt', '--without-hashes']
       files: ^pdm.lock$
 - repo: https://github.com/pdm-project/pdm
-  rev: 2.2.1 # a PDM release exposing the hook
+  rev: 2.3.2 # a PDM release exposing the hook
   hooks:
     - id: pdm-lock-check
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
--   repo: https://github.com/psf/black
-    rev: 22.10.0
-    hooks:
-    -   id: black
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+- repo: https://github.com/psf/black
+  rev: 22.10.0
+  hooks:
+    - id: black
+- repo: https://github.com/pycqa/isort
+  rev: 5.10.1
+  hooks:
+    - id: isort
+      name: isort (python)
+      args: ['--settings-path=pyproject.toml']
 
--   repo: https://github.com/PyCQA/autoflake
-    rev: v2.0.0
-    hooks:
-    -   id: autoflake
-        args: ["--in-place", "--expand-star-imports", "--remove-duplicate-keys", "--remove-unused-variables"]
+- repo: https://github.com/PyCQA/autoflake
+  rev: v2.0.0
+  hooks:
+    - id: autoflake
+      args: ['--config=pyproject.toml']

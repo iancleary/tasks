@@ -24,9 +24,25 @@ dev = [
     "isort==5.10.1",
     "mypy==0.990",
     "autoflake==2.0.0",
-    "pre-commit==2.20.0",
     "httpx>=0.23.1",
 ]
+
+[tool.isort]
+src_paths = ["app", "test"]
+force_single_line = true
+include_trailing_comma = true
+force_grid_wrap = 0
+combine_as_imports = true
+line_length = 88
+
+[tool.autoflake]
+remove-all-unused-imports = true
+recursive = true
+remove-unused-variables = true
+in-place = true
+expand-star-imports = true
+exclude = "__init__.py"
+remove-duplicate-keys = true
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]

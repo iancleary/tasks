@@ -4,20 +4,12 @@ from typing import Iterator
 
 import sqlalchemy
 from fastapi_restful.session import FastAPISessionMaker
-from pydantic import BaseSettings
 from sqlalchemy.orm import Session
 
-DATABASE = os.getenv("DATABASE", "data/data.db")
+# need initial "/" in docker, don't want it in venv (outside of docker)
+DATABASE = os.getenv("DATABASE", "/data/data.db")
 DATABASE_URI = f"sqlite:///{DATABASE}"
 ENGINE = sqlalchemy.create_engine(DATABASE_URI, echo=True, future=True)
-
-
-class DBSettings(BaseSettings):
-    """Parses variables from environment on instantiation"""
-
-    uri: str = os.getenv(
-        "DATABASE", "data/data.db"
-    )  # could break up into scheme, username, password, host, db
 
 
 def get_database_engine() -> Session:

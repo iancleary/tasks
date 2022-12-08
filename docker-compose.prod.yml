@@ -3,7 +3,9 @@ version: "3.9"
 services:
   web:
     image: iancleary/backend-main:python3.10.8-slim-2022-11-17
+    env_file:
+      - '._prod.env' 
     ports:
-      - "80:80"
+      - "8000:8000"
     volumes:
       - './data:/data'
