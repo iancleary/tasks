@@ -6,6 +6,6 @@ services:
     env_file:
       - '._prod.env' 
     ports:
-      - "80:80"
+      - "8000:8000"
     volumes:
       - './data:/data'
