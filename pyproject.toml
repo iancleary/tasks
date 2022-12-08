@@ -24,7 +24,6 @@ dev = [
     "isort==5.10.1",
     "mypy==0.990",
     "autoflake==2.0.0",
-    "pre-commit==2.20.0",
     "httpx>=0.23.1",
 ]
 
