@@ -7,7 +7,7 @@ from fastapi_restful.session import FastAPISessionMaker
 from pydantic import BaseSettings
 from sqlalchemy.orm import Session
 
-DATABASE = os.getenv("DATABASE", "data/data.db")
+DATABASE = os.getenv("DATABASE", "/data/data.db")
 DATABASE_URI = f"sqlite:///{DATABASE}"
 ENGINE = sqlalchemy.create_engine(DATABASE_URI, echo=True, future=True)
 
