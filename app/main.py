@@ -20,10 +20,14 @@ tables.create_tables()
 
 @app.get("/")
 def read_root() -> dict[str, str]:
+    return {"msg": "Hello World"}
+
+@app.get("/")
+def debug_time() -> dict[str, str]:
     now = datetime.now()
 
     current_time = now.strftime("%H:%M:%S")
-    return {"msg": "Hello World", "time": current_time}
+    return {"time": current_time}
 
 
 if __name__ == "__main__":
