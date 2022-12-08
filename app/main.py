@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import uvicorn
 from fastapi import FastAPI
@@ -19,7 +20,10 @@ tables.create_tables()
 
 @app.get("/")
 def read_root() -> dict[str, str]:
-    return {"msg": "Hello World"}
+    now = datetime.now()
+
+    current_time = now.strftime("%H:%M:%S")
+    return {"msg": "Hello World", "time": current_time}
 
 
 if __name__ == "__main__":

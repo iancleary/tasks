@@ -20,5 +20,7 @@ class Item(BASE):
 
     def __init__(self, name: str, created_date: float = None) -> None:
         self.name = name
-        if self.created_date == None:
+        if created_date == None:
             self.created_date = datetime.datetime.today().timestamp()
+        else:
+            self.created_date = created_date
