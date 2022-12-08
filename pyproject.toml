@@ -44,6 +44,10 @@ expand-star-imports = true
 exclude = "__init__.py"
 remove-duplicate-keys = true
 
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
