@@ -22,6 +22,7 @@ tables.create_tables()
 def read_root() -> dict[str, str]:
     return {"msg": "Hello World"}
 
+
 @app.get("/")
 def debug_time() -> dict[str, str]:
     now = datetime.now()
