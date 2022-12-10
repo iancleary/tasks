@@ -62,8 +62,7 @@ test:  ## Test app with pytest outside of docker (with fresh data/test.db from t
 	pdm run -v pytest tests
 
 build: requirements copy
-build: ## Make the latest build of the image (version is defined in make.env)
-	#cd docker-images && docker build --no-cache -f ${DOCKERFILE} --build-arg VERSION=${VERSION} -t ${IMAGE}:${VERSION} .
+build: ## Make the latest build of the image
 	docker-compose build || docker compose build
 
 push:
