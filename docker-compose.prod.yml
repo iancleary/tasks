@@ -2,7 +2,7 @@
 version: "3.9"
 services:
   web:
-    image: iancleary/ivy-lee-method:python3.10.8-slim-2022-11-17
+    image: iancleary/ivy-lee-method:python3.10.8-slim
     env_file:
       - '._prod.env'
     ports:
