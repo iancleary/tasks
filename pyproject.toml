@@ -25,6 +25,7 @@ dev = [
     "mypy==0.990",
     "autoflake==2.0.0",
     "httpx>=0.23.1",
+    "ruff==0.0.172",
 ]
 
 [tool.isort]
@@ -43,6 +44,36 @@ in-place = true
 expand-star-imports = true
 exclude = "__init__.py"
 remove-duplicate-keys = true
+
+[tool.ruff]
+line-length = 88
+
+# Enable Pyflakes `E` and `F` codes by default.
+select = ["I", "E", "F"]
+ignore = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
 
 [tool.mypy]
 disallow_untyped_defs = true

@@ -2,6 +2,6 @@
 
 set -x
 
-autoflake ./
+ruff ./
 isort  ./
 black ./
