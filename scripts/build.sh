@@ -4,7 +4,7 @@ set -x
 scripts/copy_app.sh
 scripts/create_production_requirements.sh
 
-use_tag="iancleary/backend-main:$NAME"
+use_tag="iancleary/ivy-lee-method:$NAME"
 
 DOCKERFILE="$NAME"
 
