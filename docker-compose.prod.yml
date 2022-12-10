@@ -4,7 +4,7 @@ services:
   web:
     image: iancleary/ivy-lee-method:python3.10.8-slim
     env_file:
-      - '._prod.env'
+      - '.env/prod.env'
     ports:
       - "8000:8000"
     volumes:
