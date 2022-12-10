@@ -21,15 +21,7 @@ repos:
   rev: 22.10.0
   hooks:
     - id: black
-- repo: https://github.com/pycqa/isort
-  rev: 5.10.1
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.0.172
   hooks:
-    - id: isort
-      name: isort (python)
-      args: ['--settings-path=pyproject.toml']
-
-- repo: https://github.com/PyCQA/autoflake
-  rev: v2.0.0
-  hooks:
-    - id: autoflake
-      args: ['--config=pyproject.toml']
+    - id: ruff

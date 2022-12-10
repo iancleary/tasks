@@ -32,7 +32,7 @@ def create_project(db: Session = Depends(get_db), *, project: NewProject) -> Non
 def get_projects(
     db: Session = Depends(get_db), *, only_active: bool = True
 ) -> List[str]:
-    if only_active == True:
+    if only_active is True:
         projects = db.query(Project).filter(Project.active == 1)
     else:
         projects = db.query(Project)

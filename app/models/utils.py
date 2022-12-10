@@ -31,7 +31,8 @@ def new_alchemy_encoder(
                 ]:
                     val = obj.__getattribute__(field)
 
-                    # is this field another SQLalchemy object, or a list of SQLalchemy objects?
+                    # is this field another SQLalchemy object,
+                    # or a list of SQLalchemy objects?
                     if isinstance(val.__class__, DeclarativeMeta) or (
                         isinstance(val, list)
                         and len(val) > 0

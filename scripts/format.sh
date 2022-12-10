@@ -2,6 +2,5 @@
 
 set -x
 
-autoflake ./
-isort  ./
+ruff --fix ./
 black ./
