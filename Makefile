@@ -9,7 +9,7 @@ PATH := $(PATH)
 
 # Docker namespace, image name and version/tag
 NS?= iancleary
-IMAGE_NAME?= backend-main
+IMAGE_NAME?= ivy-lee-method
 LATEST?= latest
 
 IMAGE=$(NS)/$(IMAGE_NAME)

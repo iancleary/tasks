@@ -9,7 +9,7 @@ You can create, read, update, and delete:
 * Things to do (in support of the Ivy Lee Method)
 * Projects (to help with summaries of the things you've done for quartely conversations with managers and performance reviews)
 
-Upon completion, the date of the items will be tracked. 
+Upon completion, the date of the items will be tracked.
 
 When creating items, the application will prevent you from having too many on your list at the same time.  The Ivy Lee Method subscribes you to only have 6 items in a day.  You should approach the first one first, and move down the list.
 
@@ -24,4 +24,4 @@ The project uses [pdm](https://pdm.fming.dev/latest/usage/project/) as a depdenc
 
 ## Deployment
 
-[docker pull iancleary/backend-main](https://hub.docker.com/r/iancleary/backend-main)
+[docker pull iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
