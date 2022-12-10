@@ -9,4 +9,4 @@ scripts/clean_app.sh
 
 mypy ./
 black ./ --check
-isort --check-only ./
+ruff ./

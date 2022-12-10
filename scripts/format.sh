@@ -2,6 +2,5 @@
 
 set -x
 
-ruff ./
-isort  ./
+ruff --fix ./
 black ./
