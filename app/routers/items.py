@@ -30,7 +30,7 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 
 @router.get("/items")
 def get_items(db: Session = Depends(get_db), *, only_active: bool = True) -> List[str]:
-    if only_active == True:
+    if only_active is True:
         items = db.query(Item).filter(Item.status == 1)
     else:
         items = db.query(Item)

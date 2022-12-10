@@ -49,7 +49,7 @@ remove-duplicate-keys = true
 line-length = 88
 
 # Enable Pyflakes `E` and `F` codes by default.
-select = ["I", "E", "F"]
+select = ["TID2", "E", "F"]
 ignore = []
 
 # Exclude a variety of commonly ignored directories.
