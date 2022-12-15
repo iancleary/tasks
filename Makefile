@@ -63,7 +63,7 @@ test:  ## Test app with pytest outside of docker (with fresh data/test.db from t
 
 build: requirements copy
 build: ## Make the latest build of the image
-	docker-compose build || docker compose build
+	docker-compose build || docker compose build || podman-compose build
 
 push:
 push: ## push the latest version to docker hub (version is defined in make.env)
@@ -72,30 +72,30 @@ push: ## push the latest version to docker hub (version is defined in make.env)
 
 up:
 up: ## Run the docker image (via docker-compose)
-	docker-compose up || docker compose up
+	docker-compose up || docker compose up || podman-compose up
 
 detached:
 detached: ## Run the docker image (via docker-compose) detached
-	docker-compose up -d || docker compose up -d
+	docker-compose up -d || docker compose up -d || podman-compose up -d
 
 down:
 down: ## Stop the docker image (via docker-compose)
-	docker-compose down || docker compose down
+	docker-compose down || docker compose down || podman-compose down
 
 stop:
 stop: down
 
 prod-up:
 prod-up: ## Run the docker image (via docker-compose)
-	docker-compose $(PROD_DOCKER_COMPOSE) up || docker compose $(PROD_DOCKER_COMPOSE) up
+	docker-compose $(PROD_DOCKER_COMPOSE) up || docker compose $(PROD_DOCKER_COMPOSE) up || podman-compose $(PROD_DOCKER_COMPOSE) up
 
 prod-detached:
 prod-detached: ## Run the docker image (via docker-compose) detached
-	docker-compose $(PROD_DOCKER_COMPOSE) up -d || docker compose $(PROD_DOCKER_COMPOSE) up -d
+	docker-compose $(PROD_DOCKER_COMPOSE) up -d || docker compose $(PROD_DOCKER_COMPOSE) up -d || podman-compose $(PROD_DOCKER_COMPOSE) up -d
 
 prod-down:
 prod-down: ## Stop the docker image (via docker-compose)
-	docker-compose $(PROD_DOCKER_COMPOSE) down || docker compose $(PROD_DOCKER_COMPOSE) down
+	docker-compose $(PROD_DOCKER_COMPOSE) down || docker compose $(PROD_DOCKER_COMPOSE) down || podman-compose $(PROD_DOCKER_COMPOSE) down 
 
 prod-stop:
 prod-stop: prod-down
