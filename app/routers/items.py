@@ -3,6 +3,8 @@ from typing import List
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import update
 from sqlalchemy.orm import Session
@@ -35,14 +37,16 @@ def get_items(db: Session = Depends(get_db), *, only_active: bool = True) -> Lis
     else:
         items = db.query(Item)
 
-    return [
-        json.dumps(
-            c,
-            cls=new_alchemy_encoder(False, ["id", "name", "active"]),
-            check_circular=False,
-        )
-        for c in items
-    ]
+    # return [
+    #     json.dumps(
+    #         c,
+    #         cls=new_alchemy_encoder(False, ["id", "name", "active"]),
+    #         check_circular=False,
+    #     )
+    #     for c in items
+    # ]
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+    return JSONResponse(content=json_compatible_return_data)
 
 
 @router.get("/item/{item_id}")
