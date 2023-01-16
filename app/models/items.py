@@ -1,5 +1,6 @@
 import datetime
 
+from pydantic import BaseModel
 from sqlalchemy import REAL
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -24,3 +25,12 @@ class Item(BASE):
             self.created_date = datetime.datetime.today().timestamp()
         else:
             self.created_date = created_date
+
+
+class PydanticItem(BaseModel):
+    id: int
+    name: str
+    created_date: float
+    description: str = ""
+    resolution_date: float = None
+    status: int = 1

@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -14,3 +15,9 @@ class Project(BASE):
 
     def __init__(self, name: str) -> None:
         self.name = name
+
+
+class PydanticProject(BaseModel):
+    id: int
+    name: str
+    active: int = 1

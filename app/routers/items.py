@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.items import Item
+from app.models.items import PydanticItem
 
 router = APIRouter()
 
@@ -40,7 +41,7 @@ def get_items(db: Session = Depends(get_db), *, only_active: bool = True) -> Lis
 
 
 @router.get("/item/{item_id}")
-def get_item(db: Session = Depends(get_db), *, item_id: str) -> str:
+def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
     item = db.query(Item).get(item_id)
     return jsonable_encoder(item)
 

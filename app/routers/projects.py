@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.projects import Project
+from app.models.projects import PydanticProject
 
 router = APIRouter()
 
@@ -30,7 +31,7 @@ def create_project(db: Session = Depends(get_db), *, project: NewProject) -> Non
 @router.get("/projects")
 def get_projects(
     db: Session = Depends(get_db), *, only_active: bool = True
-) -> List[str]:
+) -> List[PydanticProject]:
     if only_active is True:
         projects = db.query(Project).filter(Project.active == 1)
     else:
@@ -40,7 +41,7 @@ def get_projects(
 
 
 @router.get("/project/{project_id}")
-def get_project(db: Session = Depends(get_db), *, project_id: str) -> str:
+def get_project(db: Session = Depends(get_db), *, project_id: str) -> PydanticProject:
     project = db.query(Project).get(project_id)
     return jsonable_encoder(project)
 
