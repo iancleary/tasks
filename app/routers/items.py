@@ -3,7 +3,6 @@ from typing import List
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import update
 from sqlalchemy.orm import Session
@@ -30,20 +29,22 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 
 
 @router.get("/items")
-def get_items(db: Session = Depends(get_db), *, only_active: bool = True) -> List[str]:
+def get_items(
+    db: Session = Depends(get_db), *, only_active: bool = True
+) -> List[PydanticItem]:
     if only_active is True:
         items = db.query(Item).filter(Item.status == 1)
     else:
         items = db.query(Item)
 
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
-    return JSONResponse(content=json_compatible_return_data)
+    return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
 @router.get("/item/{item_id}")
 def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
     item = db.query(Item).get(item_id)
-    return jsonable_encoder(item)
+    return PydanticItem(**jsonable_encoder(item))
 
 
 ##~~ Update

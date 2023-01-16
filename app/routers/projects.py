@@ -37,13 +37,13 @@ def get_projects(
     else:
         projects = db.query(Project)
 
-    return [jsonable_encoder(c) for c in projects]
+    return [PydanticProject(**jsonable_encoder(c)) for c in projects]
 
 
 @router.get("/project/{project_id}")
 def get_project(db: Session = Depends(get_db), *, project_id: str) -> PydanticProject:
     project = db.query(Project).get(project_id)
-    return jsonable_encoder(project)
+    return PydanticProject(**jsonable_encoder(project))
 
 
 ##~~ Update
