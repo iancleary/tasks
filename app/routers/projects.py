@@ -1,15 +1,14 @@
-import json
 from typing import List
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.projects import Project
-from app.models.utils import new_alchemy_encoder
 
 router = APIRouter()
 
@@ -37,24 +36,13 @@ def get_projects(
     else:
         projects = db.query(Project)
 
-    return [
-        json.dumps(
-            c,
-            cls=new_alchemy_encoder(False, ["id", "name", "active"]),
-            check_circular=False,
-        )
-        for c in projects
-    ]
+    return [jsonable_encoder(c) for c in projects]
 
 
 @router.get("/project/{project_id}")
 def get_project(db: Session = Depends(get_db), *, project_id: str) -> str:
     project = db.query(Project).get(project_id)
-    return json.dumps(
-        project,
-        cls=new_alchemy_encoder(False, ["id", "name", "active"]),
-        check_circular=False,
-    )
+    return jsonable_encoder(project)
 
 
 ##~~ Update

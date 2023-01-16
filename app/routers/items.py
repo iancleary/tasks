@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 from fastapi import APIRouter
@@ -11,7 +10,6 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.items import Item
-from app.models.utils import new_alchemy_encoder
 
 router = APIRouter()
 
@@ -37,14 +35,6 @@ def get_items(db: Session = Depends(get_db), *, only_active: bool = True) -> Lis
     else:
         items = db.query(Item)
 
-    # return [
-    #     json.dumps(
-    #         c,
-    #         cls=new_alchemy_encoder(False, ["id", "name", "active"]),
-    #         check_circular=False,
-    #     )
-    #     for c in items
-    # ]
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
     return JSONResponse(content=json_compatible_return_data)
 
@@ -52,11 +42,7 @@ def get_items(db: Session = Depends(get_db), *, only_active: bool = True) -> Lis
 @router.get("/item/{item_id}")
 def get_item(db: Session = Depends(get_db), *, item_id: str) -> str:
     item = db.query(Item).get(item_id)
-    return json.dumps(
-        item,
-        cls=new_alchemy_encoder(False, ["id", "name", "active"]),
-        check_circular=False,
-    )
+    return jsonable_encoder(item)
 
 
 ##~~ Update
