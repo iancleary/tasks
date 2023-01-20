@@ -100,3 +100,34 @@ def test_patch_item_status_complete() -> None:
 def test_delete_item() -> None:
     response = client.delete("/item/2")
     assert response.status_code == 200
+
+
+def test_get_completed_items() -> None:
+    response = client.post("/item", json={"name": "Completed Item"})
+    response = client.post("/item", json={"name": "Open Item 1"})
+    response = client.post("/item", json={"name": "Open Item 2"})
+    response = client.get("/items")
+    completed_item_id = response.json()[-3]["id"]
+    open_item_id = response.json()[-2]["id"]
+    open_item_two_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{completed_item_id}/complete")
+    response = client.patch(f"/item/{open_item_id}/not-yet-started")
+    response = client.patch(f"/item/{open_item_two_id}/in-progress")
+
+    response = client.get("/items/completed")
+
+    assert response.status_code == 200
+    assert isinstance(response.json(), List)
+    assert len(response.json()) == 1
+    item_name = response.json()[0]["name"]
+    assert item_name == "Completed Item"
+
+
+def test_get_open_items() -> None:
+    response = client.get("/items/open")
+    assert response.status_code == 200
+    assert isinstance(response.json(), List)
+    assert len(response.json()) == 2
+    item_name = response.json()[0]["name"]
+    assert item_name == "Open Item 1"
