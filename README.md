@@ -2,7 +2,7 @@
 
 This repo contains an python backend web application using SQLite as a database, with SQLAlchemy as an Object-Relation Mapping.
 
-The purpose of the application is simple, to support the tracking of things using the [Ivy Lee Method](https://jamesclear.com/ivy-lee).
+The purpose of the application is simple, to support the tracking of tasks/items using the [Ivy Lee Method](https://jamesclear.com/ivy-lee).
 
 > ## The Ivy Lee Method
 >
