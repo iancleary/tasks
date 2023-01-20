@@ -31,9 +31,9 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 
 @router.get("/items")
 def get_items(
-    db: Session = Depends(get_db), *, only_uncomplete_items: bool = True
+    db: Session = Depends(get_db), *, only_uncompleted_items: bool = True
 ) -> List[PydanticItem]:
-    if only_uncomplete_items is True:
+    if only_uncompleted_items is True:
         items = db.query(Item).filter(Item.status != Status.COMPLETED)
     else:
         items = db.query(Item)
