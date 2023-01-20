@@ -5,6 +5,7 @@ from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import update
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -30,13 +31,25 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 
 
 @router.get("/items")
-def get_items(
-    db: Session = Depends(get_db), *, only_uncompleted_items: bool = True
-) -> List[PydanticItem]:
-    if only_uncompleted_items is True:
-        items = db.query(Item).filter(Item.status != Status.COMPLETED)
-    else:
-        items = db.query(Item)
+def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+    items = db.query(Item)
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+    return [PydanticItem(**x) for x in json_compatible_return_data]
+
+
+@router.get("/items/completed")
+def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+    items = db.query(Item).filter(Item.status == Status.COMPLETED)
+
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+    return [PydanticItem(**x) for x in json_compatible_return_data]
+
+
+@router.get("/items/open")
+def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+    items = db.query(Item).filter(
+        or_(Item.status == Status.NOT_YET_STARTED, Item.status == Status.IN_PROGRESS)
+    )
 
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
     return [PydanticItem(**x) for x in json_compatible_return_data]
