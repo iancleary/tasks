@@ -31,10 +31,10 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 
 @router.get("/items")
 def get_items(
-    db: Session = Depends(get_db), *, only_active: bool = True
+    db: Session = Depends(get_db), *, only_uncomplete_items: bool = True
 ) -> List[PydanticItem]:
-    if only_active is True:
-        items = db.query(Item).filter(Item.status == 1)
+    if only_uncomplete_items is True:
+        items = db.query(Item).filter(Item.status != Status.COMPLETED)
     else:
         items = db.query(Item)
 
@@ -55,7 +55,7 @@ class NewName(BaseModel):
     name: str
 
 
-@router.patch("/item/{item_id}/")
+@router.patch("/item/{item_id}")
 def patch_item(
     db: Session = Depends(get_db), *, item_id: str, updates: NewName
 ) -> None:
@@ -89,7 +89,7 @@ def patch_item_status_in_progress(
 @router.patch("/item/{item_id}/complete")
 def patch_item_status_complete(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
-    stmt = stmt.values({"status": Status.COMPLETE})
+    stmt = stmt.values({"status": Status.COMPLETED})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 

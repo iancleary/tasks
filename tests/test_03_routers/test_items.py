@@ -3,6 +3,7 @@ from typing import List
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.models.items import Status
 
 client = TestClient(app)
 
@@ -46,6 +47,54 @@ def test_patch_item() -> None:
 
     assert response.status_code == 200
     assert response.json()["name"] == "Gary Item"
+
+
+def test_patch_item_status_not_yet_started() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/not-yet-started")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+
+    assert response.json()["id"] == item_id
+
+    assert response.status_code == 200
+    assert response.json()["status"] == Status.NOT_YET_STARTED
+
+
+def test_patch_item_status_in_progress() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/in-progress")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+
+    assert response.json()["id"] == item_id
+
+    assert response.status_code == 200
+    assert response.json()["status"] == Status.IN_PROGRESS
+
+
+def test_patch_item_status_complete() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/complete")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+
+    assert response.json()["id"] == item_id
+
+    assert response.status_code == 200
+    assert response.json()["status"] == Status.COMPLETED
 
 
 def test_delete_item() -> None:
