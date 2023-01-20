@@ -1,4 +1,5 @@
 import datetime
+from enum import IntEnum
 
 from pydantic import BaseModel
 from sqlalchemy import REAL
@@ -17,7 +18,7 @@ class Item(BASE):
     description = Column(String, default="")
     created_date = Column(REAL)
     resolution_date = Column(REAL, default=None)
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=0)
 
     def __init__(self, name: str, created_date: float = None) -> None:
         self.name = name
@@ -34,3 +35,10 @@ class PydanticItem(BaseModel):
     description: str = ""
     resolution_date: float = None
     status: int = 1
+
+
+class Status(IntEnum):
+    NOT_YET_STARTED = 1
+    IN_PROGRESS = 2
+    COMPLETE = 3
+    WONT_DO = 4

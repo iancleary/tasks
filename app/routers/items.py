@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.items import Item
 from app.models.items import PydanticItem
+from app.models.items import Status
 
 router = APIRouter()
 
@@ -54,13 +55,41 @@ class NewName(BaseModel):
     name: str
 
 
-@router.patch("/item/{item_id}")
+@router.patch("/item/{item_id}/")
 def patch_item(
     db: Session = Depends(get_db), *, item_id: str, updates: NewName
 ) -> None:
     # rename item
     stmt = update(Item)
     stmt = stmt.values({"name": updates.name})
+    stmt = stmt.where(Item.id == item_id)
+    db.execute(stmt)
+
+
+@router.patch("/item/{item_id}/not-yet-started")
+def patch_item_status_not_yet_started(
+    db: Session = Depends(get_db), *, item_id: str
+) -> None:
+    stmt = update(Item)
+    stmt = stmt.values({"status": Status.NOT_YET_STARTED})
+    stmt = stmt.where(Item.id == item_id)
+    db.execute(stmt)
+
+
+@router.patch("/item/{item_id}/in-progress")
+def patch_item_status_in_progress(
+    db: Session = Depends(get_db), *, item_id: str
+) -> None:
+    stmt = update(Item)
+    stmt = stmt.values({"status": Status.IN_PROGRESS})
+    stmt = stmt.where(Item.id == item_id)
+    db.execute(stmt)
+
+
+@router.patch("/item/{item_id}/complete")
+def patch_item_status_complete(db: Session = Depends(get_db), *, item_id: str) -> None:
+    stmt = update(Item)
+    stmt = stmt.values({"status": Status.COMPLETE})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
