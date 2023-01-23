@@ -13,6 +13,7 @@ from app.models.items import Item
 from app.models.items import PydanticItem
 from app.models.items import Status
 from app.models.items import Active
+from app.models.items import Pinned
 
 router = APIRouter()
 
@@ -82,7 +83,28 @@ def patch_item(
     db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/backlog")
+##~~ Delete
+
+
+@router.delete("/item/{item_id}")
+def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
+    # Don't remove row, but deactivate item instead (design choice)
+    column = getattr(Item, "id")
+    stmt = update(Item).where(column == item_id).values(active=Active.NO)
+    db.execute(stmt)
+
+
+@router.patch("/item/{item_id}/activate")
+def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
+    column = getattr(Item, "id")
+    stmt = update(Item).where(column == item_id).values(active=Active.YES)
+    db.execute(stmt)
+
+
+##~ Status
+
+
+@router.patch("/item/{item_id}/status/backlog")
 def patch_item_status_backlog(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
     stmt = stmt.values({"status": Status.BACKLOG})
@@ -90,7 +112,7 @@ def patch_item_status_backlog(db: Session = Depends(get_db), *, item_id: str) ->
     db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/ready-for-work")
+@router.patch("/item/{item_id}/status/ready-for-work")
 def patch_item_status_ready_for_work(
     db: Session = Depends(get_db), *, item_id: str
 ) -> None:
@@ -100,7 +122,7 @@ def patch_item_status_ready_for_work(
     db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/in-progress")
+@router.patch("/item/{item_id}/status/in-progress")
 def patch_item_status_in_progress(
     db: Session = Depends(get_db), *, item_id: str
 ) -> None:
@@ -110,7 +132,7 @@ def patch_item_status_in_progress(
     db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/completed")
+@router.patch("/item/{item_id}/status/completed")
 def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
     stmt = stmt.values({"status": Status.COMPLETED})
@@ -118,12 +140,20 @@ def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) 
     db.execute(stmt)
 
 
-##~~ Delete
+##~ Pinned
 
 
-@router.delete("/item/{item_id}")
-def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
-    # Don't remove row, but deactivate item instead (design choice)
-    column = getattr(Item, "id")
-    stmt = update(Item).where(column == item_id).values(active=Active.NO)
+@router.patch("/item/{item_id}/pinned/yes")
+def patch_item_pinned_yes(db: Session = Depends(get_db), *, item_id: str) -> None:
+    stmt = update(Item)
+    stmt = stmt.values({"pinned": Pinned.YES})
+    stmt = stmt.where(Item.id == item_id)
+    db.execute(stmt)
+
+
+@router.patch("/item/{item_id}/pinned/no")
+def patch_item_pinned_no(db: Session = Depends(get_db), *, item_id: str) -> None:
+    stmt = update(Item)
+    stmt = stmt.values({"pinned": Pinned.NO})
+    stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
