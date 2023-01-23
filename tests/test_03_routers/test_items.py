@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.models.items import Status
+from app.models.items import Pinned
 
 client = TestClient(app)
 
@@ -49,12 +50,12 @@ def test_patch_item() -> None:
     assert response.json()["name"] == "Gary Item"
 
 
-def test_patch_item_status_not_yet_started() -> None:
+def test_patch_item_status_backlog() -> None:
     response = client.get("/items")
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/not-yet-started")
+    response = client.patch(f"/item/{item_id}/status/backlog")
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")
@@ -62,7 +63,23 @@ def test_patch_item_status_not_yet_started() -> None:
     assert response.json()["id"] == item_id
 
     assert response.status_code == 200
-    assert response.json()["status"] == Status.NOT_YET_STARTED
+    assert response.json()["status"] == Status.BACKLOG
+
+
+def test_patch_item_status_not_yet_started() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/status/ready-for-work")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+
+    assert response.json()["id"] == item_id
+
+    assert response.status_code == 200
+    assert response.json()["status"] == Status.READY_FOR_WORK
 
 
 def test_patch_item_status_in_progress() -> None:
@@ -70,7 +87,7 @@ def test_patch_item_status_in_progress() -> None:
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/in-progress")
+    response = client.patch(f"/item/{item_id}/status/in-progress")
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")
@@ -81,12 +98,12 @@ def test_patch_item_status_in_progress() -> None:
     assert response.json()["status"] == Status.IN_PROGRESS
 
 
-def test_patch_item_status_complete() -> None:
+def test_patch_item_status_completed() -> None:
     response = client.get("/items")
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/complete")
+    response = client.patch(f"/item/{item_id}/status/completed")
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")
@@ -111,23 +128,54 @@ def test_get_completed_items() -> None:
     open_item_id = response.json()[-2]["id"]
     open_item_two_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{completed_item_id}/complete")
-    response = client.patch(f"/item/{open_item_id}/not-yet-started")
-    response = client.patch(f"/item/{open_item_two_id}/in-progress")
+    response = client.patch(f"/item/{completed_item_id}/status/completed")
+    response = client.patch(f"/item/{open_item_id}/status/not-yet-started")
+    response = client.patch(f"/item/{open_item_two_id}/status/in-progress")
 
     response = client.get("/items/completed")
 
     assert response.status_code == 200
     assert isinstance(response.json(), List)
     assert len(response.json()) == 1
-    item_name = response.json()[0]["name"]
-    assert item_name == "Completed Item"
+    for item in response.json():
+        assert item["status"] == Status.COMPLETED
 
 
 def test_get_open_items() -> None:
     response = client.get("/items/open")
     assert response.status_code == 200
     assert isinstance(response.json(), List)
-    assert len(response.json()) == 2
-    item_name = response.json()[0]["name"]
-    assert item_name == "Open Item 1"
+    for item in response.json():
+        assert item["status"] != Status.COMPLETED
+
+
+def test_patch_item_pinned_yes() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/pinned/yes")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+
+    assert response.json()["id"] == item_id
+
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+
+
+def test_patch_item_pinned_no() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/pinned/no")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+
+    assert response.json()["id"] == item_id
+
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.NO
