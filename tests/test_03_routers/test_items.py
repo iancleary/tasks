@@ -49,12 +49,12 @@ def test_patch_item() -> None:
     assert response.json()["name"] == "Gary Item"
 
 
-def test_patch_item_status_not_yet_started() -> None:
+def test_patch_item_status_backlog() -> None:
     response = client.get("/items")
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/not-yet-started")
+    response = client.patch(f"/item/{item_id}/backlog")
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")
@@ -62,7 +62,23 @@ def test_patch_item_status_not_yet_started() -> None:
     assert response.json()["id"] == item_id
 
     assert response.status_code == 200
-    assert response.json()["status"] == Status.NOT_YET_STARTED
+    assert response.json()["status"] == Status.BACKLOG
+
+
+def test_patch_item_status_not_yet_started() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/ready-for-work")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+
+    assert response.json()["id"] == item_id
+
+    assert response.status_code == 200
+    assert response.json()["status"] == Status.READY_FOR_WORK
 
 
 def test_patch_item_status_in_progress() -> None:
@@ -81,12 +97,12 @@ def test_patch_item_status_in_progress() -> None:
     assert response.json()["status"] == Status.IN_PROGRESS
 
 
-def test_patch_item_status_complete() -> None:
+def test_patch_item_status_completed() -> None:
     response = client.get("/items")
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/complete")
+    response = client.patch(f"/item/{item_id}/completed")
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")
@@ -111,7 +127,7 @@ def test_get_completed_items() -> None:
     open_item_id = response.json()[-2]["id"]
     open_item_two_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{completed_item_id}/complete")
+    response = client.patch(f"/item/{completed_item_id}/completed")
     response = client.patch(f"/item/{open_item_id}/not-yet-started")
     response = client.patch(f"/item/{open_item_two_id}/in-progress")
 
@@ -120,14 +136,13 @@ def test_get_completed_items() -> None:
     assert response.status_code == 200
     assert isinstance(response.json(), List)
     assert len(response.json()) == 1
-    item_name = response.json()[0]["name"]
-    assert item_name == "Completed Item"
+    for item in response.json():
+        assert item["status"] == Status.COMPLETED
 
 
 def test_get_open_items() -> None:
     response = client.get("/items/open")
     assert response.status_code == 200
     assert isinstance(response.json(), List)
-    assert len(response.json()) == 2
-    item_name = response.json()[0]["name"]
-    assert item_name == "Open Item 1"
+    for item in response.json():
+        assert item["status"] != Status.COMPLETED

@@ -5,13 +5,14 @@ from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import update
-from sqlalchemy import or_
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.items import Item
 from app.models.items import PydanticItem
 from app.models.items import Status
+from app.models.items import Active
 
 router = APIRouter()
 
@@ -32,14 +33,16 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 
 @router.get("/items")
 def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
-    items = db.query(Item)
+    items = db.query(Item).filter(Item.active == Active.YES)
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
 @router.get("/items/completed")
 def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
-    items = db.query(Item).filter(Item.status == Status.COMPLETED)
+    items = db.query(Item).filter(
+        and_(Item.status == Status.COMPLETED, Item.active == Active.YES)
+    )
 
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
     return [PydanticItem(**x) for x in json_compatible_return_data]
@@ -48,7 +51,7 @@ def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 @router.get("/items/open")
 def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(
-        or_(Item.status == Status.NOT_YET_STARTED, Item.status == Status.IN_PROGRESS)
+        and_(Item.status != Status.COMPLETED, Item.active == Active.YES)
     )
 
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
@@ -79,12 +82,20 @@ def patch_item(
     db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/not-yet-started")
-def patch_item_status_not_yet_started(
+@router.patch("/item/{item_id}/backlog")
+def patch_item_status_backlog(db: Session = Depends(get_db), *, item_id: str) -> None:
+    stmt = update(Item)
+    stmt = stmt.values({"status": Status.BACKLOG})
+    stmt = stmt.where(Item.id == item_id)
+    db.execute(stmt)
+
+
+@router.patch("/item/{item_id}/ready-for-work")
+def patch_item_status_ready_for_work(
     db: Session = Depends(get_db), *, item_id: str
 ) -> None:
     stmt = update(Item)
-    stmt = stmt.values({"status": Status.NOT_YET_STARTED})
+    stmt = stmt.values({"status": Status.READY_FOR_WORK})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
@@ -99,8 +110,8 @@ def patch_item_status_in_progress(
     db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/complete")
-def patch_item_status_complete(db: Session = Depends(get_db), *, item_id: str) -> None:
+@router.patch("/item/{item_id}/completed")
+def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
     stmt = stmt.values({"status": Status.COMPLETED})
     stmt = stmt.where(Item.id == item_id)
@@ -114,5 +125,5 @@ def patch_item_status_complete(db: Session = Depends(get_db), *, item_id: str) -
 def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     # Don't remove row, but deactivate item instead (design choice)
     column = getattr(Item, "id")
-    stmt = update(Item).where(column == item_id).values(status=0)
+    stmt = update(Item).where(column == item_id).values(active=Active.NO)
     db.execute(stmt)

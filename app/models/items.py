@@ -10,6 +10,23 @@ from sqlalchemy import String
 from app.models import BASE
 
 
+class Status(IntEnum):
+    BACKLOG = 0
+    READY_FOR_WORK = 1
+    IN_PROGRESS = 2
+    COMPLETED = 3
+
+
+class Active(IntEnum):
+    NO = 0
+    YES = 1
+
+
+class Pinned(IntEnum):
+    NO = 0
+    YES = 1
+
+
 # mypy: ignore-errors
 class Item(BASE):
     __tablename__ = "items"
@@ -18,7 +35,9 @@ class Item(BASE):
     description = Column(String, default="")
     created_date = Column(REAL)
     resolution_date = Column(REAL, default=None)
-    status = Column(Integer, default=0)
+    status = Column(Integer, default=Status.BACKLOG)
+    active = Column(Integer, default=Active.YES)
+    pinned = Column(Integer, default=Pinned.NO)
 
     def __init__(self, name: str, created_date: float = None) -> None:
         self.name = name
@@ -34,10 +53,6 @@ class PydanticItem(BaseModel):
     created_date: float
     description: str = ""
     resolution_date: float = None
-    status: int = 1
-
-
-class Status(IntEnum):
-    NOT_YET_STARTED = 1
-    IN_PROGRESS = 2
-    COMPLETED = 3
+    status: int = Status.BACKLOG
+    active: int = Active.YES
+    pinned: int = Pinned.NO
