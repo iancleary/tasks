@@ -51,4 +51,32 @@ The project uses [pdm](https://pdm.fming.dev/latest/usage/project/) as a depende
 
 ## Deployment
 
-[docker pull iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
+### Docker Hub 
+
+[iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
+
+### Docker-compose example
+
+`docker-compose.yml`
+
+```
+---
+version: "3.9"
+services:
+  web:
+    image: iancleary/ivy-lee-method:python3.10.8-slim
+    env_file:
+      - '._prod.env'
+    ports:
+      - "8000:8000"
+    volumes:
+      - './data:/data'
+```
+
+`._prod.env`
+
+```
+DATABASE=/data/prod.db
+HOST=0.0.0.0
+PORT=8000
+```
