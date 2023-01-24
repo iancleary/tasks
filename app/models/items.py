@@ -39,12 +39,28 @@ class Item(BASE):
     active = Column(Integer, default=Active.YES)
     pinned = Column(Integer, default=Pinned.NO)
 
-    def __init__(self, name: str, created_date: float = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        created_date: float = None,
+        active: int = None,
+        pinned: int = None,
+    ) -> None:
         self.name = name
         if created_date is None:
             self.created_date = datetime.datetime.today().timestamp()
         else:
             self.created_date = created_date
+
+        if active is None:
+            self.active = Active.YES
+        else:
+            self.active = active
+
+        if pinned is None:
+            self.pinned = Pinned.NO
+        else:
+            self.pinned = pinned
 
 
 class PydanticItem(BaseModel):
