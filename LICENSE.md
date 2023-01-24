@@ -1,4 +1,4 @@
-The MIT License (MIT)
+# The MIT License (MIT)
 
 Copyright (c) 2022 Ian Cleary
 
@@ -20,12 +20,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-
 ## Attribution
 
-### iancleary/ivy-lee-method-docker
+### tiangolo/uvicorn-gunicorn-docker
 
-<https://github.com/iancleary/ivy-lee-method-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/LICENSE#L1-L21>
+<https://github.com/tiangolo/uvicorn-gunicorn-docker/blob/58ce0895f8c38b895e84f7ddb2128d66748b437c/LICENSE>
 
 The MIT License (MIT)
 
