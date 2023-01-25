@@ -56,6 +56,7 @@ This application subscribes to the [twelve-factor app methodology for configurat
 
 As such, all important configuration is handled by the environment (.env):
 
+`.env`
 ```env
 DATABASE=/data/prod.db
 HOST=0.0.0.0
@@ -68,20 +69,21 @@ ALLOWED_HEADERS=Access-Control-Allow-Origin"
 
 ## Deployment
 
-### Docker Hub
 
-[iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
+The image is available from [docker.io/iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
 
-### Docker-compose example
+----------
+
+> Docker-compose example
 
 `docker-compose.yml`
 
-```
+```docker-compose
 ---
 version: "3.9"
 services:
   web:
-    image: iancleary/ivy-lee-method:python3.10.8-slim
+    image: docker.io/iancleary/ivy-lee-method:python3.10.8-slim
     env_file:
       - '._prod.env'
     ports:
@@ -92,7 +94,7 @@ services:
 
 `._prod.env`
 
-```
+```env
 DATABASE=/data/prod.db
 HOST=0.0.0.0
 PORT=8000
