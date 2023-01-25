@@ -1,6 +1,5 @@
-"""
-envparse is a simple utility to parse environment variables.
-"""
+# envparse is a simple utility to parse environment variables.
+
 from __future__ import unicode_literals
 import inspect
 import json as pyjson
@@ -10,6 +9,10 @@ import re
 import shlex
 import warnings
 import urllib.parse as urlparse
+
+from typing import Any
+import typing
+from collections.abc import Callable
 
 __version__ = "0.2.0"
 
@@ -25,13 +28,15 @@ class ConfigurationError(Exception):
 NOTSET = type(str("NoValue"), (object,), {})
 
 
-def shortcut(cast):
-    def method(self, var, **kwargs):
+def shortcut(cast: Any) -> Callable:
+    @typing.no_type_check
+    def method(self: Any, var: str, **kwargs) -> Any:
         return self.__call__(var, cast=cast, **kwargs)
 
     return method
 
 
+@typing.no_type_check
 class Env(object):
     """
     Lookup and cast environment variables with optional schema.
@@ -47,9 +52,11 @@ class Env(object):
 
     BOOLEAN_TRUE_STRINGS = ("true", "on", "ok", "y", "yes", "1")
 
+    @typing.no_type_check
     def __init__(self, **schema):
         self.schema = schema
 
+    @typing.no_type_check
     def __call__(
         self,
         var,
@@ -59,7 +66,7 @@ class Env(object):
         force=False,
         preprocessor=None,
         postprocessor=None,
-    ):
+    ) -> Any:
         """
         Return value for given environment variable.
         :param var: Name of variable.
@@ -127,7 +134,8 @@ class Env(object):
         return value
 
     @classmethod
-    def cast(cls, value, cast=str, subcast=None):
+    @typing.no_type_check
+    def cast(cls, value: Any, cast=str, subcast=None):
         """
         Parse and cast provided value.
         :param value: Stringed value.
@@ -178,7 +186,8 @@ class Env(object):
     url = shortcut(urlparse.urlparse)
 
     @staticmethod
-    def read_envfile(path=None, **overrides):
+    @typing.no_type_check
+    def read_envfile(path: str = None, **overrides) -> None:
         """
         Read a .env file (line delimited KEY=VALUE) into os.environ.
         If not given a path to the file, recurses up the directory tree until
@@ -196,10 +205,9 @@ class Env(object):
                 content = f.read()
         except getattr(__builtins__, "FileNotFoundError", IOError):
             logger.debug("envfile not found at %s, looking in parent dir.", path)
-            filedir, filename = os.path.split(path)
-            pardir = os.path.abspath(os.path.join(filedir, os.pardir))
-            path = os.path.join(pardir, filename)
-            if filedir != pardir:
+            parent_dir = os.path.abspath(os.path.join(path, os.parent_dir))
+            path = os.path.join(parent_dir, ".env")
+            if path != parent_dir:
                 Env.read_envfile(path, **overrides)
             else:
                 # Reached top level directory.
