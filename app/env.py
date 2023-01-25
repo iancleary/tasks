@@ -1,4 +1,6 @@
+# https://github.com/rconradharris/envparse/blob/e67e70307af19d925e194b2a163e0608dae7eb55/envparse.py
 # envparse is a simple utility to parse environment variables.
+
 
 from __future__ import unicode_literals
 import inspect
