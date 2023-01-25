@@ -17,7 +17,7 @@ env.read_env()  # read .env file, if it exists
 
 app = FastAPI()
 
-allow_origins = env(
+allow_origins = env.list(
     name="ALLOW_ORIGINS",
     subcast=str,
     default=[
@@ -28,13 +28,13 @@ allow_origins = env(
 
 allow_credentials = env.bool(name="ALLOWED_CREDENTIALS", default=True)
 
-allow_methods = env(
+allow_methods = env.list(
     name="ALLOWED_METHODS",
     subcast=str,
     default=["*"],
 )
 
-allow_headers = env(
+allow_headers = env.list(
     name="ALLOWED_HEADERS",
     subcast=str,
     default=["Access-Control-Allow-Origin"],
