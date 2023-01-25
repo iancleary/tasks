@@ -1,11 +1,11 @@
 import os
 from datetime import datetime
 
-from envparse import Env
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.env import env
 from app.database import tables
 from app.routers import items
 from app.routers import projects
@@ -15,26 +15,26 @@ from app.routers import projects
 
 app = FastAPI()
 
-allow_origins = Env(
-    "ALLOW_ORIGINS",
-    subcast=int,
+allow_origins = env(
+    var="ALLOW_ORIGINS",
+    subcast=str,
     default=[
         "http://localhost",
         "http://localhost:3000",
     ],
 )
 
-allow_credentials = Env.bool("ALLOWED_CREDENTIALS", default=True)
+allow_credentials = env.bool(var="ALLOWED_CREDENTIALS", default=True)
 
-allowed_methods = Env(
-    "ALLOWED_METHODS",
+allow_methods = env(
+    var="ALLOWED_METHODS",
     subcast=str,
     default=["*"],
 )
 
-allowed_headers = Env(
-    "ALLOWED_HEADERS",
-    subcast=int,
+allow_headers = env(
+    var="ALLOWED_HEADERS",
+    subcast=str,
     default=["Access-Control-Allow-Origin"],
 )
 
@@ -42,8 +42,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
     allow_credentials=allow_credentials,
-    allow_methods=allowed_methods,
-    allow_headers=allowed_headers,
+    allow_methods=allow_methods,
+    allow_headers=allow_headers,
 )
 
 app.include_router(projects.router)
