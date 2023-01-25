@@ -6,6 +6,8 @@ The purpose of the application is simple, to support the tracking of tasks/items
 
 > ## The Ivy Lee Method
 >
+> *The Ivy Lee method dates back to 1918, when Lee, a productivity consultant, was hired by Charles M. Schwab, the president of the Bethlehem Steel Corporation, to improve his company's efficiency. As the story goes, Lee offered his method to Schwab for free, and after three months, Schwab was so pleased with the results he wrote Lee a check for $25,000 - the equivalent of about $400,000 today.*
+>
 > During his 15 minutes with each executive, Ivy Lee explained his simple daily routine for achieving peak productivity:
 >
 >* At the end of each work day, write down the six most important things you need to accomplish tomorrow. Do not write down more than six tasks.
