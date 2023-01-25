@@ -64,7 +64,7 @@ PORT=8000
 ALLOW_ORIGINS=http://localhost,http://localhost:3000
 ALLOWED_CREDENTIALS=True
 ALLOWED_METHODS=*
-ALLOWED_HEADERS=Access-Control-Allow-Origin"
+ALLOWED_HEADERS=Access-Control-Allow-Origin
 ```
 
 ## Deployment
