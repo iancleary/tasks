@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
 
-from envparse import env
+from environs import Env
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,13 +12,13 @@ from app.database import tables
 from app.routers import items
 from app.routers import projects
 
-# import datetime
-
+env = Env()
+env.read_env()  # read .env file, if it exists
 
 app = FastAPI()
 
 allow_origins = env(
-    var="ALLOW_ORIGINS",
+    name="ALLOW_ORIGINS",
     subcast=str,
     default=[
         "http://localhost",
@@ -25,16 +26,16 @@ allow_origins = env(
     ],
 )
 
-allow_credentials = env.bool(var="ALLOWED_CREDENTIALS", default=True)
+allow_credentials = env.bool(name="ALLOWED_CREDENTIALS", default=True)
 
 allow_methods = env(
-    var="ALLOWED_METHODS",
+    name="ALLOWED_METHODS",
     subcast=str,
     default=["*"],
 )
 
 allow_headers = env(
-    var="ALLOWED_HEADERS",
+    name="ALLOWED_HEADERS",
     subcast=str,
     default=["Access-Control-Allow-Origin"],
 )
