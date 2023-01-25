@@ -49,22 +49,41 @@ The project uses [pdm](https://pdm.fming.dev/latest/usage/project/) as a depende
 * build with docker and a ([requirements.txt](https://pdm.fming.dev/latest/usage/cli_reference/#exec-0--export)) file.
 * lint in an environment that installs packages in a virtual environment with pip and not pdm ([mypy doesn't support the `__pypackages__` structure](https://github.com/pdm-project/pdm/discussions/751)).
 
+
+## Configuration
+
+This application subscribes to the [twelve-factor app methodology for configuration](https://12factor.net/config).
+
+As such, all important configuration is handled by the environment (.env):
+
+`.env`
+```env
+DATABASE=/data/prod.db
+HOST=0.0.0.0
+PORT=8000
+ALLOW_ORIGINS=http://localhost,http://localhost:3000
+ALLOWED_CREDENTIALS=True
+ALLOWED_METHODS=*
+ALLOWED_HEADERS=Access-Control-Allow-Origin"
+```
+
 ## Deployment
 
-### Docker Hub 
 
-[iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
+The image is available from [docker.io/iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
 
-### Docker-compose example
+----------
+
+> Docker-compose example
 
 `docker-compose.yml`
 
-```
+```docker-compose
 ---
 version: "3.9"
 services:
   web:
-    image: iancleary/ivy-lee-method:python3.10.8-slim
+    image: docker.io/iancleary/ivy-lee-method:python3.10.8-slim
     env_file:
       - '._prod.env'
     ports:
@@ -75,7 +94,7 @@ services:
 
 `._prod.env`
 
-```
+```env
 DATABASE=/data/prod.db
 HOST=0.0.0.0
 PORT=8000
