@@ -1,11 +1,12 @@
 import os
 from datetime import datetime
 
+from envparse import env
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.env import env
+
 from app.database import tables
 from app.routers import items
 from app.routers import projects
