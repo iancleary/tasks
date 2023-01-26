@@ -21,8 +21,8 @@ allow_origins = env.list(
     name="ALLOW_ORIGINS",
     subcast=str,
     default=[
-        "http://localhost",
-        "http://localhost:3000",
+        "http://localhost",  # docs viewing by user
+        "http://localhost:3000",  # frontend default
     ],
 )
 
