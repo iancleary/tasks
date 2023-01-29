@@ -52,7 +52,7 @@ def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 @router.get("/items/open")
 def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(
-        and_(Item.status != Status.COMPLETED, Item.active == Active.YES)
+        and_(Item.status == Status.OPEN, Item.active == Active.YES)
     )
 
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
