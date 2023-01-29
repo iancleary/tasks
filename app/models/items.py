@@ -11,10 +11,11 @@ from app.models import BASE
 
 
 class Status(IntEnum):
-    BACKLOG = 0
-    READY_FOR_WORK = 1
-    IN_PROGRESS = 2
-    COMPLETED = 3
+    # These are not ordered...
+    # The only thing that matters 
+    # is that they are unique
+    OPEN = 0
+    COMPLETED = 1
 
 
 class Active(IntEnum):
@@ -35,7 +36,7 @@ class Item(BASE):
     description = Column(String, default="")
     created_date = Column(REAL)
     resolution_date = Column(REAL, default=None)
-    status = Column(Integer, default=Status.BACKLOG)
+    status = Column(Integer, default=Status.OPEN)
     active = Column(Integer, default=Active.YES)
     pinned = Column(Integer, default=Pinned.NO)
 
@@ -69,6 +70,6 @@ class PydanticItem(BaseModel):
     created_date: float
     description: str = ""
     resolution_date: float = None
-    status: int = Status.BACKLOG
+    status: int = Status.OPEN
     active: int = Active.YES
     pinned: int = Pinned.NO
