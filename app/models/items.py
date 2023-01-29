@@ -12,7 +12,7 @@ from app.models import BASE
 
 class Status(IntEnum):
     # These are not ordered...
-    # The only thing that matters 
+    # The only thing that matters
     # is that they are unique
     OPEN = 0
     COMPLETED = 1
