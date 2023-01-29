@@ -52,7 +52,7 @@ def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 @router.get("/items/open")
 def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(
-        and_(Item.status != Status.COMPLETED, Item.active == Active.YES)
+        and_(Item.status == Status.OPEN, Item.active == Active.YES)
     )
 
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
@@ -104,30 +104,10 @@ def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 ##~ Status
 
 
-@router.patch("/item/{item_id}/status/backlog")
-def patch_item_status_backlog(db: Session = Depends(get_db), *, item_id: str) -> None:
+@router.patch("/item/{item_id}/status/open")
+def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
-    stmt = stmt.values({"status": Status.BACKLOG})
-    stmt = stmt.where(Item.id == item_id)
-    db.execute(stmt)
-
-
-@router.patch("/item/{item_id}/status/ready-for-work")
-def patch_item_status_ready_for_work(
-    db: Session = Depends(get_db), *, item_id: str
-) -> None:
-    stmt = update(Item)
-    stmt = stmt.values({"status": Status.READY_FOR_WORK})
-    stmt = stmt.where(Item.id == item_id)
-    db.execute(stmt)
-
-
-@router.patch("/item/{item_id}/status/in-progress")
-def patch_item_status_in_progress(
-    db: Session = Depends(get_db), *, item_id: str
-) -> None:
-    stmt = update(Item)
-    stmt = stmt.values({"status": Status.IN_PROGRESS})
+    stmt = stmt.values({"status": Status.OPEN})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 

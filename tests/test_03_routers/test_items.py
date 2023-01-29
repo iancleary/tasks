@@ -50,12 +50,12 @@ def test_patch_item() -> None:
     assert response.json()["name"] == "Gary Item"
 
 
-def test_patch_item_status_backlog() -> None:
+def test_patch_item_status_open() -> None:
     response = client.get("/items")
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/status/backlog")
+    response = client.patch(f"/item/{item_id}/status/open")
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")
@@ -63,39 +63,7 @@ def test_patch_item_status_backlog() -> None:
     assert response.json()["id"] == item_id
 
     assert response.status_code == 200
-    assert response.json()["status"] == Status.BACKLOG
-
-
-def test_patch_item_status_not_yet_started() -> None:
-    response = client.get("/items")
-
-    item_id = response.json()[-1]["id"]
-
-    response = client.patch(f"/item/{item_id}/status/ready-for-work")
-    assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-
-    assert response.json()["id"] == item_id
-
-    assert response.status_code == 200
-    assert response.json()["status"] == Status.READY_FOR_WORK
-
-
-def test_patch_item_status_in_progress() -> None:
-    response = client.get("/items")
-
-    item_id = response.json()[-1]["id"]
-
-    response = client.patch(f"/item/{item_id}/status/in-progress")
-    assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-
-    assert response.json()["id"] == item_id
-
-    assert response.status_code == 200
-    assert response.json()["status"] == Status.IN_PROGRESS
+    assert response.json()["status"] == Status.OPEN
 
 
 def test_patch_item_status_completed() -> None:
@@ -121,16 +89,13 @@ def test_delete_item() -> None:
 
 def test_get_completed_items() -> None:
     response = client.post("/item", json={"name": "Completed Item"})
-    response = client.post("/item", json={"name": "Open Item 1"})
-    response = client.post("/item", json={"name": "Open Item 2"})
+    response = client.post("/item", json={"name": "Open Item"})
     response = client.get("/items")
-    completed_item_id = response.json()[-3]["id"]
-    open_item_id = response.json()[-2]["id"]
-    open_item_two_id = response.json()[-1]["id"]
+    completed_item_id = response.json()[-2]["id"]
+    open_item_id = response.json()[-1]["id"]
 
     response = client.patch(f"/item/{completed_item_id}/status/completed")
-    response = client.patch(f"/item/{open_item_id}/status/not-yet-started")
-    response = client.patch(f"/item/{open_item_two_id}/status/in-progress")
+    response = client.patch(f"/item/{open_item_id}/status/open")
 
     response = client.get("/items/completed")
 
