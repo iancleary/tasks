@@ -59,6 +59,16 @@ def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
+@router.get("/items/pinned")
+def get_pinned_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+    items = db.query(Item).filter(
+        and_(Item.status == Status.OPEN, Item.status == Pinned.YES, Item.active == Active.YES)
+    )
+
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+    return [PydanticItem(**x) for x in json_compatible_return_data]
+
+
 @router.get("/item/{item_id}")
 def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
     item = db.query(Item).get(item_id)
