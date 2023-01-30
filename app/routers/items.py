@@ -16,6 +16,7 @@ from app.models.items import Status
 from app.models.items import Active
 from app.models.items import Pinned
 from app.models.items import UNSET_RESOLUTION_DATE
+from app.models.items import convert_utc_to_local
 
 router = APIRouter()
 
@@ -38,6 +39,9 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(Item.active == Active.YES)
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
+    json_compatible_return_data = [
+        convert_utc_to_local(x) for x in json_compatible_return_data
+    ]
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
@@ -46,8 +50,13 @@ def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(
         and_(Item.status == Status.COMPLETED, Item.active == Active.YES)
     )
-
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
+
+    # convert to json, then correct timezone on dict-like object,
+    # then instatiate return type for validation
+    json_compatible_return_data = [
+        convert_utc_to_local(x) for x in json_compatible_return_data
+    ]
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
@@ -56,15 +65,23 @@ def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(
         and_(Item.status == Status.OPEN, Item.active == Active.YES)
     )
-
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
+
+    # convert to json, then correct timezone on dict-like object,
+    # then instatiate return type for validation
+    json_compatible_return_data = [
+        convert_utc_to_local(x) for x in json_compatible_return_data
+    ]
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
 @router.get("/item/{item_id}")
 def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
     item = db.query(Item).get(item_id)
-    return PydanticItem(**jsonable_encoder(item))
+
+    # convert to json, then correct timezone on dict-like object,
+    # then instatiate return type for validation
+    return PydanticItem(**convert_utc_to_local(jsonable_encoder(item)))
 
 
 ##~~ Update
@@ -109,8 +126,9 @@ def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 @router.patch("/item/{item_id}/status/open")
 def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
-    reopened_timestamp = datetime.datetime.utcnow().timestamp()
-    stmt = stmt.values({"status": Status.OPEN, "resolution_date": reopened_timestamp})
+    stmt = stmt.values(
+        {"status": Status.OPEN, "resolution_date": UNSET_RESOLUTION_DATE}
+    )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
@@ -118,8 +136,9 @@ def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> No
 @router.patch("/item/{item_id}/status/completed")
 def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
+    completed_timestamp = datetime.datetime.utcnow().timestamp()
     stmt = stmt.values(
-        {"status": Status.COMPLETED, "resolution_date": UNSET_RESOLUTION_DATE}
+        {"status": Status.COMPLETED, "resolution_date": completed_timestamp}
     )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)

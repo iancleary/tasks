@@ -1,19 +1,15 @@
 import os
 from datetime import datetime
 
-from environs import Env
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-
+from app.env import env
 from app.database import tables
 from app.routers import items
 from app.routers import projects
 
-env = Env()
-env.read_env()  # read .env file, if it exists
 
 app = FastAPI()
 

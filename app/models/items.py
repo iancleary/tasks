@@ -9,6 +9,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 
 from app.models import BASE
+from app.models.utils import utc_to_local
 
 
 class Status(IntEnum):
@@ -62,7 +63,7 @@ class Item(BASE):
         self,
         name: str,
         created_date: float = None,
-        resolution_date: float = 0.0,
+        resolution_date: float = None,
         description: str = Description.DEFAULT,
         active: int = None,
         pinned: int = None,
@@ -100,10 +101,10 @@ class Item(BASE):
         else:
             self.created_date = datetime.datetime.fromtimestamp(self.created_date)
 
-        if self.resolution_date is UNSET_RESOLUTION_DATE:
+        if self.resolution_date is None:
             self.resolution_date = None
         else:
-            self.resolution_date = datetime.datetime.fromtimestamp(self.created_date)
+            self.resolution_date = datetime.datetime.fromtimestamp(self.resolution_date)
         # also need to defined behavior for columns created after the database
         # even though they have default values in the application code,
         # they might not have a value in a new database column,
@@ -123,9 +124,23 @@ class Item(BASE):
 class PydanticItem(BaseModel):
     id: int
     name: str
-    created_date: float
+    created_date: datetime.datetime = None
     description: str = ""
-    resolution_date: float = None
+    resolution_date: datetime.datetime = None
     status: int = Status.OPEN
     active: int = Active.YES
     pinned: int = Pinned.NO
+
+
+def convert_utc_to_local(item: dict):
+    if item["created_date"] is not None:
+        item["created_date"] = datetime.datetime.fromtimestamp(item["created_date"])
+        item["created_date"] = utc_to_local(item["created_date"])
+
+    if item["resolution_date"] is not None:
+        item["resolution_date"] = datetime.datetime.fromtimestamp(
+            item["resolution_date"]
+        )
+        item["resolution_date"] = utc_to_local(item["resolution_date"])
+
+    return item
