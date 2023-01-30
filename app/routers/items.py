@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 
 from fastapi import APIRouter
@@ -14,6 +15,7 @@ from app.models.items import PydanticItem
 from app.models.items import Status
 from app.models.items import Active
 from app.models.items import Pinned
+from app.models.items import UNSET_RESOLUTION_DATE
 
 router = APIRouter()
 
@@ -107,7 +109,8 @@ def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 @router.patch("/item/{item_id}/status/open")
 def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
-    stmt = stmt.values({"status": Status.OPEN})
+    reopened_timestamp = datetime.datetime.utcnow().timestamp()
+    stmt = stmt.values({"status": Status.OPEN, "resolution_date": reopened_timestamp})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
@@ -115,7 +118,9 @@ def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> No
 @router.patch("/item/{item_id}/status/completed")
 def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
-    stmt = stmt.values({"status": Status.COMPLETED})
+    stmt = stmt.values(
+        {"status": Status.COMPLETED, "resolution_date": UNSET_RESOLUTION_DATE}
+    )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
