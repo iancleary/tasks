@@ -32,9 +32,10 @@ class Pinned(IntEnum):
 class Description(Enum):
     DEFAULT = ""
 
-# This will store as a value of 0.0, 
+
+# This will store as a value of 0.0,
 # but code will handle it and massage it to None
-# 
+#
 # Python 3.10.9 (main, Jan 28 2023, 19:03:24) [GCC 9.4.0] on linux
 # Type "help", "copyright", "credits" or "license" for more information.
 # >>> import datetime
