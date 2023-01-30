@@ -67,7 +67,12 @@ ALLOW_ORIGINS=http://localhost,http://localhost:3000
 ALLOWED_CREDENTIALS=True
 ALLOWED_METHODS=*
 ALLOWED_HEADERS=Access-Control-Allow-Origin
+TIMEZONE=America/Phoenix
 ```
+
+> For a list, please see the link:
+> https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
 
 ## Deployment
 
@@ -100,4 +105,12 @@ services:
 DATABASE=/data/prod.db
 HOST=0.0.0.0
 PORT=8000
+ALLOW_ORIGINS=http://localhost,http://localhost:3000
+ALLOWED_CREDENTIALS=True
+ALLOWED_METHODS=*
+ALLOWED_HEADERS=Access-Control-Allow-Origin
+TIMEZONE=America/Phoenix
 ```
+
+> For a list, please see the link:
+> https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
