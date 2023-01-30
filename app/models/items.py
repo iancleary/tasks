@@ -97,12 +97,12 @@ class Item(BASE):
             #
             self.created_date = datetime.datetime.utcnow().timestamp()
         else:
-            self.created_date = created_date
+            self.created_date = datetime.datetime.fromtimestamp(self.created_date)
 
         if self.resolution_date is UNSET_RESOLUTION_DATE:
             self.resolution_date = None
         else:
-            self.resolution_date = self.resolution_date
+            self.resolution_date = datetime.datetime.fromtimestamp(self.created_date)
         # also need to defined behavior for columns created after the database
         # even though they have default values in the application code,
         # they might not have a value in a new database column,
