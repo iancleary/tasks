@@ -45,7 +45,7 @@ class Description(Enum):
 #
 # Again, code here massages this to None in the Python object
 # but the database will store a 0.0
-UNSET_RESOLUTION_DATE = 0.0
+UNSET_DATE = 0.0
 
 
 # mypy: ignore-errors
@@ -54,7 +54,8 @@ class Item(BASE):
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String)
     created_date = Column(REAL)
-    resolution_date = Column(REAL, default=UNSET_RESOLUTION_DATE)
+    resolution_date = Column(REAL, default=UNSET_DATE)
+    deleted_date = Column(REAL, default=UNSET_DATE)
     status = Column(Integer, default=Status.OPEN)
     active = Column(Integer, default=Active.YES)
     pinned = Column(Integer, default=Pinned.NO)
@@ -64,6 +65,7 @@ class Item(BASE):
         name: str,
         created_date: float = None,
         resolution_date: float = None,
+        deleted_date: float = None,
         description: str = Description.DEFAULT,
         active: int = None,
         pinned: int = None,
@@ -74,6 +76,8 @@ class Item(BASE):
         self.description = description
 
         self.resolution_date = resolution_date
+
+        self.deleted_date = deleted_date
 
         if created_date is None:
             # store data in UTC.
@@ -105,6 +109,11 @@ class Item(BASE):
             self.resolution_date = None
         else:
             self.resolution_date = datetime.datetime.fromtimestamp(self.resolution_date)
+
+        if self.deleted_date is None:
+            self.deleted_date = None
+        else:
+            self.deleted_date = datetime.datetime.fromtimestamp(self.deleted_date)
         # also need to defined behavior for columns created after the database
         # even though they have default values in the application code,
         # they might not have a value in a new database column,
@@ -127,6 +136,7 @@ class PydanticItem(BaseModel):
     created_date: datetime.datetime = None
     description: str = ""
     resolution_date: datetime.datetime = None
+    deleted_date: datetime.datetime = None
     status: int = Status.OPEN
     active: int = Active.YES
     pinned: int = Pinned.NO
@@ -142,5 +152,9 @@ def convert_utc_to_local(item: dict):
             item["resolution_date"]
         )
         item["resolution_date"] = utc_to_local(item["resolution_date"])
+
+    if item["deleted_date"] is not None:
+        item["deleted_date"] = datetime.datetime.fromtimestamp(item["deleted_date"])
+        item["deleted_date"] = utc_to_local(item["deleted_date"])
 
     return item

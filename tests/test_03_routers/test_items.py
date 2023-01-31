@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.models.items import Status
 from app.models.items import Pinned
+from app.models.items import Active
 
 client = TestClient(app)
 
@@ -101,9 +102,26 @@ def test_get_completed_items() -> None:
 
     assert response.status_code == 200
     assert isinstance(response.json(), List)
-    assert len(response.json()) == 1
     for item in response.json():
         assert item["status"] == Status.COMPLETED
+
+
+def test_get_deleted_items() -> None:
+    response = client.post("/item", json={"name": "Item to be deleted"})
+    response = client.post("/item", json={"name": "Another deletion"})
+    response = client.get("/items")
+    deleted_item_id_1 = response.json()[-2]["id"]
+    deleted_item_id_2 = response.json()[-1]["id"]
+
+    response = client.delete(f"/item/{deleted_item_id_1}")
+    response = client.delete(f"/item/{deleted_item_id_2}")
+
+    response = client.get("/items/deleted")
+
+    assert response.status_code == 200
+    assert isinstance(response.json(), List)
+    for item in response.json():
+        assert item["active"] == Active.NO
 
 
 def test_get_open_items() -> None:

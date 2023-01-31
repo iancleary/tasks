@@ -74,6 +74,9 @@ up:
 up: ## Run the docker image (via docker-compose)
 	docker-compose up || docker compose up || podman-compose up
 
+dev: build up
+dev: ## Build and Run the docker image (build and up targets)
+
 detached:
 detached: ## Run the docker image (via docker-compose) detached
 	docker-compose up -d || docker compose up -d || podman-compose up -d
