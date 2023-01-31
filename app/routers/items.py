@@ -74,6 +74,7 @@ def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     ]
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
+
 @router.get("/items/deleted")
 def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(
@@ -87,7 +88,6 @@ def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
         convert_utc_to_local(x) for x in json_compatible_return_data
     ]
     return [PydanticItem(**x) for x in json_compatible_return_data]
-
 
 
 @router.get("/item/{item_id}")
@@ -125,7 +125,11 @@ def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     # Don't remove row, but deactivate item instead (design choice)
     column = getattr(Item, "id")
     # can't deleted completed item
-    stmt = update(Item).where(and_(column == item_id, Item.status != Status.COMPLETED)).values(active=Active.NO)
+    stmt = (
+        update(Item)
+        .where(and_(column == item_id, Item.status != Status.COMPLETED))
+        .values(active=Active.NO)
+    )
     db.execute(stmt)
 
 
