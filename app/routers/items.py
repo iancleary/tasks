@@ -74,6 +74,21 @@ def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     ]
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
+@router.get("/items/deleted")
+def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+    items = db.query(Item).filter(
+        and_(Item.status == Status.OPEN, Item.active == Active.NO)
+    )
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+
+    # convert to json, then correct timezone on dict-like object,
+    # then instatiate return type for validation
+    json_compatible_return_data = [
+        convert_utc_to_local(x) for x in json_compatible_return_data
+    ]
+    return [PydanticItem(**x) for x in json_compatible_return_data]
+
+
 
 @router.get("/item/{item_id}")
 def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
@@ -109,7 +124,8 @@ def patch_item(
 def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     # Don't remove row, but deactivate item instead (design choice)
     column = getattr(Item, "id")
-    stmt = update(Item).where(column == item_id).values(active=Active.NO)
+    # can't deleted completed item
+    stmt = update(Item).where(and_(column == item_id, Item.status != Status.COMPLETED)).values(active=Active.NO)
     db.execute(stmt)
 
 

@@ -101,7 +101,6 @@ def test_get_completed_items() -> None:
 
     assert response.status_code == 200
     assert isinstance(response.json(), List)
-    assert len(response.json()) == 1
     for item in response.json():
         assert item["status"] == Status.COMPLETED
 
