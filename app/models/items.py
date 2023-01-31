@@ -154,9 +154,7 @@ def convert_utc_to_local(item: dict):
         item["resolution_date"] = utc_to_local(item["resolution_date"])
 
     if item["deleted_date"] is not None:
-        item["deleted_date"] = datetime.datetime.fromtimestamp(
-            item["deleted_date"]
-        )
+        item["deleted_date"] = datetime.datetime.fromtimestamp(item["deleted_date"])
         item["deleted_date"] = utc_to_local(item["deleted_date"])
 
     return item

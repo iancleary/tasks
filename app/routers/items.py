@@ -131,7 +131,7 @@ def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     stmt = (
         update(Item)
         .where(and_(column == item_id, Item.status != Status.COMPLETED))
-        .values({"active":Active.NO, "deleted_date": deleted_timestamp})
+        .values({"active": Active.NO, "deleted_date": deleted_timestamp})
     )
     db.execute(stmt)
 
@@ -139,7 +139,11 @@ def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 @router.patch("/item/{item_id}/activate")
 def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     column = getattr(Item, "id")
-    stmt = update(Item).where(column == item_id).values({"active": Active.YES, "deleted_date": UNSET_DATE})
+    stmt = (
+        update(Item)
+        .where(column == item_id)
+        .values({"active": Active.YES, "deleted_date": UNSET_DATE})
+    )
     db.execute(stmt)
 
 
@@ -150,7 +154,7 @@ def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
     stmt = stmt.values(
-        {"status": Status.OPEN, "resolution_date": UNSET_DATE, "active":Active.YES}
+        {"status": Status.OPEN, "resolution_date": UNSET_DATE, "active": Active.YES}
     )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
@@ -161,7 +165,11 @@ def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) 
     stmt = update(Item)
     completed_timestamp = datetime.datetime.utcnow().timestamp()
     stmt = stmt.values(
-        {"status": Status.COMPLETED, "resolution_date": completed_timestamp, "active":Active.YES}
+        {
+            "status": Status.COMPLETED,
+            "resolution_date": completed_timestamp,
+            "active": Active.YES,
+        }
     )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
