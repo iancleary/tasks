@@ -15,7 +15,7 @@ from app.models.items import PydanticItem
 from app.models.items import Status
 from app.models.items import Active
 from app.models.items import Pinned
-from app.models.items import UNSET_RESOLUTION_DATE
+from app.models.items import UNSET_DATE
 from app.models.items import convert_utc_to_local
 
 router = APIRouter()
@@ -148,7 +148,7 @@ def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
     stmt = stmt.values(
-        {"status": Status.OPEN, "resolution_date": UNSET_RESOLUTION_DATE, "active":Active.YES}
+        {"status": Status.OPEN, "resolution_date": UNSET_DATE, "active":Active.YES}
     )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
