@@ -125,11 +125,13 @@ def patch_item(
 def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     # Don't remove row, but deactivate item instead (design choice)
     column = getattr(Item, "id")
+
+    deleted_timestamp = datetime.datetime.utcnow().timestamp()
     # can't deleted completed item
     stmt = (
         update(Item)
         .where(and_(column == item_id, Item.status != Status.COMPLETED))
-        .values(active=Active.NO)
+        .values({"active":Active.NO, "deleted_date": deleted_timestamp})
     )
     db.execute(stmt)
 
@@ -137,7 +139,7 @@ def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 @router.patch("/item/{item_id}/activate")
 def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     column = getattr(Item, "id")
-    stmt = update(Item).where(column == item_id).values(active=Active.YES)
+    stmt = update(Item).where(column == item_id).values({"active": Active.YES, "deleted_date": UNSET_DATE})
     db.execute(stmt)
 
 
