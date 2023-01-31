@@ -111,6 +111,7 @@ def patch_item(
     db: Session = Depends(get_db), *, item_id: str, updates: NewName
 ) -> None:
     # rename item
+    # I will expand this when I get to a single item screen
     stmt = update(Item)
     stmt = stmt.values({"name": updates.name})
     stmt = stmt.where(Item.id == item_id)
@@ -147,7 +148,7 @@ def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
     stmt = stmt.values(
-        {"status": Status.OPEN, "resolution_date": UNSET_RESOLUTION_DATE}
+        {"status": Status.OPEN, "resolution_date": UNSET_RESOLUTION_DATE, "active":Active.YES}
     )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
@@ -158,7 +159,7 @@ def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) 
     stmt = update(Item)
     completed_timestamp = datetime.datetime.utcnow().timestamp()
     stmt = stmt.values(
-        {"status": Status.COMPLETED, "resolution_date": completed_timestamp}
+        {"status": Status.COMPLETED, "resolution_date": completed_timestamp, "active":Active.YES}
     )
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
