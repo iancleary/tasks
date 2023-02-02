@@ -143,6 +143,8 @@ class PydanticItem(BaseModel):
 
 
 def convert_utc_to_local(item: dict):
+    if item is None:
+        return item
     if item["created_date"] is not None:
         item["created_date"] = datetime.datetime.fromtimestamp(item["created_date"])
         item["created_date"] = utc_to_local(item["created_date"])

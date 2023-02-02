@@ -3,6 +3,7 @@ from typing import List
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import update
@@ -93,6 +94,9 @@ def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 @router.get("/item/{item_id}")
 def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
     item = db.query(Item).get(item_id)
+
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
     # convert to json, then correct timezone on dict-like object,
     # then instatiate return type for validation
