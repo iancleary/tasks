@@ -107,7 +107,7 @@ def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
 
 
 class ItemPatch(BaseModel):
-    name: str
+    name: str = None
     description: str = None
 
 
@@ -116,17 +116,8 @@ def patch_item(
     db: Session = Depends(get_db), *, item_id: str, updates: ItemPatch
 ) -> None:
     stmt = update(Item)
-
-    new_values = {}
-
-    if updates.name is not None:
-        new_values["name"] = updates.name
-
-    if updates.description is not None:
-        new_values["description"] = updates.description
-
-    stmt = stmt.values(new_values)
     stmt = stmt.where(Item.id == item_id)
+    stmt = stmt.values(name=updates.name, description=updates.description)
     db.execute(stmt)
 
 
