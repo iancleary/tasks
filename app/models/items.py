@@ -1,7 +1,8 @@
 import datetime
-
 from enum import Enum
 from enum import IntEnum
+from typing import Union
+
 
 # when I upgrade to python3.11 (doesn't exist in python3.10)
 # from enum import StrEnum
@@ -152,9 +153,9 @@ class Item(BASE):
 
 class PydanticItem(BaseModel):
     id: int
-    name: str
+    name: Union[str, None]
     created_date: datetime.datetime = None
-    description: str = ""
+    description: Union[str, None] = ""
     resolution_date: datetime.datetime = None
     deleted_date: datetime.datetime = None
     status: int = Status.OPEN

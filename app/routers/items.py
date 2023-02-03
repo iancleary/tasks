@@ -107,8 +107,8 @@ def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
 
 
 class ItemPatch(BaseModel):
-    name: str = None
-    description: str = None
+    name: str
+    description: str
 
 
 @router.patch("/item/{item_id}")
