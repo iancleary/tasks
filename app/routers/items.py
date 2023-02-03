@@ -106,18 +106,17 @@ def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
 ##~~ Update
 
 
-class NewName(BaseModel):
+class ItemPatch(BaseModel):
     name: str
+    description: str
 
 
 @router.patch("/item/{item_id}")
 def patch_item(
-    db: Session = Depends(get_db), *, item_id: str, updates: NewName
+    db: Session = Depends(get_db), *, item_id: str, updates: ItemPatch
 ) -> None:
-    # rename item
-    # I will expand this when I get to a single item screen
     stmt = update(Item)
-    stmt = stmt.values({"name": updates.name})
+    stmt = stmt.values({"name": updates.name, "description": updates.description})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
