@@ -73,6 +73,8 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "docker_images/alembic",
+    "docker_images/app"
 ]
 
 [tool.ruff.isort]

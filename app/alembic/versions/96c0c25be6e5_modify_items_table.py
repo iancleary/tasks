@@ -20,6 +20,7 @@ def upgrade() -> None:
     op.add_column("items", sa.Column("description", sa.String()))
     op.add_column("items", sa.Column("order_", sa.Integer()))
 
+
 def downgrade() -> None:
     op.remove_column("items", sa.Column("description", sa.String()))
     op.remove_column("items", sa.Column("order_", sa.Integer()))
