@@ -138,6 +138,7 @@ __pypackages__/
 node_modules
 
 # docker-images
+docker-images/alembic.ini
 docker-images/app
 docker-images/requirements.txt
 

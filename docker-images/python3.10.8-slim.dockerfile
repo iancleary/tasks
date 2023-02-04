@@ -17,11 +17,14 @@ COPY ./gunicorn_conf.py /gunicorn_conf.py
 COPY ./start-reload.sh /start-reload.sh
 RUN chmod +x /start-reload.sh
 
-# Needed /app/app for from app.database to be import path in dockerfile and in venv
-COPY ./app /app/app
-WORKDIR /app/
+# Needed /code/app for from app.database to be import path in dockerfile and in venv
+COPY ./app /code/app
+# Copy alembic configuration file
+COPY alembic.ini /code/app
 
-ENV PYTHONPATH=/app
+WORKDIR /code/
+
+ENV PYTHONPATH=/code
 
 EXPOSE 80
 

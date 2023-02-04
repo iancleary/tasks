@@ -17,12 +17,9 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_columns(
-        "items",
-        sa.Column("description", sa.String()),
-        sa.Column("order_", sa.Integer()),
-    )
-
+    op.add_column("items", sa.Column("description", sa.String()))
+    op.add_column("items", sa.Column("order_", sa.Integer()))
 
 def downgrade() -> None:
-    pass
+    op.remove_column("items", sa.Column("description", sa.String()))
+    op.remove_column("items", sa.Column("order_", sa.Integer()))
