@@ -43,7 +43,9 @@ def test_patch_item() -> None:
     NAME = "New name for task"
     # Test Description
     DESCRIPTION = "New description for task"
-    response = client.patch(f"/item/{item_id}", json={"name": NAME, "description": DESCRIPTION})
+    response = client.patch(
+        f"/item/{item_id}", json={"name": NAME, "description": DESCRIPTION}
+    )
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")

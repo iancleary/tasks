@@ -1,5 +1,4 @@
 import datetime
-from enum import Enum
 from enum import IntEnum
 from typing import Union
 
@@ -69,7 +68,7 @@ class Item(BASE):
     status = Column(Integer, default=Status.OPEN)
     active = Column(Integer, default=Active.YES)
     pinned = Column(Integer, default=Pinned.NO)
-    order_ =  Column(Integer, default=0)
+    order_ = Column(Integer, default=0)
     description = Column(String, default="")
 
     def __init__(
@@ -91,9 +90,9 @@ class Item(BASE):
         self.deleted_date = deleted_date
 
         if description is None:
-             self.description = ""
+            self.description = ""
         else:
-             self.description = description
+            self.description = description
 
         if created_date is None:
             # store data in UTC.
