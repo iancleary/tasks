@@ -8,6 +8,7 @@ Create Date: 2023-02-04 10:51:23.781741
 from alembic import op
 import sqlalchemy as sa
 
+
 def column_exists(table_name, column_name):
     bind = op.get_context().bind
     insp = sa.inspect(bind)
@@ -30,7 +31,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    if column_exists(table_name="items",  column_name="description"):
+    if column_exists(table_name="items", column_name="description"):
         op.remove_column("items", sa.Column("description", sa.String()))
-    if column_exists(table_name="items",  column_name="order_"):
+    if column_exists(table_name="items", column_name="order_"):
         op.remove_column("items", sa.Column("order_", sa.Integer()))
