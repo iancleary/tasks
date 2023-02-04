@@ -1,6 +1,10 @@
 import datetime
 from enum import IntEnum
-from enum import Enum
+from typing import Union
+
+
+# when I upgrade to python3.11 (doesn't exist in python3.10)
+# from enum import StrEnum
 
 from pydantic import BaseModel
 from sqlalchemy import REAL
@@ -10,6 +14,11 @@ from sqlalchemy import String
 
 from app.models import BASE
 from app.models.utils import utc_to_local
+
+
+# when I upgrade to python3.11 (doesn't exist in python3.10)
+# class Description(StrEnum):
+#     DEFAULT = ""
 
 
 class Status(IntEnum):
@@ -30,8 +39,8 @@ class Pinned(IntEnum):
     YES = 1
 
 
-class Description(Enum):
-    DEFAULT = ""
+class Order(IntEnum):
+    DEFAULT = 0
 
 
 # This will store as a value of 0.0,
@@ -59,6 +68,8 @@ class Item(BASE):
     status = Column(Integer, default=Status.OPEN)
     active = Column(Integer, default=Active.YES)
     pinned = Column(Integer, default=Pinned.NO)
+    order_ = Column(Integer, default=0)
+    description = Column(String, default="")
 
     def __init__(
         self,
@@ -66,18 +77,22 @@ class Item(BASE):
         created_date: float = None,
         resolution_date: float = None,
         deleted_date: float = None,
-        description: str = Description.DEFAULT,
+        description: str = "",
         active: int = None,
         pinned: int = None,
+        order_: int = None,
     ) -> None:
 
         self.name = name
 
-        self.description = description
-
         self.resolution_date = resolution_date
 
         self.deleted_date = deleted_date
+
+        if description is None:
+            self.description = ""
+        else:
+            self.description = description
 
         if created_date is None:
             # store data in UTC.
@@ -129,20 +144,28 @@ class Item(BASE):
         else:
             self.pinned = pinned
 
+        # if order_ is None:
+        #     self.order_ = 0
+        # else:
+        #     self.order_ = order_
+
 
 class PydanticItem(BaseModel):
     id: int
-    name: str
+    name: Union[str, None]
     created_date: datetime.datetime = None
-    description: str = ""
+    description: Union[str, None] = ""
     resolution_date: datetime.datetime = None
     deleted_date: datetime.datetime = None
     status: int = Status.OPEN
     active: int = Active.YES
     pinned: int = Pinned.NO
+    # order_: int = 0
 
 
 def convert_utc_to_local(item: dict):
+    if item is None:
+        return item
     if item["created_date"] is not None:
         item["created_date"] = datetime.datetime.fromtimestamp(item["created_date"])
         item["created_date"] = utc_to_local(item["created_date"])

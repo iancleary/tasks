@@ -12,6 +12,7 @@ dependencies = [
     "gunicorn==20.1.0",
     "fastapi-restful[session]==0.4.3",
     "environs==9.5.0",
+    "alembic>=1.9.2",
 ]
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -72,6 +73,8 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "docker_images/alembic",
+    "docker_images/app"
 ]
 
 [tool.ruff.isort]
@@ -80,6 +83,7 @@ known-first-party = ["src"]
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
+exclude = ['alembic/']
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]

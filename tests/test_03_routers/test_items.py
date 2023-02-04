@@ -40,7 +40,12 @@ def test_patch_item() -> None:
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}", json={"name": "Gary Item"})
+    NAME = "New name for task"
+    # Test Description
+    DESCRIPTION = "New description for task"
+    response = client.patch(
+        f"/item/{item_id}", json={"name": NAME, "description": DESCRIPTION}
+    )
     assert response.status_code == 200
 
     response = client.get(f"/item/{item_id}")
@@ -48,7 +53,8 @@ def test_patch_item() -> None:
     assert response.json()["id"] == item_id
 
     assert response.status_code == 200
-    assert response.json()["name"] == "Gary Item"
+    assert response.json()["name"] == NAME
+    assert response.json()["description"] == DESCRIPTION
 
 
 def test_patch_item_status_open() -> None:

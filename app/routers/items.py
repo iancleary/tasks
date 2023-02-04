@@ -3,6 +3,7 @@ from typing import List
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import update
@@ -94,6 +95,9 @@ def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
     item = db.query(Item).get(item_id)
 
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+
     # convert to json, then correct timezone on dict-like object,
     # then instatiate return type for validation
     return PydanticItem(**convert_utc_to_local(jsonable_encoder(item)))
@@ -102,19 +106,18 @@ def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
 ##~~ Update
 
 
-class NewName(BaseModel):
+class ItemPatch(BaseModel):
     name: str
+    description: str
 
 
 @router.patch("/item/{item_id}")
 def patch_item(
-    db: Session = Depends(get_db), *, item_id: str, updates: NewName
+    db: Session = Depends(get_db), *, item_id: str, updates: ItemPatch
 ) -> None:
-    # rename item
-    # I will expand this when I get to a single item screen
     stmt = update(Item)
-    stmt = stmt.values({"name": updates.name})
     stmt = stmt.where(Item.id == item_id)
+    stmt = stmt.values(name=updates.name, description=updates.description)
     db.execute(stmt)
 
 
