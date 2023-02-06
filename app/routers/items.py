@@ -54,7 +54,7 @@ def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
     # convert to json, then correct timezone on dict-like object,
-    # then instatiate return type for validation
+    # then instantiate return type for validation
     json_compatible_return_data = [
         convert_utc_to_local(x) for x in json_compatible_return_data
     ]
@@ -69,7 +69,7 @@ def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
     # convert to json, then correct timezone on dict-like object,
-    # then instatiate return type for validation
+    # then instantiate return type for validation
     json_compatible_return_data = [
         convert_utc_to_local(x) for x in json_compatible_return_data
     ]
@@ -84,7 +84,7 @@ def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
     # convert to json, then correct timezone on dict-like object,
-    # then instatiate return type for validation
+    # then instantiate return type for validation
     json_compatible_return_data = [
         convert_utc_to_local(x) for x in json_compatible_return_data
     ]
@@ -99,7 +99,7 @@ def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
     # convert to json, then correct timezone on dict-like object,
-    # then instatiate return type for validation
+    # then instantiate return type for validation
     return PydanticItem(**convert_utc_to_local(jsonable_encoder(item)))
 
 
