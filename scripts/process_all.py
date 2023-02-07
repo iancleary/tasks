@@ -5,7 +5,6 @@ import sys
 environments = [
     {"NAME": "latest", "PYTHON_VERSION": "3.11.1"},
     {"NAME": "python3.11.1-slim", "PYTHON_VERSION": "3.11.1"},
-    {"NAME": "python3.10.8-slim", "PYTHON_VERSION": "3.10.8"},
 ]
 
 start_with = os.environ.get("START_WITH")
