@@ -5,7 +5,7 @@ services:
     image: main/backend
     build:
       context: ./docker-images
-      dockerfile: python3.10.8-slim.dockerfile
+      dockerfile: python3.11.1-slim.dockerfile
     env_file:
       - '_env/prod.env'
     ports:
