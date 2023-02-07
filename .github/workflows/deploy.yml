@@ -12,7 +12,7 @@ jobs:
         image:
           - name: latest
             python_version: "3.11.1"
-          - name: python3.11.1
+          - name: python3.11.1-slim
             python_version: "3.11.1"
       fail-fast: true
     runs-on: ubuntu-22.04
@@ -21,7 +21,7 @@ jobs:
       - name: Set up PDM (for create_production_requirements)
         uses: pdm-project/setup-pdm@v3
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.image.python_version }}
       - name: Deploy Image
         run: bash scripts/build-push.sh
         env:
