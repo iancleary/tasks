@@ -90,7 +90,7 @@ The image is available from [docker.io/iancleary/ivy-lee-method](https://hub.doc
 version: "3.9"
 services:
   web:
-    image: docker.io/iancleary/ivy-lee-method:python3.10.8-slim
+    image: docker.io/iancleary/ivy-lee-method:latest
     env_file:
       - '._prod.env'
     ports:
