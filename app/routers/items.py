@@ -193,7 +193,7 @@ def patch_item_pinned_yes(db: Session = Depends(get_db), *, item_id: str) -> Non
 @router.patch("/item/{item_id}/pinned/no")
 def patch_item_pinned_no(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = update(Item)
-    stmt = stmt.values({"pinned": Pinned.NO})
+    stmt = stmt.values({"pinned": Pinned.NO, "order_": Order.IGNORE})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
@@ -208,11 +208,17 @@ def increase_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
+    if item.pinned != Pinned.YES:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Item {item_id} is not Pinned. Only pinned items can have order!",
+        )
+
     stmt = update(Item)
 
     # prevent increasing past max order (unpin to remove order)
-    new_order = min(Order.MAX,  item.order_ + 1)
-    stmt = stmt.values({"order": new_order})
+    new_order = min(Order.MAX, item.order_ + 1)
+    stmt = stmt.values({"order_": new_order})
     stmt = stmt.where(Item.id == item.id)
     db.execute(stmt)
 
@@ -224,10 +230,18 @@ def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
+    if item.pinned != Pinned.YES:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Item {item_id} is not Pinned. Only pinned items can have order!",
+        )
+
     stmt = update(Item)
 
     # prevent decreasing past min order (unpin to remove order)
-    new_order = max(Order.MIN,  item.order_ - 1)
-    stmt = stmt.values({"order": new_order})
+    new_order = max(Order.MIN, item.order_ - 1)
+    stmt = stmt.values({"order_": new_order})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
+
+    # will need to get all pinned items and update their order, handling when there are the max number

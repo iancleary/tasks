@@ -6,6 +6,7 @@ from app.main import app
 from app.models.items import Status
 from app.models.items import Pinned
 from app.models.items import Active
+from app.models.items import Order
 
 client = TestClient(app)
 
@@ -168,3 +169,109 @@ def test_patch_item_pinned_no() -> None:
 
     assert response.status_code == 200
     assert response.json()["pinned"] == Pinned.NO
+    assert response.json()["order_"] == Order.IGNORE
+
+def test_patch_item_order() -> None:
+    response = client.get("/items")
+
+    item_id = response.json()[-1]["id"]
+
+    response = client.patch(f"/item/{item_id}/pinned/no")
+    assert response.status_code == 200
+
+    response = client.get(f"/item/{item_id}")
+    assert response.json()["id"] == item_id
+
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 409
+
+    response = client.patch(f"/item/{item_id}/pinned/yes")
+    assert response.status_code == 200
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.IGNORE
+
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN
+
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN + 1
+
+    response = client.patch(f"/item/{item_id}/order/decrease")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN
+
+    # test you bottom out at Order.MIN
+    response = client.patch(f"/item/{item_id}/order/decrease")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN
+
+    # Start to go up to max
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN + 1
+
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN + 2
+
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN + 3
+
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN + 4
+
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MIN + 5
+    assert response.json()["order_"] == Order.MAX
+
+     # test you top out at Order.MAX
+    response = client.patch(f"/item/{item_id}/order/increase")
+    assert response.status_code == 200
+    
+    response = client.get(f"/item/{item_id}")
+    assert response.status_code == 200
+    assert response.json()["pinned"] == Pinned.YES
+    assert response.json()["order_"] == Order.MAX
