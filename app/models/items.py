@@ -3,8 +3,8 @@ from enum import IntEnum
 from typing import Union
 
 
-# when I upgrade to python3.11 (doesn't exist in python3.10)
-# from enum import StrEnum
+# doesn't exist in python3.10-
+from enum import StrEnum
 
 from pydantic import BaseModel
 from sqlalchemy import REAL
@@ -16,9 +16,9 @@ from app.models import BASE
 from app.models.utils import utc_to_local
 
 
-# when I upgrade to python3.11 (doesn't exist in python3.10)
-# class Description(StrEnum):
-#     DEFAULT = ""
+# doesn't exist in python3.10-
+class Description(StrEnum):
+    DEFAULT = ""
 
 
 class Status(IntEnum):
@@ -40,7 +40,7 @@ class Pinned(IntEnum):
 
 
 class Order(IntEnum):
-    DEFAULT = 0
+    IGNORE = 0 # 1-6 are orders that count for the pinned items (ivy lee method's max of 6 things)
 
 
 # This will store as a value of 0.0,
@@ -68,8 +68,8 @@ class Item(BASE):
     status = Column(Integer, default=Status.OPEN)
     active = Column(Integer, default=Active.YES)
     pinned = Column(Integer, default=Pinned.NO)
-    order_ = Column(Integer, default=0)
-    description = Column(String, default="")
+    order_ = Column(Integer, default=Order.IGNORE)
+    description = Column(String, default=Description.DEFAULT)
 
     def __init__(
         self,
@@ -90,7 +90,7 @@ class Item(BASE):
         self.deleted_date = deleted_date
 
         if description is None:
-            self.description = ""
+            self.description = Description.DEFAULT
         else:
             self.description = description
 
@@ -144,23 +144,23 @@ class Item(BASE):
         else:
             self.pinned = pinned
 
-        # if order_ is None:
-        #     self.order_ = 0
-        # else:
-        #     self.order_ = order_
+        if order_ is None:
+            self.order_ = 0
+        else:
+            self.order_ = order_
 
 
 class PydanticItem(BaseModel):
     id: int
     name: Union[str, None]
     created_date: datetime.datetime = None
-    description: Union[str, None] = ""
+    description: Union[str, None] = Description.DEFAULT
     resolution_date: datetime.datetime = None
     deleted_date: datetime.datetime = None
     status: int = Status.OPEN
     active: int = Active.YES
     pinned: int = Pinned.NO
-    # order_: int = 0
+    order_: int = Order.IGNORE
 
 
 def convert_utc_to_local(item: dict):
