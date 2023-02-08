@@ -195,3 +195,32 @@ def patch_item_pinned_no(db: Session = Depends(get_db), *, item_id: str) -> None
     stmt = stmt.values({"pinned": Pinned.NO})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
+
+
+##~ Order
+
+
+@router.patch("/item/{item_id}/order/increase")
+def increase_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
+    item = db.query(Item).get(item_id)
+
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+
+    stmt = update(Item)
+    stmt = stmt.values({"order": item.order_ + 1})
+    stmt = stmt.where(Item.id == item.id)
+    db.execute(stmt)
+
+
+@router.patch("/item/{item_id}/order/decrease")
+def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
+    item = db.query(Item).get(item_id)
+
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+
+    stmt = update(Item)
+    stmt = stmt.values({"order": item.order_ + 1})
+    stmt = stmt.where(Item.id == item_id)
+    db.execute(stmt)
