@@ -42,6 +42,8 @@ class Pinned(IntEnum):
 class Order(IntEnum):
     # 1-6 are orders that count for the pinned items (ivy lee method's max of 6 things)
     IGNORE = 0
+    MIN = 1
+    MAX = 6
 
 
 # This will store as a value of 0.0,

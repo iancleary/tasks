@@ -16,6 +16,7 @@ from app.models.items import PydanticItem
 from app.models.items import Status
 from app.models.items import Active
 from app.models.items import Pinned
+from app.models.items import Order
 from app.models.items import UNSET_DATE
 from app.models.items import convert_utc_to_local
 
@@ -208,7 +209,10 @@ def increase_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
     stmt = update(Item)
-    stmt = stmt.values({"order": item.order_ + 1})
+
+    # prevent increasing past max order (unpin to remove order)
+    new_order = min(Order.MAX,  item.order_ + 1)
+    stmt = stmt.values({"order": new_order})
     stmt = stmt.where(Item.id == item.id)
     db.execute(stmt)
 
@@ -221,6 +225,9 @@ def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
     stmt = update(Item)
-    stmt = stmt.values({"order": item.order_ + 1})
+
+    # prevent decreasing past min order (unpin to remove order)
+    new_order = max(Order.MIN,  item.order_ - 1)
+    stmt = stmt.values({"order": new_order})
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
