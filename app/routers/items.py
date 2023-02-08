@@ -244,4 +244,5 @@ def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
-    # will need to get all pinned items and update their order, handling when there are the max number
+    # will need to get all pinned items and update their order,
+    # handling when there are the max number
