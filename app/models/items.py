@@ -148,7 +148,7 @@ class Item(BASE):
             self.pinned = pinned
 
         if order_ is None:
-            self.order_ = 0
+            self.order_ = Order.IGNORE
         else:
             self.order_ = order_
 

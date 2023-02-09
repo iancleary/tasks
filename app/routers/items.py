@@ -208,19 +208,44 @@ def increase_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    if item.pinned != Pinned.YES:
+    # convert str to int
+    item_id = int(item_id)
+
+    current_order = item.order_
+    # prevent increasing past max order (unpin to remove order)
+    if current_order == Order.MAX:
         raise HTTPException(
             status_code=409,
-            detail=f"Item {item_id} is not Pinned. Only pinned items can have order!",
+            detail=f"Item {item_id} order is already at max of {Order.MAX}",
         )
 
-    stmt = update(Item)
+    if item.pinned == Pinned.NO:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Item {item_id} is not pinned, pin this item",
+        )
 
-    # prevent increasing past max order (unpin to remove order)
-    new_order = min(Order.MAX, item.order_ + 1)
-    stmt = stmt.values({"order_": new_order})
-    stmt = stmt.where(Item.id == item.id)
-    db.execute(stmt)
+    new_order = current_order + 1
+
+    update_list = []
+    update_list.append({"id": item_id, "order_": new_order})
+
+    # get item to swap
+    items = db.query(Item).filter(
+        and_(
+            Item.status == Status.OPEN,
+            Item.active == Active.YES,
+            Item.pinned == Pinned.YES,
+            Item.order_ == item.order_ + 1,
+        )
+    )
+    json_items = [jsonable_encoder(x) for x in items]
+
+    if len(json_items) == 1:
+        item_to_swap_with = PydanticItem(**jsonable_encoder(items[0]))
+        update_list.append({"id": item_to_swap_with.id, "order_": current_order})
+
+    db.bulk_update_mappings(Item, update_list)
 
 
 @router.patch("/item/{item_id}/order/decrease")
@@ -230,19 +255,41 @@ def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    if item.pinned != Pinned.YES:
+    # convert str to int
+    item_id = int(item_id)
+
+    current_order = item.order_
+    # prevent decreasing past min order (unpin to remove order)
+    if current_order == Order.MIN:
         raise HTTPException(
             status_code=409,
-            detail=f"Item {item_id} is not Pinned. Only pinned items can have order!",
+            detail=f"Item {item_id} order is already at min of {Order.MIN}.",
         )
 
-    stmt = update(Item)
+    if item.pinned == Pinned.NO:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Item {item_id} is not pinned, pin this item",
+        )
 
-    # prevent decreasing past min order (unpin to remove order)
-    new_order = max(Order.MIN, item.order_ - 1)
-    stmt = stmt.values({"order_": new_order})
-    stmt = stmt.where(Item.id == item_id)
-    db.execute(stmt)
+    new_order = current_order - 1
 
-    # will need to get all pinned items and update their order,
-    # handling when there are the max number
+    update_list = []
+    update_list.append({"id": item_id, "order_": new_order})
+
+    # get item to swap
+    items = db.query(Item).filter(
+        and_(
+            Item.status == Status.OPEN,
+            Item.active == Active.YES,
+            Item.pinned == Pinned.YES,
+            Item.order_ == item.order_ - 1,
+        )
+    )
+    json_items = [jsonable_encoder(x) for x in items]
+
+    if len(json_items) == 1:
+        item_to_swap_with = PydanticItem(**jsonable_encoder(items[0]))
+        update_list.append({"id": item_to_swap_with.id, "order_": current_order})
+
+    db.bulk_update_mappings(Item, update_list)
