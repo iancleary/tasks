@@ -360,7 +360,7 @@ def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     db.execute(stmt)
 
 
-@router.get("/items/priority/")
+@router.get("/items/priority")
 def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
     priority = db.query(Priority).first()
