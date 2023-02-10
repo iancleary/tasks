@@ -49,6 +49,43 @@ def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
+@router.get("/items/priority")
+def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+        return []
+
+    priority_object = PydanticPriority(**jsonable_encoder(priority))
+    priority_list = get_list_from_str(priority_object.list)
+
+    if len(priority_list) == 0:
+        # not in priority list, nothing to get
+        return []
+
+    items = db.query(Item).filter(Item.id.in_(priority_list))
+
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+
+    # make a dictionary so I can lookup by id when sorting
+    # convert to json, then correct timezone on dict-like object,
+    # then instantiate return type for validation
+    pydantic_item_by_id = {
+        s["id"]: PydanticItem(**convert_utc_to_local(s))
+        for s in json_compatible_return_data
+    }
+
+    # sort list to match priority list
+    sorted_pydantic_items = [pydantic_item_by_id[y] for y in priority_list]
+
+    # convert to json, then correct timezone on dict-like object,
+    # then instantiate return type for validation
+    return sorted_pydantic_items
+
+
 @router.get("/items/completed")
 def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     items = db.query(Item).filter(
@@ -227,8 +264,16 @@ def patch_item_priority_yes(db: Session = Depends(get_db), *, item_id: str) -> N
 
     priority_list = get_list_from_str(priority.list)
 
+    item_id_int = int(item_id)
+
+    if item_id_int in priority_list:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Item {item.id} is already in the priority list.",
+        )
+
     # add item to front of list
-    priority_list = [int(item_id)] + priority_list
+    priority_list = [item_id_int] + priority_list
 
     priority_list_str = make_str_from_list(priority_list)
 
@@ -358,38 +403,3 @@ def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     stmt = stmt.values({"list": priority_list_str})
     stmt = stmt.where(Priority.id == priority.id)
     db.execute(stmt)
-
-
-@router.get("/items/priority")
-def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
-
-    priority = db.query(Priority).first()
-
-    if priority is None:
-        priority = Priority(list="")
-        db.add(priority)
-        return []
-
-    priority_object = PydanticPriority(**jsonable_encoder(priority))
-    priority_list = get_list_from_str(priority_object.list)
-
-    if len(priority_list) == 0:
-        # not in priority list, nothing to get
-        return []
-
-    items = db.query(Item).filter(Item.id.in_(priority_list))
-
-    json_compatible_return_data = [jsonable_encoder(x) for x in items]
-
-    # make a dictionary so I can lookup by id when sorting
-    json_dict = {x["id"]: x for x in json_compatible_return_data}
-
-    # sort list to match priority list
-    json_compatible_return_data = [json_dict[y] for y in priority_list]
-
-    # convert to json, then correct timezone on dict-like object,
-    # then instantiate return type for validation
-    json_compatible_return_data = [
-        convert_utc_to_local(x) for x in json_compatible_return_data
-    ]
-    return [PydanticItem(**x) for x in json_compatible_return_data]
