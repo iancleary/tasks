@@ -1,7 +1,7 @@
 """modify items table
 
 Revision ID: 96c0c25be6e5
-Revises: 
+Revises:
 Create Date: 2023-02-04 10:51:23.781741
 
 """
@@ -32,6 +32,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     if column_exists(table_name="items", column_name="description"):
-        op.remove_column("items", sa.Column("description", sa.String()))
+        op.drop_column("items", sa.Column("description", sa.String()))
     if column_exists(table_name="items", column_name="order_"):
-        op.remove_column("items", sa.Column("order_", sa.Integer()))
+        op.drop_column("items", sa.Column("order_", sa.Integer()))

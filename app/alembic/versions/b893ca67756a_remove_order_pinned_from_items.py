@@ -25,9 +25,9 @@ depends_on = None
 
 def upgrade() -> None:
     if column_exists(table_name="items", column_name="order_)"):
-        op.remove_column("items", sa.Column("order_", sa.Integer()))
+        op.drop_column("items", sa.Column("order_", sa.Integer()))
     if column_exists(table_name="items", column_name="pinned"):
-        op.remove_column("items", sa.Column("pinned", sa.Integer()))
+        op.drop_column("items", sa.Column("pinned", sa.Integer()))
 
 
 def downgrade() -> None:
