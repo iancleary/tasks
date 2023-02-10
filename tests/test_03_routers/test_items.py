@@ -4,9 +4,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.models.items import Status
-from app.models.items import Pinned
 from app.models.items import Active
-from app.models.items import Order
 
 client = TestClient(app)
 
@@ -144,15 +142,8 @@ def test_patch_item_pinned_yes() -> None:
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/pinned/yes")
+    response = client.patch(f"/item/{item_id}/priority/yes")
     assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-
-    assert response.json()["id"] == item_id
-
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
 
 
 def test_patch_item_pinned_no() -> None:
@@ -160,127 +151,56 @@ def test_patch_item_pinned_no() -> None:
 
     item_id = response.json()[-1]["id"]
 
-    response = client.patch(f"/item/{item_id}/pinned/no")
+    response = client.patch(f"/item/{item_id}/priority/no")
     assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-
-    assert response.json()["id"] == item_id
-
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.NO
-    assert response.json()["order_"] == Order.IGNORE
 
 
 def test_patch_item_order() -> None:
     response = client.get("/items")
 
-    item_id = response.json()[-1]["id"]
+    # ensure no items are priority
+    for item in response.json():
+        item_id = item["id"]
+        response = client.patch(f"/item/{item_id}/priority/no")
+        assert response.status_code == 200
+
+    response = client.post("/item", json={"name": "Priority Item 1"})
+    response = client.get("/items")
+    priority_item_1_id = response.json()[-1]["id"]
 
     # 1
-    response = client.patch(f"/item/{item_id}/pinned/no")
+    response = client.patch(f"/item/{priority_item_1_id}/priority/yes")
     assert response.status_code == 200
 
-    # 2
-    response = client.get(f"/item/{item_id}")
-    assert response.json()["id"] == item_id
-    assert response.json()["order_"] == Order.IGNORE
+    response = client.get("/items/priority")
+    priority_items = response.json()
+    assert isinstance(priority_items, List)
+    assert len(priority_items) == 1
 
-    # 3 (cannot increase IGNORED item)
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 409
+    response = client.post("/item", json={"name": "Priority Item 2"})
+    response = client.get("/items")
+    priority_item_2_id = response.json()[-1]["id"]
 
-    # 4
-    response = client.patch(f"/item/{item_id}/pinned/yes")
-    assert response.status_code == 200
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.IGNORE
-
-    # 5
-    response = client.patch(f"/item/{item_id}/order/increase")
+    response = client.patch(f"/item/{priority_item_2_id}/priority/yes")
     assert response.status_code == 200
 
-    # 6
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN
+    response = client.get("/items/priority")
+    priority_items = response.json()
+    assert isinstance(priority_items, List)
+    assert len(priority_items) == 2
 
-    # 7
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 200
+    priority_list = [x["id"] for x in priority_items]
 
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN + 1
+    assert priority_list == [priority_item_2_id, priority_item_1_id]
 
-    response = client.patch(f"/item/{item_id}/order/decrease")
+    response = client.patch(f"/item/{priority_item_2_id}/priority/decrease")
     assert response.status_code == 200
 
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN
+    response = client.get("/items/priority")
+    priority_items = response.json()
+    assert isinstance(priority_items, List)
+    assert len(priority_items) == 2
 
-    # test you bottom out at Order.MIN
-    response = client.patch(f"/item/{item_id}/order/decrease")
-    assert response.status_code == 409
+    priority_list = [x["id"] for x in priority_items]
 
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN
-
-    # Start to go up to max
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN + 1
-
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN + 2
-
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN + 3
-
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN + 4
-
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 200
-
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MIN + 5
-    assert response.json()["order_"] == Order.MAX
-
-    # test you top out at Order.MAX
-    response = client.patch(f"/item/{item_id}/order/increase")
-    assert response.status_code == 409
-
-    response = client.get(f"/item/{item_id}")
-    assert response.status_code == 200
-    assert response.json()["pinned"] == Pinned.YES
-    assert response.json()["order_"] == Order.MAX
+    assert priority_list == [priority_item_1_id, priority_item_2_id]

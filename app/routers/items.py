@@ -15,10 +15,12 @@ from app.models.items import Item
 from app.models.items import PydanticItem
 from app.models.items import Status
 from app.models.items import Active
-from app.models.items import Pinned
-from app.models.items import Order
 from app.models.items import UNSET_DATE
 from app.models.items import convert_utc_to_local
+from app.models.priority import Priority
+from app.models.priority import PydanticPriority
+from app.models.priority import get_list_from_str
+from app.models.priority import make_str_from_list
 
 router = APIRouter()
 
@@ -182,108 +184,185 @@ def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) 
 ##~ Pinned
 
 
-@router.patch("/item/{item_id}/pinned/yes")
+@router.patch("/item/{item_id}/priority/yes")
 def patch_item_pinned_yes(db: Session = Depends(get_db), *, item_id: str) -> None:
-    stmt = update(Item)
-    stmt = stmt.values({"pinned": Pinned.YES})
-    stmt = stmt.where(Item.id == item_id)
+    item = db.query(Item).get(item_id)
+
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list=item_id)
+        db.add(priority)
+        return
+
+    priority_list = get_list_from_str(priority.list)
+
+    # add item to front of list
+    priority_list = [int(item_id)] + priority_list
+
+    priority_list_str = make_str_from_list(priority_list)
+
+    priority = db.query(Priority).first()
+
+    stmt = update(Priority)
+    stmt = stmt.values({"list": priority_list_str})
+    stmt = stmt.where(Priority.id == priority.id)
     db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/pinned/no")
+@router.patch("/item/{item_id}/priority/no")
 def patch_item_pinned_no(db: Session = Depends(get_db), *, item_id: str) -> None:
-    stmt = update(Item)
-    stmt = stmt.values({"pinned": Pinned.NO, "order_": Order.IGNORE})
-    stmt = stmt.where(Item.id == item_id)
+    item = db.query(Item).get(item_id)
+
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+
+        # not in priority list, nothing to do
+        return
+
+    priority_list = get_list_from_str(priority.list)
+
+    if len(priority_list) == 0:
+        # not in priority list, nothing to do
+        return
+
+    # Remove from list
+    priority_list.remove(int(item_id))
+    priority_list_str = make_str_from_list(priority_list)
+
+    priority = db.query(Priority).first()
+
+    stmt = update(Priority)
+    stmt = stmt.values({"list": priority_list_str})
+    stmt = stmt.where(Priority.id == priority.id)
     db.execute(stmt)
 
 
 ##~ Order
 
 
-@router.patch("/item/{item_id}/order/increase")
+@router.patch("/item/{item_id}/priority/increase")
 def increase_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    current_order = item.order_
-    # prevent increasing past max order (unpin to remove order)
-    if current_order == Order.MAX:
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+        priority = db.query(Priority).first()
+
+    priority_list = get_list_from_str(priority.list)
+
+    current_position = priority_list.index(item.id)
+
+    # closer to front of list is higher priority
+    desired_position = current_position - 1
+
+    # if item exists at higher priority, swap their positions
+    if 0 <= desired_position < len(priority_list):
+        a = current_position
+        b = desired_position
+        priority_list[b], priority_list[a] = priority_list[a], priority_list[b]
+    else:
         raise HTTPException(
             status_code=409,
-            detail=f"Item {item.id} order is already at max of {Order.MAX}",
+            detail=f"Item {item.id} is the highest priorty, won't increase.",
         )
 
-    if item.pinned == Pinned.NO:
-        raise HTTPException(
-            status_code=409,
-            detail=f"Item {item.id} is not pinned, pin this item",
-        )
+    priority_list_str = make_str_from_list(priority_list)
 
-    new_order = current_order + 1
+    priority = db.query(Priority).first()
 
-    update_list = []
-    update_list.append({"id": item.id, "order_": new_order})
-
-    # get item to swap
-    items = db.query(Item).filter(
-        and_(
-            Item.status == Status.OPEN,
-            Item.active == Active.YES,
-            Item.pinned == Pinned.YES,
-            Item.order_ == item.order_ + 1,
-        )
-    )
-    json_items = [jsonable_encoder(x) for x in items]
-
-    if len(json_items) == 1:
-        item_to_swap_with = PydanticItem(**jsonable_encoder(items[0]))
-        update_list.append({"id": item_to_swap_with.id, "order_": current_order})
-
-    db.bulk_update_mappings(Item, update_list)
+    stmt = update(Priority)
+    stmt = stmt.values({"list": priority_list_str})
+    stmt = stmt.where(Priority.id == priority.id)
+    db.execute(stmt)
 
 
-@router.patch("/item/{item_id}/order/decrease")
+@router.patch("/item/{item_id}/priority/decrease")
 def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    current_order = item.order_
-    # prevent decreasing past min order (unpin to remove order)
-    if current_order == Order.MIN:
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+
+    priority_list = get_list_from_str(priority.list)
+
+    current_position = priority_list.index(item.id)
+
+    # closer to back of list is lower priority
+    desired_position = current_position + 1
+
+    # if item exists at lower priority, swap their positions
+    if 0 <= desired_position < len(priority_list):
+        a = current_position
+        b = desired_position
+        priority_list[b], priority_list[a] = priority_list[a], priority_list[b]
+    else:
         raise HTTPException(
             status_code=409,
-            detail=f"Item {item.id} order is already at min of {Order.MIN}.",
+            detail=f"Item {item.id} is the lowest priorty, won't decrease.",
         )
 
-    if item.pinned == Pinned.NO:
-        raise HTTPException(
-            status_code=409,
-            detail=f"Item {item.id} is not pinned, pin this item",
-        )
+    priority_list_str = make_str_from_list(priority_list)
 
-    new_order = current_order - 1
+    priority = db.query(Priority).first()
 
-    update_list = []
-    update_list.append({"id": item.id, "order_": new_order})
+    stmt = update(Priority)
+    stmt = stmt.values({"list": priority_list_str})
+    stmt = stmt.where(Priority.id == priority.id)
+    db.execute(stmt)
 
-    # get item to swap
-    items = db.query(Item).filter(
-        and_(
-            Item.status == Status.OPEN,
-            Item.active == Active.YES,
-            Item.pinned == Pinned.YES,
-            Item.order_ == item.order_ - 1,
-        )
-    )
-    json_items = [jsonable_encoder(x) for x in items]
 
-    if len(json_items) == 1:
-        item_to_swap_with = PydanticItem(**jsonable_encoder(items[0]))
-        update_list.append({"id": item_to_swap_with.id, "order_": current_order})
+@router.get("/items/priority/")
+def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
-    db.bulk_update_mappings(Item, update_list)
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+        return []
+
+    priority_object = PydanticPriority(**jsonable_encoder(priority))
+    priority_list = get_list_from_str(priority_object.list)
+
+    if len(priority_list) == 0:
+        # not in priority list, nothing to get
+        return []
+
+    items = db.query(Item).filter(Item.id.in_(priority_list))
+
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+
+    # make a dictionary so I can lookup by id when sorting
+    json_dict = {x["id"]: x for x in json_compatible_return_data}
+
+    # sort list to match priority list
+    json_compatible_return_data = [json_dict[y] for y in priority_list]
+
+    # convert to json, then correct timezone on dict-like object,
+    # then instantiate return type for validation
+    json_compatible_return_data = [
+        convert_utc_to_local(x) for x in json_compatible_return_data
+    ]
+    return [PydanticItem(**x) for x in json_compatible_return_data]
