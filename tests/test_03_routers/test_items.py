@@ -154,6 +154,14 @@ def test_patch_item_pinned_no() -> None:
     response = client.patch(f"/item/{item_id}/priority/no")
     assert response.status_code == 200
 
+    response = client.get("/items/priority")
+    priority_items = response.json()
+    assert isinstance(priority_items, List)
+
+    priority_list = [x["id"] for x in priority_items]
+
+    assert item_id not in priority_list
+
 
 def test_patch_item_order() -> None:
     response = client.get("/items")

@@ -180,6 +180,33 @@ def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) 
     stmt = stmt.where(Item.id == item_id)
     db.execute(stmt)
 
+    # Remove item from priority list
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+
+        # not in priority list, nothing to do
+        return
+
+    priority_list = get_list_from_str(priority.list)
+
+    if len(priority_list) == 0:
+        # not in priority list, nothing to do
+        return
+
+    # Remove from list
+    priority_list.remove(int(item_id))
+    priority_list_str = make_str_from_list(priority_list)
+
+    priority = db.query(Priority).first()
+
+    stmt = update(Priority)
+    stmt = stmt.values({"list": priority_list_str})
+    stmt = stmt.where(Priority.id == priority.id)
+    db.execute(stmt)
+
 
 ##~ Pinned
 
