@@ -22,12 +22,16 @@ down_revision = "96c0c25be6e5"
 branch_labels = None
 depends_on = None
 
+## op.drop_column note
+### do not used named parameters
+### It throws an operational error
+
 
 def upgrade() -> None:
-    if column_exists(table_name="items", column_name="order_)"):
-        op.drop_column("items", sa.Column("order_", sa.Integer()))
+    if column_exists(table_name="items", column_name="order_"):
+        op.drop_column("items", "order_")
     if column_exists(table_name="items", column_name="pinned"):
-        op.drop_column("items", sa.Column("pinned", sa.Integer()))
+        op.drop_column("items", "pinned")
 
 
 def downgrade() -> None:

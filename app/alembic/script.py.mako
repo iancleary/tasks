@@ -24,6 +24,10 @@ branch_labels = ${repr(branch_labels)}
 depends_on = ${repr(depends_on)}
 
 
+## op.drop_column note
+### do not used named parameters
+### It throws an operational error
+
 def upgrade() -> None:
     ${upgrades if upgrades else "pass"}
 

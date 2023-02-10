@@ -22,6 +22,10 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
+## op.drop_column note
+### do not used named parameters
+### It throws an operational error
+
 
 def upgrade() -> None:
     if not column_exists(table_name="items", column_name="description"):
@@ -32,6 +36,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     if column_exists(table_name="items", column_name="description"):
-        op.drop_column("items", sa.Column("description", sa.String()))
+        op.drop_column("items", "description")
     if column_exists(table_name="items", column_name="order_"):
-        op.drop_column("items", sa.Column("order_", sa.Integer()))
+        op.drop_column("items", "order_")
