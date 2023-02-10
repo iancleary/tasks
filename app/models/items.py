@@ -34,18 +34,6 @@ class Active(IntEnum):
     YES = 1
 
 
-class Pinned(IntEnum):
-    NO = 0
-    YES = 1
-
-
-class Order(IntEnum):
-    # 1-6 are orders that count for the pinned items (ivy lee method's max of 6 things)
-    IGNORE = 0
-    MIN = 1
-    MAX = 6
-
-
 # This will store as a value of 0.0,
 # but code will handle it and massage it to None
 #
@@ -70,8 +58,6 @@ class Item(BASE):
     deleted_date = Column(REAL, default=UNSET_DATE)
     status = Column(Integer, default=Status.OPEN)
     active = Column(Integer, default=Active.YES)
-    pinned = Column(Integer, default=Pinned.NO)
-    order_ = Column(Integer, default=Order.IGNORE)
     description = Column(String, default=Description.DEFAULT)
 
     def __init__(
@@ -82,8 +68,6 @@ class Item(BASE):
         deleted_date: float = None,
         description: str = "",
         active: int = None,
-        pinned: int = None,
-        order_: int = None,
     ) -> None:
 
         self.name = name
@@ -142,16 +126,6 @@ class Item(BASE):
         else:
             self.active = active
 
-        if pinned is None:
-            self.pinned = Pinned.NO
-        else:
-            self.pinned = pinned
-
-        if order_ is None:
-            self.order_ = Order.IGNORE
-        else:
-            self.order_ = order_
-
 
 class PydanticItem(BaseModel):
     id: int
@@ -162,8 +136,6 @@ class PydanticItem(BaseModel):
     deleted_date: datetime.datetime = None
     status: int = Status.OPEN
     active: int = Active.YES
-    pinned: int = Pinned.NO
-    order_: int = Order.IGNORE
 
 
 def convert_utc_to_local(item: dict):

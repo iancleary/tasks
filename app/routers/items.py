@@ -212,7 +212,7 @@ def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) 
 
 
 @router.patch("/item/{item_id}/priority/yes")
-def patch_item_pinned_yes(db: Session = Depends(get_db), *, item_id: str) -> None:
+def patch_item_priority_yes(db: Session = Depends(get_db), *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:
@@ -241,7 +241,7 @@ def patch_item_pinned_yes(db: Session = Depends(get_db), *, item_id: str) -> Non
 
 
 @router.patch("/item/{item_id}/priority/no")
-def patch_item_pinned_no(db: Session = Depends(get_db), *, item_id: str) -> None:
+def patch_item_priority_no(db: Session = Depends(get_db), *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:

@@ -137,7 +137,7 @@ def test_get_open_items() -> None:
         assert item["status"] != Status.COMPLETED
 
 
-def test_patch_item_pinned_yes() -> None:
+def test_patch_item_priority_yes() -> None:
     response = client.get("/items")
 
     item_id = response.json()[-1]["id"]
@@ -146,7 +146,7 @@ def test_patch_item_pinned_yes() -> None:
     assert response.status_code == 200
 
 
-def test_patch_item_pinned_no() -> None:
+def test_patch_item_priority_no() -> None:
     response = client.get("/items")
 
     item_id = response.json()[-1]["id"]
