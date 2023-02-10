@@ -10,3 +10,5 @@ def test_create_tables() -> None:
     print(f"dir(metadata): {dir(metadata)}")
     print(f"metadata.tables.keys(): {metadata.tables.keys()}")
     assert "projects" in metadata.tables.keys()
+    assert "items" in metadata.tables.keys()
+    # assert "priority" in metadata.tables.keys()

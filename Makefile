@@ -59,7 +59,7 @@ format: ## format the code
 
 test:
 test:  ## Test app with pytest outside of docker (with fresh data/test.db from tests/conftest.py)
-	pdm run -v pytest tests
+	pdm run -v pytest -vv  tests
 
 build: requirements copy
 build: ## Make the latest build of the image
@@ -98,7 +98,7 @@ prod-detached: ## Run the docker image (via docker-compose) detached
 
 prod-down:
 prod-down: ## Stop the docker image (via docker-compose)
-	docker-compose $(PROD_DOCKER_COMPOSE) down || docker compose $(PROD_DOCKER_COMPOSE) down || podman-compose $(PROD_DOCKER_COMPOSE) down 
+	docker-compose $(PROD_DOCKER_COMPOSE) down || docker compose $(PROD_DOCKER_COMPOSE) down || podman-compose $(PROD_DOCKER_COMPOSE) down
 
 prod-stop:
 prod-stop: prod-down

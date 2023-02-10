@@ -17,6 +17,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Set up python-version
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Setup pdm
         run: |
           python3 -m pip install pdm

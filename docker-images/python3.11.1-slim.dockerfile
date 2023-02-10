@@ -19,8 +19,6 @@ RUN chmod +x /start-reload.sh
 
 # Needed /code/app for from app.database to be import path in dockerfile and in venv
 COPY ./app /code/app
-# Copy alembic configuration file
-COPY alembic.ini /code/app
 
 WORKDIR /code/
 

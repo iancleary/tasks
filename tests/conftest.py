@@ -15,6 +15,8 @@ def pytest_configure(config: Config) -> None:
     if TEST_DATABASE_FILE.exists():
         TEST_DATABASE_FILE.unlink()
 
+    TEST_DATABASE_FILE.parent.mkdir(parents=True, exist_ok=True)
+
 
 def pytest_unconfigure(config: Config) -> None:
     # Delete Test Database File
