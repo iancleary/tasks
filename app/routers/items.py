@@ -15,7 +15,6 @@ from app.models.items import Item
 from app.models.items import PydanticItem
 from app.models.items import Status
 from app.models.items import Active
-from app.models.items import PriorityListLength
 from app.models.items import UNSET_DATE
 from app.models.items import convert_utc_to_local
 from app.models.priority import Priority
@@ -50,10 +49,8 @@ def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     return [PydanticItem(**x) for x in json_compatible_return_data]
 
 
-@router.get("/items/priority")
-def get_priority_items(
-    db: Session = Depends(get_db), limit: int = PriorityListLength.MAX
-) -> List[PydanticItem]:
+@router.get("/item/focus")
+def get_focus_item(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
     priority = db.query(Priority).first()
 
@@ -65,9 +62,45 @@ def get_priority_items(
     priority_object = PydanticPriority(**jsonable_encoder(priority))
     priority_list = get_list_from_str(priority_object.list)
 
-    # handle query parameter to limit number of items to return
-    length_limit = max(int(limit), len(priority_list))
-    priority_list = priority_list[0 : length_limit - 1]
+    if len(priority_list) == 0:
+        # not in limited priority list, nothing to get
+        return []
+
+    # get first item
+    priority_list = [priority_list[0]]
+
+    items = db.query(Item).filter(Item.id.in_(priority_list))
+
+    json_compatible_return_data = [jsonable_encoder(x) for x in items]
+
+    # make a dictionary so I can lookup by id when sorting
+    # convert to json, then correct timezone on dict-like object,
+    # then instantiate return type for validation
+    pydantic_item_by_id = {
+        s["id"]: PydanticItem(**convert_utc_to_local(s))
+        for s in json_compatible_return_data
+    }
+
+    # sort list to match priority list
+    sorted_pydantic_items = [pydantic_item_by_id[y] for y in priority_list]
+
+    # convert to json, then correct timezone on dict-like object,
+    # then instantiate return type for validation
+    return sorted_pydantic_items
+
+
+@router.get("/items/priority")
+def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+        return []
+
+    priority_object = PydanticPriority(**jsonable_encoder(priority))
+    priority_list = get_list_from_str(priority_object.list)
 
     if len(priority_list) == 0:
         # not in limited priority list, nothing to get
