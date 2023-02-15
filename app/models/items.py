@@ -34,6 +34,10 @@ class Active(IntEnum):
     YES = 1
 
 
+class PriorityListLength(IntEnum):
+    MAX = 6
+
+
 # This will store as a value of 0.0,
 # but code will handle it and massage it to None
 #
