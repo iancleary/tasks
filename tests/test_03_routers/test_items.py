@@ -199,18 +199,6 @@ def test_patch_item_order() -> None:
 
     priority_list = [x["id"] for x in priority_items]
 
-    assert priority_list == [priority_item_2_id, priority_item_1_id]
-
-    response = client.patch(f"/item/{priority_item_2_id}/priority/decrease")
-    assert response.status_code == 200
-
-    response = client.get("/items/priority")
-    priority_items = response.json()
-    assert isinstance(priority_items, List)
-    assert len(priority_items) == 2
-
-    priority_list = [x["id"] for x in priority_items]
-
     assert priority_list == [priority_item_1_id, priority_item_2_id]
 
     response = client.patch(f"/item/{priority_item_2_id}/priority/decrease")
@@ -237,6 +225,18 @@ def test_patch_item_order() -> None:
 
     assert priority_list == [priority_item_1_id, priority_item_2_id]
 
+    response = client.patch(f"/item/{priority_item_1_id}/priority/decrease")
+    assert response.status_code == 200
+
+    response = client.get("/items/priority")
+    priority_items = response.json()
+    assert isinstance(priority_items, List)
+    assert len(priority_items) == 2
+
+    priority_list = [x["id"] for x in priority_items]
+
+    assert priority_list == [priority_item_2_id, priority_item_1_id]
+
     response = client.get("/item/focus")
     priority_items = response.json()
     assert isinstance(priority_items, List)
@@ -244,4 +244,4 @@ def test_patch_item_order() -> None:
 
     priority_list = [x["id"] for x in priority_items]
 
-    assert priority_list == [priority_item_1_id]
+    assert priority_list == [priority_item_2_id]
