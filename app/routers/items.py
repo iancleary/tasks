@@ -128,9 +128,11 @@ def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 @router.get("/items/completed")
 def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
-    items = db.query(Item).filter(
-        and_(Item.status == Status.COMPLETED, Item.active == Active.YES)
-    )
+    items = (
+        db.query(Item)
+        .filter(and_(Item.status == Status.COMPLETED, Item.active == Active.YES))
+        .order_by(Item.resolution_date.desc())
+    )  # most recent completions first
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
     # convert to json, then correct timezone on dict-like object,
