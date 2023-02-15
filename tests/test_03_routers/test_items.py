@@ -236,3 +236,12 @@ def test_patch_item_order() -> None:
     priority_list = [x["id"] for x in priority_items]
 
     assert priority_list == [priority_item_1_id, priority_item_2_id]
+
+    response = client.get("/items/priority?limit=1")
+    priority_items = response.json()
+    assert isinstance(priority_items, List)
+    assert len(priority_items) == 1
+
+    priority_list = [x["id"] for x in priority_items]
+
+    assert priority_list == [priority_item_1_id]

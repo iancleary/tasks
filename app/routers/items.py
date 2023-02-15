@@ -15,6 +15,7 @@ from app.models.items import Item
 from app.models.items import PydanticItem
 from app.models.items import Status
 from app.models.items import Active
+from app.models.items import PriorityListLength
 from app.models.items import UNSET_DATE
 from app.models.items import convert_utc_to_local
 from app.models.priority import Priority
@@ -50,7 +51,9 @@ def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 
 @router.get("/items/priority")
-def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+def get_priority_items(
+    db: Session = Depends(get_db), limit: int = PriorityListLength.MAX
+) -> List[PydanticItem]:
 
     priority = db.query(Priority).first()
 
@@ -62,8 +65,12 @@ def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
     priority_object = PydanticPriority(**jsonable_encoder(priority))
     priority_list = get_list_from_str(priority_object.list)
 
+    # handle query parameter to limit number of items to return
+    length_limit = max(int(limit), len(priority_list))
+    priority_list = priority_list[0 : length_limit - 1]
+
     if len(priority_list) == 0:
-        # not in priority list, nothing to get
+        # not in limited priority list, nothing to get
         return []
 
     items = db.query(Item).filter(Item.id.in_(priority_list))
