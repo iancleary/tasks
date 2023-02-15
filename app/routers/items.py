@@ -339,8 +339,8 @@ def patch_item_priority_yes(db: Session = Depends(get_db), *, item_id: str) -> N
             detail=f"Item {item.id} is already in the priority list.",
         )
 
-    # add item to front of list
-    priority_list = [item_id_int] + priority_list
+    # add item to back of list
+    priority_list = priority_list + [item_id_int]
 
     priority_list_str = make_str_from_list(priority_list)
 
