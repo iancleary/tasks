@@ -237,7 +237,7 @@ def test_patch_item_order() -> None:
 
     assert priority_list == [priority_item_1_id, priority_item_2_id]
 
-    response = client.get("/items/priority?limit=1")
+    response = client.get("/item/focus")
     priority_items = response.json()
     assert isinstance(priority_items, List)
     assert len(priority_items) == 1
