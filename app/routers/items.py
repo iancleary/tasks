@@ -218,6 +218,33 @@ def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
     )
     db.execute(stmt)
 
+    # Remove item from priority list
+    priority = db.query(Priority).first()
+
+    if priority is None:
+        priority = Priority(list="")
+        db.add(priority)
+
+        # not in priority list, nothing to do
+        return
+
+    priority_list = get_list_from_str(priority.list)
+
+    if len(priority_list) == 0:
+        # not in priority list, nothing to do
+        return
+
+    # Remove from list
+    priority_list.remove(int(item_id))
+    priority_list_str = make_str_from_list(priority_list)
+
+    priority = db.query(Priority).first()
+
+    stmt = update(Priority)
+    stmt = stmt.values({"list": priority_list_str})
+    stmt = stmt.where(Priority.id == priority.id)
+    db.execute(stmt)
+
 
 @router.patch("/item/{item_id}/activate")
 def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
