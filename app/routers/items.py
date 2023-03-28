@@ -51,7 +51,6 @@ def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 @router.get("/item/focus")
 def get_focus_item(db: Session = Depends(get_db)) -> List[PydanticItem]:
-
     priority = db.query(Priority).first()
 
     if priority is None:
@@ -91,7 +90,6 @@ def get_focus_item(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 @router.get("/items/priority")
 def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
-
     priority = db.query(Priority).first()
 
     if priority is None:
