@@ -8,6 +8,7 @@ from app.models import BASE
 
 MAX_LENGTH = 6
 
+
 # mypy: ignore-errors
 class Priority(BASE):
     __tablename__ = "priority"
