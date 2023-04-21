@@ -3,8 +3,8 @@ FROM python:3.11.3-slim
 # RUN adduser --system --no-create-home nonroot
 
 # MIT License Credit:
-# https://github.com/iancleary/ivy-lee-method-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/docker-images/python3.9-slim.dockerfile#L1-L25
-# https://github.com/iancleary/ivy-lee-method-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/LICENSE#L1-L21
+# https://github.com/iancleary/tasks-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/docker-images/python3.9-slim.dockerfile#L1-L25
+# https://github.com/iancleary/tasks-docker/blob/d4014223e3d367c9fdf5a9cdd634280e06a84a97/LICENSE#L1-L21
 
 # Install all OS dependencies for fully functional requirements.txt install
 RUN apt-get update --yes && \
