@@ -20,6 +20,13 @@ RUN apt-get update --yes && \
 COPY docker-images/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
+# Remove OS dependencies, now that build of psutil is complete
+RUN apt-get remove --yes && \
+    python3-dev \
+    gcc && \
+    apt-get autoremove --yes && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 COPY docker-images/start.sh /start.sh
 RUN chmod +x /start.sh
 
