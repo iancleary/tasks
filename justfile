@@ -58,14 +58,14 @@ stop: down
 
 # Run the docker image (via docker-compose)
 prod-up:
-	docker-compose $(PROD_DOCKER_COMPOSE) up || docker compose $(PROD_DOCKER_COMPOSE) up || podman-compose $(PROD_DOCKER_COMPOSE) up
+	docker-compose {{PROD_DOCKER_COMPOSE}} up || docker compose {{PROD_DOCKER_COMPOSE}} up || podman-compose {{PROD_DOCKER_COMPOSE}} up
 
 # Run the docker image (via docker-compose) detached
 prod-detached:
-	docker-compose $(PROD_DOCKER_COMPOSE) up -d || docker compose $(PROD_DOCKER_COMPOSE) up -d || podman-compose $(PROD_DOCKER_COMPOSE) up -d
+	docker-compose {{PROD_DOCKER_COMPOSE}} up -d || docker compose {{PROD_DOCKER_COMPOSE}} up -d || podman-compose {{PROD_DOCKER_COMPOSE}} up -d
 
 # Stop the docker image (via docker-compose)
 prod-down:
-	docker-compose $(PROD_DOCKER_COMPOSE) down || docker compose $(PROD_DOCKER_COMPOSE) down || podman-compose $(PROD_DOCKER_COMPOSE) down
+	docker-compose {{PROD_DOCKER_COMPOSE}} down || docker compose {{PROD_DOCKER_COMPOSE}} down || podman-compose {{PROD_DOCKER_COMPOSE}} down
 
 prod-stop: prod-down
