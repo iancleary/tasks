@@ -69,7 +69,6 @@ class Item(BASE):
         description: str = "",
         active: int = None,
     ) -> None:
-
         self.name = name
 
         self.resolution_date = resolution_date
