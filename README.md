@@ -77,7 +77,7 @@ TIMEZONE=America/Phoenix
 ## Deployment
 
 
-The image is available from [docker.io/iancleary/ivy-lee-method](https://hub.docker.com/r/iancleary/ivy-lee-method)
+The image is available from [docker.io/iancleary/tasks](https://hub.docker.com/r/iancleary/tasks)
 
 ----------
 
@@ -90,7 +90,7 @@ The image is available from [docker.io/iancleary/ivy-lee-method](https://hub.doc
 version: "3.9"
 services:
   web:
-    image: docker.io/iancleary/ivy-lee-method:latest
+    image: docker.io/iancleary/tasks:latest
     env_file:
       - '._prod.env'
     ports:

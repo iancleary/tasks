@@ -1,31 +1,51 @@
-name: Deploy
+name: Publish Docker image
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
-  BuildPush:
-    strategy:
-      matrix:
-        image:
-          - name: latest
-            python_version: "3.11.1"
-          - name: python3.11.1-slim
-            python_version: "3.11.1"
-      fail-fast: true
-    runs-on: ubuntu-22.04
+  push_to_registries:
+    name: Push Docker image to multiple registries
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up PDM (for create_production_requirements)
-        uses: pdm-project/setup-pdm@v3
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Prepare to create docker file
+        run: |
+          scripts/copy_app.sh
+          scripts/create_production_requirements.sh
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          python-version: ${{ matrix.image.python_version }}
-      - name: Deploy Image
-        run: bash scripts/build-push.sh
-        env:
-          NAME: ${{ matrix.image.name }}
-          PYTHON_VERSION: ${{ matrix.image.python_version }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@507c2f2dc502c992ad446e3d7a5dfbe311567a96
+        with:
+          images: |
+            iancleary/tasks
+            ghcr.io/${{ github.repository }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@eafaea8d0f5853934deece2ffa67af59d936562b
+        with:
+          context: ./docker-images
+          dockerfile: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
