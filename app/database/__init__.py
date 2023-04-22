@@ -5,8 +5,10 @@ from typing import Iterator
 
 import sqlalchemy
 from fastapi import Depends
-from fastapi_restful.session import FastAPISessionMaker
 from sqlalchemy.orm import Session
+from sqlaclhemy.engine import Engine
+
+from app.database.session import FastAPISessionMaker
 
 # need initial "/" in docker, don't want it in venv (outside of docker)
 DATABASE = os.getenv("DATABASE", "/data/data.db")
@@ -14,7 +16,7 @@ DATABASE_URI = f"sqlite:///{DATABASE}"
 ENGINE = sqlalchemy.create_engine(DATABASE_URI, echo=True, future=True)
 
 
-def get_database_engine() -> Session:
+def get_database_engine() -> Engine:
     return ENGINE
 
 
