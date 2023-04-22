@@ -2,15 +2,13 @@ import datetime
 from typing import List
 
 from fastapi import APIRouter
-from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import update
 from sqlalchemy import and_
-from sqlalchemy.orm import Session
 
-from app.database import get_db
+from app.database import Database
 from app.models.items import Item
 from app.models.items import PydanticItem
 from app.models.items import Status
@@ -31,7 +29,7 @@ class NewItem(BaseModel):
 
 
 @router.post("/item")
-def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
+def create_item(db: Database, *, item: NewItem) -> None:
     item = Item(name=item.name)
     db.add(item)
 
@@ -40,7 +38,7 @@ def create_item(db: Session = Depends(get_db), *, item: NewItem) -> None:
 
 
 @router.get("/items")
-def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+def get_items(db: Database) -> List[PydanticItem]:
     items = db.query(Item).filter(Item.active == Active.YES)
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
     json_compatible_return_data = [
@@ -50,7 +48,7 @@ def get_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 
 @router.get("/item/focus")
-def get_focus_item(db: Session = Depends(get_db)) -> List[PydanticItem]:
+def get_focus_item(db: Database) -> List[PydanticItem]:
     priority = db.query(Priority).first()
 
     if priority is None:
@@ -89,7 +87,7 @@ def get_focus_item(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 
 @router.get("/items/priority")
-def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+def get_priority_items(db: Database) -> List[PydanticItem]:
     priority = db.query(Priority).first()
 
     if priority is None:
@@ -125,7 +123,7 @@ def get_priority_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 
 @router.get("/items/completed")
-def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+def get_completed_items(db: Database) -> List[PydanticItem]:
     items = (
         db.query(Item)
         .filter(and_(Item.status == Status.COMPLETED, Item.active == Active.YES))
@@ -142,7 +140,7 @@ def get_completed_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 
 @router.get("/items/open")
-def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+def get_open_items(db: Database) -> List[PydanticItem]:
     items = db.query(Item).filter(
         and_(Item.status == Status.OPEN, Item.active == Active.YES)
     )
@@ -157,7 +155,7 @@ def get_open_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 
 @router.get("/items/deleted")
-def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
+def get_deleted_items(db: Database) -> List[PydanticItem]:
     items = db.query(Item).filter(
         and_(Item.status == Status.OPEN, Item.active == Active.NO)
     )
@@ -172,7 +170,7 @@ def get_deleted_items(db: Session = Depends(get_db)) -> List[PydanticItem]:
 
 
 @router.get("/item/{item_id}")
-def get_item(db: Session = Depends(get_db), *, item_id: str) -> PydanticItem:
+def get_item(db: Database, *, item_id: str) -> PydanticItem:
     item = db.query(Item).get(item_id)
 
     if item is None:
@@ -192,9 +190,7 @@ class ItemPatch(BaseModel):
 
 
 @router.patch("/item/{item_id}")
-def patch_item(
-    db: Session = Depends(get_db), *, item_id: str, updates: ItemPatch
-) -> None:
+def patch_item(db: Database, *, item_id: str, updates: ItemPatch) -> None:
     stmt = update(Item)
     stmt = stmt.where(Item.id == item_id)
     stmt = stmt.values(name=updates.name, description=updates.description)
@@ -205,7 +201,7 @@ def patch_item(
 
 
 @router.delete("/item/{item_id}")
-def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
+def delete_item(db: Database, *, item_id: int) -> None:
     # Don't remove row, but deactivate item instead (design choice)
     column = getattr(Item, "id")
 
@@ -247,7 +243,7 @@ def delete_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 
 
 @router.patch("/item/{item_id}/activate")
-def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
+def activate_item(db: Database, *, item_id: int) -> None:
     column = getattr(Item, "id")
     stmt = (
         update(Item)
@@ -261,7 +257,7 @@ def activate_item(db: Session = Depends(get_db), *, item_id: int) -> None:
 
 
 @router.patch("/item/{item_id}/status/open")
-def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> None:
+def patch_item_status_open(db: Database, *, item_id: str) -> None:
     stmt = update(Item)
     stmt = stmt.values(
         {"status": Status.OPEN, "resolution_date": UNSET_DATE, "active": Active.YES}
@@ -271,7 +267,7 @@ def patch_item_status_open(db: Session = Depends(get_db), *, item_id: str) -> No
 
 
 @router.patch("/item/{item_id}/status/completed")
-def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) -> None:
+def patch_item_status_completed(db: Database, *, item_id: str) -> None:
     stmt = update(Item)
     completed_timestamp = datetime.datetime.utcnow().timestamp()
     stmt = stmt.values(
@@ -316,7 +312,7 @@ def patch_item_status_completed(db: Session = Depends(get_db), *, item_id: str) 
 
 
 @router.patch("/item/{item_id}/priority/yes")
-def patch_item_priority_yes(db: Session = Depends(get_db), *, item_id: str) -> None:
+def patch_item_priority_yes(db: Database, *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:
@@ -353,7 +349,7 @@ def patch_item_priority_yes(db: Session = Depends(get_db), *, item_id: str) -> N
 
 
 @router.patch("/item/{item_id}/priority/no")
-def patch_item_priority_no(db: Session = Depends(get_db), *, item_id: str) -> None:
+def patch_item_priority_no(db: Database, *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:
@@ -390,7 +386,7 @@ def patch_item_priority_no(db: Session = Depends(get_db), *, item_id: str) -> No
 
 
 @router.patch("/item/{item_id}/priority/increase")
-def increase_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
+def increase_item_order(db: Database, *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:
@@ -432,7 +428,7 @@ def increase_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
 
 
 @router.patch("/item/{item_id}/priority/decrease")
-def decrease_item_order(db: Session = Depends(get_db), *, item_id: str) -> None:
+def decrease_item_order(db: Database, *, item_id: str) -> None:
     item = db.query(Item).get(item_id)
 
     if item is None:
