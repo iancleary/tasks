@@ -1,8 +1,10 @@
 import os
 from functools import lru_cache
+from typing import Annotated
 from typing import Iterator
 
 import sqlalchemy
+from fastapi import Depends
 from fastapi_restful.session import FastAPISessionMaker
 from sqlalchemy.orm import Session
 
@@ -26,3 +28,6 @@ def _get_fastapi_sessionmaker() -> FastAPISessionMaker:
     """This function could be replaced with a global variable if preferred"""
     database_uri = DATABASE_URI
     return FastAPISessionMaker(database_uri)
+
+
+Database = Annotated[Session, Depends(get_db)]
