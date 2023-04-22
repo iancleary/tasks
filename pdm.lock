@@ -72,12 +72,12 @@ dependencies = [
 
 [[package]]
 name = "fastapi"
-version = "0.92.0"
+version = "0.95.1"
 requires_python = ">=3.7"
 summary = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 dependencies = [
     "pydantic!=1.7,!=1.7.1,!=1.7.2,!=1.7.3,!=1.8,!=1.8.1,<2.0.0,>=1.6.2",
-    "starlette<0.26.0,>=0.25.0",
+    "starlette<0.27.0,>=0.26.1",
 ]
 
 [[package]]
@@ -353,7 +353,7 @@ dependencies = [
 
 [[package]]
 name = "starlette"
-version = "0.25.0"
+version = "0.26.1"
 requires_python = ">=3.7"
 summary = "The little ASGI library that shines."
 dependencies = [
@@ -415,8 +415,9 @@ requires_python = ">=3.7"
 summary = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
 
 [metadata]
-lock_version = "4.1"
-content_hash = "sha256:eeba4cac5154a07a31689e74da683fccabad6000a9041ecdd12d4739b8cfbce6"
+lock_version = "4.2"
+groups = ["default", "dev"]
+content_hash = "sha256:81abcb328ca0e799a84416321eabd11426ec8fd6a15623d4f6e436be4e50e1c6"
 
 [metadata.files]
 "alembic 1.9.2" = [
@@ -470,9 +471,9 @@ content_hash = "sha256:eeba4cac5154a07a31689e74da683fccabad6000a9041ecdd12d4739b
     {url = "https://files.pythonhosted.org/packages/ca/5e/f0f217dc393372681bfe05c50f06a212e78d0a3fee907a74ab451ec1dcdb/environs-9.5.0-py2.py3-none-any.whl", hash = "sha256:1e549569a3de49c05f856f40bce86979e7d5ffbbc4398e7f338574c220189124"},
     {url = "https://files.pythonhosted.org/packages/d4/e3/c3c6c76f3dbe3e019e9a451b35bf9f44690026a5bb1232f7b77097b72ff5/environs-9.5.0.tar.gz", hash = "sha256:a76307b36fbe856bdca7ee9161e6c466fd7fcffc297109a118c59b54e27e30c9"},
 ]
-"fastapi 0.92.0" = [
-    {url = "https://files.pythonhosted.org/packages/11/92/6577adcb71d85378700765b5298929ac0fcafaa47a7c39bdc205289d9c74/fastapi-0.92.0.tar.gz", hash = "sha256:023a0f5bd2c8b2609014d3bba1e14a1d7df96c6abea0a73070621c9862b9a4de"},
-    {url = "https://files.pythonhosted.org/packages/cd/ec/878318da126d6c83641d23644899ca94838b839490bcdbcddad6814fe07a/fastapi-0.92.0-py3-none-any.whl", hash = "sha256:ae7b97c778e2f2ec3fb3cb4fb14162129411d99907fb71920f6d69a524340ebf"},
+"fastapi 0.95.1" = [
+    {url = "https://files.pythonhosted.org/packages/2e/84/d289e941ffec2f107d9097c8f7c2dbc874b0fc3fab9776aa3cc366d45ab2/fastapi-0.95.1-py3-none-any.whl", hash = "sha256:a870d443e5405982e1667dfe372663abf10754f246866056336d7f01c21dab07"},
+    {url = "https://files.pythonhosted.org/packages/a9/7b/ec011cf46d78627159ab869556f246b5f823a6df8d94f7577e043a63fffd/fastapi-0.95.1.tar.gz", hash = "sha256:9569f0a381f8a457ec479d90fa01005cfddaae07546eb1f3fa035bc4797ae7d5"},
 ]
 "fastapi-restful 0.4.3" = [
     {url = "https://files.pythonhosted.org/packages/16/fd/a30b8776eb48767b0bf97028f0d88aea01911ee24d131f2be34225bf082d/FastApi-RESTful-0.4.3.tar.gz", hash = "sha256:6953813d489d1d3220e85cc2421df609358b9523aa76f28359f8668ea4aa7a61"},
@@ -916,9 +917,9 @@ content_hash = "sha256:eeba4cac5154a07a31689e74da683fccabad6000a9041ecdd12d4739b
     {url = "https://files.pythonhosted.org/packages/fc/87/b5df8c50302e0d5eaba079a8f9795c3491f4c7bec76a68b238c804408098/SQLAlchemy-1.4.46-cp27-cp27m-win32.whl", hash = "sha256:c04144a24103135ea0315d459431ac196fe96f55d3213bfd6d39d0247775c854"},
     {url = "https://files.pythonhosted.org/packages/fe/83/27efbfa73ca515d89ada6ab05d0d2739b5fafcfb0bf254df4ae8439441ec/SQLAlchemy-1.4.46-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9883f5fae4fd8e3f875adc2add69f8b945625811689a6c65866a35ee9c0aea23"},
 ]
-"starlette 0.25.0" = [
-    {url = "https://files.pythonhosted.org/packages/3b/89/f873d6392441a8be9bcbc0abbc92aa73849879e72565331bd9b54cfb8675/starlette-0.25.0.tar.gz", hash = "sha256:854c71e73736c429c2bdb07801f2c76c9cba497e7c3cf4988fde5e95fe4cdb3c"},
-    {url = "https://files.pythonhosted.org/packages/b0/56/e7e16e133428ce19ff429d3d71aa7114048730385eea7d0985df5cf9aed6/starlette-0.25.0-py3-none-any.whl", hash = "sha256:774f1df1983fd594b9b6fb3ded39c2aa1979d10ac45caac0f4255cbe2acb8628"},
+"starlette 0.26.1" = [
+    {url = "https://files.pythonhosted.org/packages/12/48/f9c1ec6bee313aba264fbc2483d9070f4e4526f2538e2b55b1e4a391d938/starlette-0.26.1-py3-none-any.whl", hash = "sha256:e87fce5d7cbdde34b76f0ac69013fd9d190d581d80681493016666e6f96c6d5e"},
+    {url = "https://files.pythonhosted.org/packages/52/55/98746af96f57a0ff4f108c5ac84c130af3c4e291272acf446afc67d5d5d8/starlette-0.26.1.tar.gz", hash = "sha256:41da799057ea8620e4667a3e69a5b1923ebd32b1819c8fa75634bbe8d8bea9bd"},
 ]
 "typing-extensions 4.4.0" = [
     {url = "https://files.pythonhosted.org/packages/0b/8e/f1a0a5a76cfef77e1eb6004cb49e5f8d72634da638420b9ea492ce8305e8/typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
