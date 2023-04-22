@@ -236,10 +236,11 @@ def delete_item(db: Database, *, item_id: int) -> None:
 
     priority = db.query(Priority).first()
 
-    stmt = update(Priority)
-    stmt = stmt.values({"list": priority_list_str})
-    stmt = stmt.where(Priority.id == priority.id)
-    db.execute(stmt)
+    if priority is not None:
+        stmt = update(Priority)
+        stmt = stmt.values({"list": priority_list_str})
+        stmt = stmt.where(Priority.id == priority.id)
+        db.execute(stmt)
 
 
 @router.patch("/item/{item_id}/activate")
@@ -302,10 +303,11 @@ def patch_item_status_completed(db: Database, *, item_id: str) -> None:
 
     priority = db.query(Priority).first()
 
-    stmt = update(Priority)
-    stmt = stmt.values({"list": priority_list_str})
-    stmt = stmt.where(Priority.id == priority.id)
-    db.execute(stmt)
+    if priority is not None:
+        stmt = update(Priority)
+        stmt = stmt.values({"list": priority_list_str})
+        stmt = stmt.where(Priority.id == priority.id)
+        db.execute(stmt)
 
 
 ##~ Pinned
@@ -342,10 +344,11 @@ def patch_item_priority_yes(db: Database, *, item_id: str) -> None:
 
     priority = db.query(Priority).first()
 
-    stmt = update(Priority)
-    stmt = stmt.values({"list": priority_list_str})
-    stmt = stmt.where(Priority.id == priority.id)
-    db.execute(stmt)
+    if priority is not None:
+        stmt = update(Priority)
+        stmt = stmt.values({"list": priority_list_str})
+        stmt = stmt.where(Priority.id == priority.id)
+        db.execute(stmt)
 
 
 @router.patch("/item/{item_id}/priority/no")
@@ -376,10 +379,11 @@ def patch_item_priority_no(db: Database, *, item_id: str) -> None:
 
     priority = db.query(Priority).first()
 
-    stmt = update(Priority)
-    stmt = stmt.values({"list": priority_list_str})
-    stmt = stmt.where(Priority.id == priority.id)
-    db.execute(stmt)
+    if priority is not None:
+        stmt = update(Priority)
+        stmt = stmt.values({"list": priority_list_str})
+        stmt = stmt.where(Priority.id == priority.id)
+        db.execute(stmt)
 
 
 ##~ Order
@@ -399,7 +403,8 @@ def increase_item_order(db: Database, *, item_id: str) -> None:
         db.add(priority)
         priority = db.query(Priority).first()
 
-    priority_list = get_list_from_str(priority.list)
+    if priority is not None:
+        priority_list = get_list_from_str(priority.list)
 
     current_position = priority_list.index(item.id)
 
@@ -421,10 +426,11 @@ def increase_item_order(db: Database, *, item_id: str) -> None:
 
     priority = db.query(Priority).first()
 
-    stmt = update(Priority)
-    stmt = stmt.values({"list": priority_list_str})
-    stmt = stmt.where(Priority.id == priority.id)
-    db.execute(stmt)
+    if priority is not None:
+        stmt = update(Priority)
+        stmt = stmt.values({"list": priority_list_str})
+        stmt = stmt.where(Priority.id == priority.id)
+        db.execute(stmt)
 
 
 @router.patch("/item/{item_id}/priority/decrease")
@@ -462,7 +468,8 @@ def decrease_item_order(db: Database, *, item_id: str) -> None:
 
     priority = db.query(Priority).first()
 
-    stmt = update(Priority)
-    stmt = stmt.values({"list": priority_list_str})
-    stmt = stmt.where(Priority.id == priority.id)
-    db.execute(stmt)
+    if priority is not None:
+        stmt = update(Priority)
+        stmt = stmt.values({"list": priority_list_str})
+        stmt = stmt.where(Priority.id == priority.id)
+        db.execute(stmt)
