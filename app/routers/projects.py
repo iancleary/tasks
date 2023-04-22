@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import update
+from sqlalchemy import select
 
 from app.database import Database
 from app.models.projects import Project
@@ -29,16 +30,16 @@ def create_project(db: Database, *, project: ProjectName) -> None:
 @router.get("/projects")
 def get_projects(db: Database, *, only_active: bool = True) -> List[PydanticProject]:
     if only_active is True:
-        projects = db.query(Project).filter(Project.active == 1)
+        projects = db.execute(select(Project).filter_by(active=1)).scalars()
     else:
-        projects = db.query(Project)
+        projects = db.execute(select(Project)).scalars()
 
     return [PydanticProject(**jsonable_encoder(c)) for c in projects]
 
 
 @router.get("/project/{project_id}")
 def get_project(db: Database, *, project_id: str) -> PydanticProject:
-    project = db.query(Project).get(project_id)
+    project = db.execute(select(Project).filter_by(id=int(project_id))).scalar_one()
     return PydanticProject(**jsonable_encoder(project))
 
 
