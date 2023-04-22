@@ -13,14 +13,14 @@ router = APIRouter()
 
 
 ##~~ Create
-class NewProject(BaseModel):
+class ProjectName(BaseModel):
     name: str
 
 
 @router.post("/project")
-def create_project(db: Database, *, project: NewProject) -> None:
-    project = Project(name=project.name)
-    db.add(project)
+def create_project(db: Database, *, project: ProjectName) -> None:
+    project_to_add_to_db = Project(name=project.name)
+    db.add(project_to_add_to_db)
 
 
 ##~~ Read

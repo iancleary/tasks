@@ -24,14 +24,14 @@ router = APIRouter()
 
 
 ##~~ Create
-class NewItem(BaseModel):
+class ItemName(BaseModel):
     name: str
 
 
 @router.post("/item")
-def create_item(db: Database, *, item: NewItem) -> None:
-    item = Item(name=item.name)
-    db.add(item)
+def create_item(db: Database, *, item: ItemName) -> None:
+    item_to_add_to_db = Item(name=item.name)
+    db.add(item_to_add_to_db)
 
 
 ##~~ Read
