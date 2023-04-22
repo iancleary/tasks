@@ -34,7 +34,7 @@ format:
 
 # Test app with pytest outside of docker (with fresh data/test.db from tests/conftest.py)
 test:
-	pdm run -v pytest -vv  tests
+	SQLALCHEMY_WARN_20=1 pdm run -v pytest -vv  tests
 
 # Make the latest build of the image
 build: requirements copy

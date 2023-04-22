@@ -5,10 +5,12 @@ from fastapi import APIRouter
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy import update
 from sqlalchemy import and_
+from sqlalchemy import update
+from sqlalchemy import select
 
 from app.database import Database
+from app.database.items import get_item_by_id
 from app.models.items import Item
 from app.models.items import PydanticItem
 from app.models.items import Status
@@ -39,7 +41,7 @@ def create_item(db: Database, *, item: ItemName) -> None:
 
 @router.get("/items")
 def get_items(db: Database) -> List[PydanticItem]:
-    items = db.query(Item).filter(Item.active == Active.YES)
+    items = db.execute(select(Item).filter_by(active=Active.YES)).scalars()
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
     json_compatible_return_data = [
         convert_utc_to_local(x) for x in json_compatible_return_data
@@ -49,7 +51,7 @@ def get_items(db: Database) -> List[PydanticItem]:
 
 @router.get("/item/focus")
 def get_focus_item(db: Database) -> List[PydanticItem]:
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list="")
@@ -88,7 +90,7 @@ def get_focus_item(db: Database) -> List[PydanticItem]:
 
 @router.get("/items/priority")
 def get_priority_items(db: Database) -> List[PydanticItem]:
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list="")
@@ -102,7 +104,7 @@ def get_priority_items(db: Database) -> List[PydanticItem]:
         # not in limited priority list, nothing to get
         return []
 
-    items = db.query(Item).filter(Item.id.in_(priority_list))
+    items = db.execute(select(Item).filter(Item.id.in_(priority_list))).scalars()
 
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
@@ -124,11 +126,11 @@ def get_priority_items(db: Database) -> List[PydanticItem]:
 
 @router.get("/items/completed")
 def get_completed_items(db: Database) -> List[PydanticItem]:
-    items = (
-        db.query(Item)
+    items = db.execute(
+        select(Item)
         .filter(and_(Item.status == Status.COMPLETED, Item.active == Active.YES))
-        .order_by(Item.resolution_date.desc())
-    )  # most recent completions first
+        .order_by(Item.resolution_date.desc())  # most recent completions first
+    ).scalars()
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
     # convert to json, then correct timezone on dict-like object,
@@ -141,9 +143,9 @@ def get_completed_items(db: Database) -> List[PydanticItem]:
 
 @router.get("/items/open")
 def get_open_items(db: Database) -> List[PydanticItem]:
-    items = db.query(Item).filter(
-        and_(Item.status == Status.OPEN, Item.active == Active.YES)
-    )
+    items = db.execute(
+        select(Item).filter(and_(Item.status == Status.OPEN, Item.active == Active.YES))
+    ).scalars()
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
     # convert to json, then correct timezone on dict-like object,
@@ -156,9 +158,9 @@ def get_open_items(db: Database) -> List[PydanticItem]:
 
 @router.get("/items/deleted")
 def get_deleted_items(db: Database) -> List[PydanticItem]:
-    items = db.query(Item).filter(
-        and_(Item.status == Status.OPEN, Item.active == Active.NO)
-    )
+    items = db.execute(
+        select(Item).filter(and_(Item.status == Status.OPEN, Item.active == Active.NO))
+    ).scalars()
     json_compatible_return_data = [jsonable_encoder(x) for x in items]
 
     # convert to json, then correct timezone on dict-like object,
@@ -171,7 +173,7 @@ def get_deleted_items(db: Database) -> List[PydanticItem]:
 
 @router.get("/item/{item_id}")
 def get_item(db: Database, *, item_id: str) -> PydanticItem:
-    item = db.query(Item).get(item_id)
+    item = get_item_by_id(db, item_id)
 
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
@@ -207,15 +209,17 @@ def delete_item(db: Database, *, item_id: int) -> None:
 
     deleted_timestamp = datetime.datetime.utcnow().timestamp()
     # can't deleted completed item
+
+    item_table = Item.__table__
     stmt = (
-        update(Item)
+        item_table.update()
         .where(and_(column == item_id, Item.status != Status.COMPLETED))
         .values({"active": Active.NO, "deleted_date": deleted_timestamp})
     )
     db.execute(stmt)
 
     # Remove item from priority list
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list="")
@@ -234,7 +238,7 @@ def delete_item(db: Database, *, item_id: int) -> None:
     priority_list.remove(int(item_id))
     priority_list_str = make_str_from_list(priority_list)
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is not None:
         stmt = update(Priority)
@@ -246,8 +250,9 @@ def delete_item(db: Database, *, item_id: int) -> None:
 @router.patch("/item/{item_id}/activate")
 def activate_item(db: Database, *, item_id: int) -> None:
     column = getattr(Item, "id")
+    item_table = Item.__table__
     stmt = (
-        update(Item)
+        item_table.update()
         .where(column == item_id)
         .values({"active": Active.YES, "deleted_date": UNSET_DATE})
     )
@@ -259,7 +264,8 @@ def activate_item(db: Database, *, item_id: int) -> None:
 
 @router.patch("/item/{item_id}/status/open")
 def patch_item_status_open(db: Database, *, item_id: str) -> None:
-    stmt = update(Item)
+    item_table = Item.__table__
+    stmt = item_table.update()
     stmt = stmt.values(
         {"status": Status.OPEN, "resolution_date": UNSET_DATE, "active": Active.YES}
     )
@@ -269,7 +275,8 @@ def patch_item_status_open(db: Database, *, item_id: str) -> None:
 
 @router.patch("/item/{item_id}/status/completed")
 def patch_item_status_completed(db: Database, *, item_id: str) -> None:
-    stmt = update(Item)
+    item_table = Item.__table__
+    stmt = item_table.update()
     completed_timestamp = datetime.datetime.utcnow().timestamp()
     stmt = stmt.values(
         {
@@ -282,7 +289,7 @@ def patch_item_status_completed(db: Database, *, item_id: str) -> None:
     db.execute(stmt)
 
     # Remove item from priority list
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list="")
@@ -301,7 +308,7 @@ def patch_item_status_completed(db: Database, *, item_id: str) -> None:
     priority_list.remove(int(item_id))
     priority_list_str = make_str_from_list(priority_list)
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is not None:
         stmt = update(Priority)
@@ -315,12 +322,14 @@ def patch_item_status_completed(db: Database, *, item_id: str) -> None:
 
 @router.patch("/item/{item_id}/priority/yes")
 def patch_item_priority_yes(db: Database, *, item_id: str) -> None:
+    item_table = Item.__table__
+    stmt = item_table.update()
     item = db.query(Item).get(item_id)
 
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list=item_id)
@@ -342,7 +351,7 @@ def patch_item_priority_yes(db: Database, *, item_id: str) -> None:
 
     priority_list_str = make_str_from_list(priority_list)
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is not None:
         stmt = update(Priority)
@@ -358,7 +367,7 @@ def patch_item_priority_no(db: Database, *, item_id: str) -> None:
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list="")
@@ -377,7 +386,7 @@ def patch_item_priority_no(db: Database, *, item_id: str) -> None:
     priority_list.remove(int(item_id))
     priority_list_str = make_str_from_list(priority_list)
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is not None:
         stmt = update(Priority)
@@ -396,12 +405,12 @@ def increase_item_order(db: Database, *, item_id: str) -> None:
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list="")
         db.add(priority)
-        priority = db.query(Priority).first()
+        priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is not None:
         priority_list = get_list_from_str(priority.list)
@@ -424,7 +433,7 @@ def increase_item_order(db: Database, *, item_id: str) -> None:
 
     priority_list_str = make_str_from_list(priority_list)
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is not None:
         stmt = update(Priority)
@@ -440,7 +449,7 @@ def decrease_item_order(db: Database, *, item_id: str) -> None:
     if item is None:
         raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is None:
         priority = Priority(list="")
@@ -466,7 +475,7 @@ def decrease_item_order(db: Database, *, item_id: str) -> None:
 
     priority_list_str = make_str_from_list(priority_list)
 
-    priority = db.query(Priority).first()
+    priority = db.execute(select(Priority)).scalar_one_or_none()
 
     if priority is not None:
         stmt = update(Priority)

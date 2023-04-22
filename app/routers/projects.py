@@ -65,6 +65,6 @@ def patch_project(db: Database, *, project_id: str, updates: NewName) -> None:
 @router.delete("/project/{project_id}")
 def delete_project(db: Database, *, project_id: int) -> None:
     # Don't remove row, but deactivate project instead (design choice)
-    column = getattr(Project, "id")
-    stmt = update(Project).where(column == project_id).values(active=0)
+    project_table = Project.__table__
+    stmt = project_table.update().where(Project.id == project_id).values(active=0)
     db.execute(stmt)
