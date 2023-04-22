@@ -1,17 +1,18 @@
 from pydantic import BaseModel
-from sqlalchemy import Column
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import Mapped
 from sqlalchemy import Integer
 from sqlalchemy import String
 
-from app.models import BASE
+from app.models import Base
 
 
 # mypy: ignore-errors
-class Project(BASE):
+class Project(Base):
     __tablename__ = "projects"
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(String)
-    active = Column(Integer, default=1)
+    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
+    name: Mapped[str] = mapped_column(String)
+    active: Mapped[int] = mapped_column(Integer, default=1)
 
     def __init__(self, name: str) -> None:
         self.name = name

@@ -1,19 +1,20 @@
 from pydantic import BaseModel
-from sqlalchemy import Column
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import Mapped
 from sqlalchemy import Integer
 from sqlalchemy import String
 from typing import List
 
-from app.models import BASE
+from app.models import Base
 
 MAX_LENGTH = 6
 
 
 # mypy: ignore-errors
-class Priority(BASE):
+class Priority(Base):
     __tablename__ = "priority"
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    list = Column(String)
+    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
+    list: Mapped[str] = mapped_column(String)
 
     def __init__(self, list: str = None) -> None:
         self.list = list

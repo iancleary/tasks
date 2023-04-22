@@ -81,7 +81,7 @@ known-first-party = ["src"]
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
-exclude = ['alembic/', 'app/routers/']
+exclude = ['alembic/']
 plugins = ['sqlalchemy.ext.mypy.plugin']
 
 [build-system]

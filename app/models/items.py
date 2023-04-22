@@ -8,11 +8,12 @@ from enum import StrEnum
 
 from pydantic import BaseModel
 from sqlalchemy import REAL
-from sqlalchemy import Column
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import Mapped
 from sqlalchemy import Integer
 from sqlalchemy import String
 
-from app.models import BASE
+from app.models import Base
 from app.models.utils import utc_to_local
 
 
@@ -49,16 +50,16 @@ UNSET_DATE = 0.0
 
 
 # mypy: ignore-errors
-class Item(BASE):
+class Item(Base):
     __tablename__ = "items"
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(String)
-    created_date = Column(REAL)
-    resolution_date = Column(REAL, default=UNSET_DATE)
-    deleted_date = Column(REAL, default=UNSET_DATE)
-    status = Column(Integer, default=Status.OPEN)
-    active = Column(Integer, default=Active.YES)
-    description = Column(String, default=Description.DEFAULT)
+    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
+    name: Mapped[int] = mapped_column(String)
+    created_date: Mapped[float] = mapped_column(REAL)
+    resolution_date: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
+    deleted_date: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
+    status: Mapped[int] = mapped_column(Integer, default=Status.OPEN)
+    active: Mapped[int] = mapped_column(Integer, default=Active.YES)
+    description: Mapped[str] = mapped_column(String, default=Description.DEFAULT)
 
     def __init__(
         self,
