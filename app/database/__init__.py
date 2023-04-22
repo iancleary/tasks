@@ -6,7 +6,7 @@ from typing import Iterator
 import sqlalchemy
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from sqlaclhemy.engine import Engine
+from sqlalchemy.engine import Engine
 
 from app.database.session import FastAPISessionMaker
 
