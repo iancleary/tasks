@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import Mapped
-from sqlalchemy import Integer
 from sqlalchemy import String
 from typing import List
 
@@ -13,11 +12,14 @@ MAX_LENGTH = 6
 # mypy: ignore-errors
 class Priority(Base):
     __tablename__ = "priority"
-    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
+    id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True)
     list: Mapped[str] = mapped_column(String)
 
     def __init__(self, list: str = None) -> None:
-        self.list = list
+        if list is None:
+            self.list = []
+        else:
+            self.list = list
 
 
 class PydanticPriority(BaseModel):
