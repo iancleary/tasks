@@ -50,7 +50,7 @@ UNSET_DATE = 0.0
 
 
 # mypy: ignore-errors
-class Item(Base):
+class ItemObject(Base):
     __tablename__ = "items"
     id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     name: Mapped[int] = mapped_column(String)
