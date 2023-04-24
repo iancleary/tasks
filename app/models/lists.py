@@ -11,7 +11,7 @@ class ListObject(Base):
     __tablename__ = "lists"
     id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     name: Mapped[str] = mapped_column(String)
-    sections: Mapped[str] = mapped_column(String)
+    sections: Mapped[str] = mapped_column(String, default="")
 
 
 class PydanticItemList(BaseModel):

@@ -5,6 +5,7 @@ from typing import Iterator
 
 import sqlalchemy
 from fastapi import Depends
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from app.database.core.session import FastAPISessionMaker
@@ -15,7 +16,7 @@ DATABASE_URI = f"sqlite:///{DATABASE}"
 ENGINE = sqlalchemy.create_engine(DATABASE_URI, echo=True, future=True)
 
 
-def get_database_engine() -> Session:
+def get_database_engine() -> Engine:
     return ENGINE
 
 

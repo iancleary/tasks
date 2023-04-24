@@ -16,8 +16,8 @@ class ListNotFoundExeption(Exception):
         return f"List with id {self.list_id} not found."
 
 
-def create_new_list_object_in_database(db: Session, name: str, list_id: int) -> None:
-    list_obj = ListObject(name=name, list_id=list_id)
+def create_new_list_object_in_database(db: Session, name: str) -> None:
+    list_obj = ListObject(name=name)
     db.add(list_obj)
     db.commit()
 
