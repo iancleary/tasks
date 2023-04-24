@@ -18,6 +18,11 @@ def test_pydantic_section_list() -> None:
 def test_section_object_defaults() -> None:
     section_object = SectionObject()
     assert isinstance(section_object, SectionObject)
+    assert section_object.name is None
+    assert section_object.items is None
+    assert section_object.list_id is None
+    assert section_object.id is None
+    # section_object.id is not set yet as it is not committed to the database
 
 
 def test_section_object_custom_parameters() -> None:
