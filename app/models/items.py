@@ -1,5 +1,4 @@
 import datetime
-
 from enum import IntEnum
 from enum import StrEnum
 from typing import Union
