@@ -5,7 +5,7 @@ class StrListConverter:
     DELIMITER = ","
 
     @staticmethod
-    def get_list_from_str(list_str: str):
+    def get_list_from_str(list_str: str) -> List[int]:
         # Handle edge cases
         if len(list_str) == 0:
             return []
@@ -27,7 +27,7 @@ class StrListConverter:
         return list_object
 
     @staticmethod
-    def make_str_from_list(list_object: List[int]):
+    def make_str_from_list(list_object: List[int]) -> str:
         list_str = ""
         for x in list_object:
             list_str = list_str + StrListConverter.DELIMITER + str(x)
