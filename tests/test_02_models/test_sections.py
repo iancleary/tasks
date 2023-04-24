@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from app.models.sections import SectionObject
 from app.models.sections import PydanticSectionList
+from app.models.sections import SectionObject
 
 
 def test_pydantic_section_list() -> None:
