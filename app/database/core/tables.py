@@ -5,4 +5,4 @@ from app.models import Base
 def create_tables() -> None:
     engine = get_database_engine()
     Base.metadata.create_all(engine)
-    print(Base.metadata.tables.keys())
+    print(f"Database tables: {Base.metadata.tables.keys()}")

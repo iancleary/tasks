@@ -2,8 +2,8 @@ from typing import Union
 
 from sqlalchemy import select
 from sqlalchemy import update
-from sqlalchemy.orm import Session
 
+from app.database.core import get_session
 from app.models.lists import ListObject
 from app.models.utils.columns import StrListConverter
 
@@ -16,18 +16,24 @@ class ListNotFoundExeption(Exception):
         return f"List with id {self.list_id} not found."
 
 
-def create_new_list_object_in_database(db: Session, name: str) -> None:
+def create_new_list_object_in_database(name: str) -> None:
+    database_session = get_session()
     list_obj = ListObject(name=name)
-    db.add(list_obj)
-    db.commit()
+    with database_session.begin() as session:
+        session.add(list_obj)
 
 
-def select_list_obj_by_id(db: Session, id: int) -> Union[ListObject, None]:
-    obj = db.execute(select(ListObject).where(ListObject.id == id)).scalar_one_or_none()
+def select_list_obj_by_id(id: int) -> Union[ListObject, None]:
+    database_session = get_session()
+    with database_session.begin() as session:
+        obj = session.execute(
+            select(ListObject).where(ListObject.id == id)
+        ).scalar_one_or_none()
     return obj
 
 
-def update_list_object_in_database(db: Session, list_object: ListObject) -> None:
+def update_list_object_in_database(list_object: ListObject) -> None:
+    database_session = get_session()
     stmt = update(ListObject)
     stmt = stmt.values(
         {
@@ -37,13 +43,15 @@ def update_list_object_in_database(db: Session, list_object: ListObject) -> None
         }
     )
     stmt = stmt.where(ListObject.id == list_object.id)
-    db.execute(stmt)
+    with database_session.begin() as session:
+        session.execute(stmt)
 
 
-def delete_list_object_from_database(db: Session, list_id: int) -> None:
-    list_obj = select_list_obj_by_id(db, list_id)
-    db.delete(list_obj)
-    db.commit()
+def delete_list_object_from_database(list_id: int) -> None:
+    database_session = get_session()
+    with database_session.begin() as session:
+        list_obj = select_list_obj_by_id(session, list_id)
+        session.delete(list_obj)
 
 
 def add_item_id_to_list_object(list_object: ListObject, item_id: int) -> ListObject:
@@ -62,25 +70,23 @@ def remove_item_id_from_list_object(
     return list_object
 
 
-def add_item_id_to_list_in_database(db: Session, list_id: int, item_id: int) -> None:
-    list_obj = select_list_obj_by_id(db, list_id)
+def add_item_id_to_list_in_database(list_id: int, item_id: int) -> None:
+    list_obj = select_list_obj_by_id(list_id)
 
     if list_obj is None:
         raise ListNotFoundExeption(list_id=list_id)
     else:
         list_obj = add_item_id_to_list_object(list_obj, item_id)
 
-    update_list_object_in_database(db, list_obj)
+    update_list_object_in_database(list_obj)
 
 
-def remove_item_id_from_list_in_database(
-    db: Session, list_id: int, item_id: int
-) -> None:
-    list_obj = select_list_obj_by_id(db, list_id)
+def remove_item_id_from_list_in_database(list_id: int, item_id: int) -> None:
+    list_obj = select_list_obj_by_id(list_id)
 
     if list_obj is None:
         raise ListNotFoundExeption(list_id=list_id)
     else:
         list_obj = remove_item_id_from_list_object(list_obj, item_id)
 
-    update_list_object_in_database(db, list_obj)
+    update_list_object_in_database(list_obj)
