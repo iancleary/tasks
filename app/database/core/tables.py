@@ -1,7 +1,8 @@
-import app.database
+from app.database.core import get_database_engine
 from app.models import Base
 
 
 def create_tables() -> None:
-    engine = app.database.get_database_engine()
+    engine = get_database_engine()
     Base.metadata.create_all(engine)
+    print(Base.metadata.tables.keys())

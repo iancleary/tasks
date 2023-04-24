@@ -13,7 +13,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 from app.models import Base
-from app.models.utils import utc_to_local
+from app.models.utils.datetime import utc_to_local
 
 
 # doesn't exist in python3.10-
