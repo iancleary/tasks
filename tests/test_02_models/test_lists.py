@@ -24,4 +24,5 @@ def test_list_object_custom_parameters() -> None:
     assert isinstance(list_object, ListObject)
     assert list_object.name == "test"
     assert list_object.sections == "1,2,3"
-    # list_object.id isnt set yet as it is not committed to the database
+    assert list_object.id is None
+    # list_object.id is not set yet as it is not committed to the database
