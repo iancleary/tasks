@@ -1,6 +1,5 @@
 import datetime
 
-# doesn't exist in python3.10-
 from enum import IntEnum
 from enum import StrEnum
 from typing import Union
@@ -16,7 +15,6 @@ from app.models import Base
 from app.models.utils.datetime import utc_to_local
 
 
-# doesn't exist in python3.10-
 class Description(StrEnum):
     DEFAULT = ""
 
