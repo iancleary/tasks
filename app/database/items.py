@@ -1,8 +1,10 @@
 from typing import Union
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.models.items import Item
+
 from app.models.items import Active
+from app.models.items import Item
 
 
 def select_item_by_id(db: Session, item_id: Union[int, str]) -> Union[Item, None]:

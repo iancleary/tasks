@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 
-from app.main import app
-
 from app.main import allow_credentials
 from app.main import allow_headers
 from app.main import allow_methods
 from app.main import allow_origins
+from app.main import app
 
 
 def test_app() -> None:

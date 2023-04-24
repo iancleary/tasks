@@ -1,5 +1,6 @@
 from contextlib import contextmanager
-from typing import Iterator, Optional
+from typing import Iterator
+from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy.orm import Session

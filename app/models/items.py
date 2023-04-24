@@ -1,17 +1,16 @@
 import datetime
-from enum import IntEnum
-from typing import Union
-
 
 # doesn't exist in python3.10-
+from enum import IntEnum
 from enum import StrEnum
+from typing import Union
 
 from pydantic import BaseModel
 from sqlalchemy import REAL
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import Mapped
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
 from app.models import Base
 from app.models.utils import utc_to_local

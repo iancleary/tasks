@@ -1,8 +1,9 @@
 from typing import Union
-from sqlalchemy import update
-from sqlalchemy import select
 
+from sqlalchemy import select
+from sqlalchemy import update
 from sqlalchemy.orm import Session
+
 from app.models.sections import SectionList
 from app.models.utils.columns import StrListConverter
 
