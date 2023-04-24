@@ -29,7 +29,7 @@ def select_list_obj_by_id(id: int) -> Union[ListObject, None]:
         obj = session.execute(
             select(ListObject).where(ListObject.id == id)
         ).scalar_one_or_none()
-    return obj
+        return obj
 
 
 def update_list_object_in_database(list_object: ListObject) -> None:
@@ -48,35 +48,37 @@ def update_list_object_in_database(list_object: ListObject) -> None:
 
 
 def delete_list_object_from_database(list_id: int) -> None:
+    list_obj = select_list_obj_by_id(list_id)
     database_session = get_session()
     with database_session.begin() as session:
-        list_obj = select_list_obj_by_id(session, list_id)
         session.delete(list_obj)
 
 
-def add_item_id_to_list_object(list_object: ListObject, item_id: int) -> ListObject:
-    sections = StrListConverter.get_list_from_str(list_object.sections)
-    sections.add(item_id)
-    list_object.sections = StrListConverter.make_str_from_list(list)
+def insert_item_id_to_list_object(
+    list_object: ListObject, item_id: int, index: int
+) -> ListObject:
+    section_list = StrListConverter.get_list_from_str(list_object.sections)
+    section_list[index:index] = [item_id]
+    list_object.sections = StrListConverter.make_str_from_list(section_list)
     return list_object
 
 
 def remove_item_id_from_list_object(
     list_object: ListObject, item_id: int
 ) -> ListObject:
-    sections = StrListConverter.get_list_from_str(list_object.sections)
-    sections.remove(item_id)
-    list_object.sections = StrListConverter.make_str_from_list(list)
+    section_list = StrListConverter.get_list_from_str(list_object.sections)
+    section_list.remove(item_id)
+    list_object.sections = StrListConverter.make_str_from_list(section_list)
     return list_object
 
 
-def add_item_id_to_list_in_database(list_id: int, item_id: int) -> None:
+def add_item_id_to_list_in_database(list_id: int, item_id: int, index: int) -> None:
     list_obj = select_list_obj_by_id(list_id)
 
     if list_obj is None:
-        raise ListNotFoundExeption(list_id=list_id)
+        raise ListNotFoundExeption(list_id=str(list_id))
     else:
-        list_obj = add_item_id_to_list_object(list_obj, item_id)
+        list_obj = insert_item_id_to_list_object(list_obj, item_id, index)
 
     update_list_object_in_database(list_obj)
 
@@ -85,7 +87,7 @@ def remove_item_id_from_list_in_database(list_id: int, item_id: int) -> None:
     list_obj = select_list_obj_by_id(list_id)
 
     if list_obj is None:
-        raise ListNotFoundExeption(list_id=list_id)
+        raise ListNotFoundExeption(list_id=str(list_id))
     else:
         list_obj = remove_item_id_from_list_object(list_obj, item_id)
 

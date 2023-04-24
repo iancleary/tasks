@@ -9,7 +9,7 @@ from app.database.lists import create_new_list_object_in_database
 
 def test_list_not_found_exception() -> None:
     with pytest.raises(ListNotFoundExeption):
-        raise ListNotFoundExeption(list_id=1)
+        raise ListNotFoundExeption(list_id=str(1))
 
 
 def test_create_new_list_object_in_database() -> None:

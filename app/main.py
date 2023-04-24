@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Union
 
 import uvicorn
 from fastapi import FastAPI
@@ -51,13 +52,13 @@ app.add_middleware(
 tables.create_tables()
 
 START_TIME = datetime.utcnow().isoformat()
-HOST = (os.getenv("HOST", "0.0.0.0"),)
-PORT = (int(os.getenv("PORT", 8000)),)
-LOG_LEVEL = (os.getenv("LOG_LEVEL", "info"),)
+HOST = os.getenv("HOST", "0.0.0.0")
+PORT = int(os.getenv("PORT", 8000))
+LOG_LEVEL = os.getenv("LOG_LEVEL", "info")
 
 
 @app.get("/health")
-def health_check() -> dict[str, str]:
+def health_check() -> dict[str, Union[str, dict[str, Union[str, int, dict[str, str]]]]]:
     return {
         "status": "pass",
         "details": {

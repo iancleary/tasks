@@ -16,14 +16,7 @@ class StrListConverter:
         else:
             pass
 
-        split_list = list_str.split(StrListConverter.DELIMITER)
-
-        list_object = []
-        for x in split_list:
-            if x:
-                list_object.append(int(x))
-            else:
-                pass
+        list_object = [int(x) for x in list_str.split(StrListConverter.DELIMITER) if x]
         return list_object
 
     @staticmethod

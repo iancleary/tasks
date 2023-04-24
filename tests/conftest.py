@@ -2,6 +2,7 @@ import os
 import pathlib
 
 from pytest import Config
+from pytest import Session
 
 TEST_DATABASE = "data/test.db"  # relative to project root
 TEST_DATABASE_URI = f"sqlite:///{TEST_DATABASE}"
@@ -24,7 +25,7 @@ def pytest_configure(config: Config) -> None:
     TEST_DATABASE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 
-def pytest_sessionstart(session):
+def pytest_sessionstart(session: Session) -> None:
     """
     Called after the Session object has been created and
     before performing collection and entering the run test loop.
@@ -56,11 +57,12 @@ def pytest_sessionstart(session):
     assert "lists" in metadata.tables.keys()
 
 
-def pytest_sessionfinish(session, exitstatus):
+def pytest_sessionfinish(session: Session, exitstatus: int) -> int:
     """
     Called after whole test run finished, right before
     returning the exit status to the system.
     """
+    return exitstatus
 
 
 def pytest_unconfigure(config: Config) -> None:
