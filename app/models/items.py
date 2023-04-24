@@ -63,8 +63,9 @@ class ItemObject(Base):
         created_date: float = None,
         resolution_date: float = None,
         deleted_date: float = None,
-        description: str = "",
-        active: int = None,
+        description: str = Description.DEFAULT,
+        status: int = Status.OPEN,
+        active: int = Active.YES,
     ) -> None:
         self.name = name
 
@@ -116,6 +117,11 @@ class ItemObject(Base):
         # even though they have default values in the application code,
         # they might not have a value in a new database column,
         # so we must handle these cases below
+
+        if status is None:
+            self.status = Status.OPEN
+        else:
+            self.status = status
 
         if active is None:
             self.active = Active.YES
