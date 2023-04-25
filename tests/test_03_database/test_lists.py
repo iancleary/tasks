@@ -1,4 +1,6 @@
 import pytest
+from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 from app.database.lists import ListNotFoundExeption
 from app.database.lists import ListObject
@@ -14,13 +16,15 @@ def test_list_not_found_exception() -> None:
         raise ListNotFoundExeption(list_id=str(1))
 
 
-def test_create_new_list_object_in_database(database_session) -> None:
+def test_create_new_list_object_in_database(
+    database_session: sessionmaker[Session],
+) -> None:
     with database_session.begin() as session:
         new_id = create_new_list_object_in_database(session=session, name="test")
         assert isinstance(new_id, int)
 
 
-def test_select_list_obj_by_id(database_session) -> None:
+def test_select_list_obj_by_id(database_session: sessionmaker[Session]) -> None:
     with database_session.begin() as session:
         list_obj = select_list_obj_by_id(session=session, list_id=1)
         assert isinstance(list_obj, ListObject)
@@ -28,18 +32,28 @@ def test_select_list_obj_by_id(database_session) -> None:
         assert list_obj.id == 1
 
 
-def test_select_all_list_obj(database_session) -> None:
+def test_select_all_list_obj(database_session: sessionmaker[Session]) -> None:
     with database_session.begin() as session:
         list_objs = select_all_list_obj(session=session)
+        if list_objs is None:
+            raise ValueError(
+                "Excpected list objects to be in database from earlier test cases"
+            )
         assert isinstance(list_objs, list)
         for list_object in list_objs:
             assert isinstance(list_object, ListObject)
             assert isinstance(list_object.id, int)
 
 
-def test_update_list_object_in_database(database_session) -> None:
+def test_update_list_object_in_database(
+    database_session: sessionmaker[Session],
+) -> None:
     with database_session.begin() as session:
         all_list_objects = select_all_list_obj(session=session)
+        if all_list_objects is None:
+            raise ValueError(
+                "Excpected list objects to be in database from earlier test cases"
+            )
         list_object = all_list_objects[0]
         list_object_id = list_object.id
         list_object.name = "test new name"
@@ -48,13 +62,23 @@ def test_update_list_object_in_database(database_session) -> None:
         retrieved_list_object = select_list_obj_by_id(
             session=session, list_id=list_object_id
         )
+        if retrieved_list_object is None:
+            raise ValueError(
+                "Excpected list objects to be in database from earlier test cases"
+            )
         assert retrieved_list_object.name == "test new name"
         assert retrieved_list_object.sections == "1,2,3"
 
 
-def test_delete_list_object_from_database(database_session) -> None:
+def test_delete_list_object_from_database(
+    database_session: sessionmaker[Session],
+) -> None:
     with database_session.begin() as session:
         all_list_objects = select_all_list_obj(session=session)
+        if all_list_objects is None:
+            raise ValueError(
+                "Excpected list objects to be in database from earlier test cases"
+            )
         first_list_object = all_list_objects[0]
         # delete existing list
         delete_list_object_from_database(session=session, list_id=first_list_object.id)

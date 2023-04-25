@@ -107,7 +107,7 @@ def insert_section_id_to_list_object_in_database(
             list_object=list_obj, section_id=section_id, index=index
         )
 
-    update_list_object_in_database(list_obj)
+    update_list_object_in_database(session=session, list_object=list_obj)
 
 
 def remove_section_id_from_list_object_in_database(
