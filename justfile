@@ -36,6 +36,9 @@ format:
 test:
 	SQLALCHEMY_WARN_20=1 pdm run -v pytest -vv  tests
 
+# Format and then run lint and test targets (like CI does)
+ci: format lint test
+
 # Make the latest build of the image
 build: requirements copy
 	docker-compose build || docker compose build || podman-compose build
