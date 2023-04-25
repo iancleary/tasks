@@ -23,6 +23,7 @@ def test_section_object_defaults() -> None:
     assert section_object.list_id is None
     assert section_object.id is None
     # section_object.id is not set yet as it is not committed to the database
+    # and the id is set by the database
 
 
 def test_section_object_custom_parameters() -> None:
@@ -33,3 +34,4 @@ def test_section_object_custom_parameters() -> None:
     assert section_object.list_id == 1
     assert section_object.id is None
     # section_object.id is not set yet as it is not committed to the database
+    # and the id is set by the database

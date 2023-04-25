@@ -26,3 +26,4 @@ def test_list_object_custom_parameters() -> None:
     assert list_object.sections == "1,2,3"
     assert list_object.id is None
     # list_object.id is not set yet as it is not committed to the database
+    # and the id is set by the database

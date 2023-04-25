@@ -28,3 +28,4 @@ def test_list_object_defaults() -> None:
     assert list_object.description == Description.DEFAULT
     assert list_object.id is None
     # list_object.id is not set yet as it is not committed to the database
+    # and the id is set by the database
