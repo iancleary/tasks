@@ -3,8 +3,10 @@ import pytest
 from app.database.lists import ListNotFoundExeption
 from app.database.lists import ListObject
 from app.database.lists import create_new_list_object_in_database
+from app.database.lists import delete_list_object_from_database
 from app.database.lists import select_all_list_obj
 from app.database.lists import select_list_obj_by_id
+from app.database.lists import update_list_object_in_database
 
 
 def test_list_not_found_exception() -> None:
@@ -20,7 +22,7 @@ def test_create_new_list_object_in_database(database_session) -> None:
 
 def test_select_list_obj_by_id(database_session) -> None:
     with database_session.begin() as session:
-        list_obj = select_list_obj_by_id(session=session, id=1)
+        list_obj = select_list_obj_by_id(session=session, list_id=1)
         assert isinstance(list_obj, ListObject)
         assert isinstance(list_obj.id, int)
         assert list_obj.id == 1
@@ -35,25 +37,42 @@ def test_select_all_list_obj(database_session) -> None:
             assert isinstance(list_object.id, int)
 
 
-# def test_update_list_object_in_database() -> None:
-#     all_list_objects = select_all_list_obj()
-#     list_object = all_list_objects[0]
-#     list_object_id = list_object.id
-#     list_object.name = "test new name"
-#     list_object.sections = "1,2,3"
-#     update_list_object_in_database(list_object)
-#     retrieved_list_object = select_list_obj_by_id(list_object_id)
-#     assert retrieved_list_object.name == "test new name"
-#     assert retrieved_list_object.sections == "1,2,3"
+def test_update_list_object_in_database(database_session) -> None:
+    with database_session.begin() as session:
+        all_list_objects = select_all_list_obj(session=session)
+        list_object = all_list_objects[0]
+        list_object_id = list_object.id
+        list_object.name = "test new name"
+        list_object.sections = "1,2,3"
+        update_list_object_in_database(session=session, list_object=list_object)
+        retrieved_list_object = select_list_obj_by_id(
+            session=session, list_id=list_object_id
+        )
+        assert retrieved_list_object.name == "test new name"
+        assert retrieved_list_object.sections == "1,2,3"
 
 
-# def test_delete_list_object_from_database() -> None:
-#     # delete existing list
-#     delete_list_object_from_database(1)
+def test_delete_list_object_from_database(database_session) -> None:
+    with database_session.begin() as session:
+        all_list_objects = select_all_list_obj(session=session)
+        first_list_object = all_list_objects[0]
+        # delete existing list
+        delete_list_object_from_database(session=session, list_id=first_list_object.id)
 
-#     # delete non existing list
-#     with pytest.raises(ListNotFoundExeption):
-#         delete_list_object_from_database(123123123123)
+        # store for later use (check if list is deleted in another session)
+        first_list_object_id = first_list_object.id
+
+        # delete non existing list
+        with pytest.raises(ListNotFoundExeption):
+            delete_list_object_from_database(session=session, list_id=123123123123)
+
+    # check if list is deleted, new session is needed
+    # as the first session commits when the session closes
+    with database_session.begin() as session:
+        with pytest.raises(ListNotFoundExeption):
+            delete_list_object_from_database(
+                session=session, list_id=first_list_object_id
+            )
 
 
 # def test_insert_section_id_to_list_object() -> None:

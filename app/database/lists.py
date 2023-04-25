@@ -26,9 +26,9 @@ def create_new_list_object_in_database(session: Session, name: str) -> int:
     return new_list_obj_id
 
 
-def select_list_obj_by_id(session: Session, id: int) -> Union[ListObject, None]:
+def select_list_obj_by_id(session: Session, list_id: int) -> Union[ListObject, None]:
     obj = session.execute(
-        select(ListObject).where(ListObject.id == id)
+        select(ListObject).where(ListObject.id == list_id)
     ).scalar_one_or_none()
     return obj
 
@@ -56,7 +56,7 @@ def update_list_object_in_database(session: Session, list_object: ListObject) ->
 
 
 def delete_list_object_from_database(session: Session, list_id: int) -> None:
-    list_obj = select_list_obj_by_id(list_id)
+    list_obj = select_list_obj_by_id(session=session, list_id=list_id)
 
     if list_obj is None:
         raise ListNotFoundExeption(list_id=str(list_id))
