@@ -12,7 +12,7 @@ class SectionObject(Base):
     __tablename__ = "sections"
     id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     name: Mapped[str] = mapped_column(String)
-    items: Mapped[str] = mapped_column(String)
+    items: Mapped[str] = mapped_column(String, default="")
     list_id: Mapped[int] = mapped_column(Integer, ForeignKey("lists.id"))
 
 

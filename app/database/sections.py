@@ -19,10 +19,11 @@ class SectionNotFoundExeption(Exception):
 
 
 def create_new_section_object_in_database(
-    *, session: Session, name: str  # keyword arguments only
+    *, session: Session, name: str, list_id: int  # keyword arguments only
 ) -> int:
     new_section_obj_iterator = session.execute(
-        insert(SectionObject).returning(SectionObject.id), {"name": name}
+        insert(SectionObject).returning(SectionObject.id),
+        {"name": name, "list_id": list_id},
     )
     new_section_obj_id = new_section_obj_iterator.scalar_one()
     return new_section_obj_id

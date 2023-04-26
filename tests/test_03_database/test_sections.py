@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
+from app.database.lists import create_new_list_object_in_database
 from app.database.sections import SectionNotFoundExeption
 from app.database.sections import SectionObject
 from app.database.sections import create_new_section_object_in_database
@@ -20,8 +21,15 @@ def test_create_new_section_object_in_database(
     database_session: sessionmaker[Session],
 ) -> None:
     with database_session.begin() as session:
-        new_id = create_new_section_object_in_database(session=session, name="test")
-        assert isinstance(new_id, int)
+        new_list_object_id = create_new_list_object_in_database(
+            session=session, name="test for sections"
+        )
+        assert isinstance(new_list_object_id, int)
+
+        new_section_object_id = create_new_section_object_in_database(
+            session=session, name="test", list_id=new_list_object_id
+        )
+        assert isinstance(new_section_object_id, int)
 
 
 def test_select_section_object_by_id(database_session: sessionmaker[Session]) -> None:
@@ -30,6 +38,7 @@ def test_select_section_object_by_id(database_session: sessionmaker[Session]) ->
         assert isinstance(section_obj, SectionObject)
         assert isinstance(section_obj.id, int)
         assert section_obj.id == 1
+        assert isinstance(section_obj.list_id, int)
 
 
 def test_select_all_section_objects(database_session: sessionmaker[Session]) -> None:
@@ -43,6 +52,7 @@ def test_select_all_section_objects(database_session: sessionmaker[Session]) -> 
         for section_object in section_objs:
             assert isinstance(section_object, SectionObject)
             assert isinstance(section_object.id, int)
+            assert isinstance(section_object.list_id, int)
 
 
 def test_update_section_object_in_database(

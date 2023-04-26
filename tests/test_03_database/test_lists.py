@@ -40,6 +40,7 @@ def test_select_all_list_objects(database_session: sessionmaker[Session]) -> Non
                 "Excpected list objects to be in database from earlier test cases"
             )
         assert isinstance(list_objs, list)
+        assert len(list_objs) > 0
         for list_object in list_objs:
             assert isinstance(list_object, ListObject)
             assert isinstance(list_object.id, int)
