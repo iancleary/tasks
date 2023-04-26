@@ -21,14 +21,14 @@ class ListNotFoundExeption(Exception):
 def create_new_list_object_in_database(
     *, session: Session, name: str  # keyword arguments only
 ) -> int:
-    new_list_obj_iterator = session.execute(
+    new_list_object_iterator = session.execute(
         insert(ListObject).returning(ListObject.id), {"name": name}
     )
-    new_list_obj_id = new_list_obj_iterator.scalar_one()
-    return new_list_obj_id
+    new_list_object_id = new_list_object_iterator.scalar_one()
+    return new_list_object_id
 
 
-def select_list_obj_by_id(
+def select_list_object_by_id(
     *, session: Session, list_id: int  # keyword arguments only
 ) -> Union[ListObject, None]:
     obj = session.execute(
@@ -37,7 +37,7 @@ def select_list_obj_by_id(
     return obj
 
 
-def select_all_list_obj(
+def select_all_list_objects(
     *, session: Session  # keyword arguments only
 ) -> Union[List[ListObject], None]:
     iterator_result = session.scalars(select(ListObject))
@@ -64,7 +64,7 @@ def update_list_object_in_database(
 
 
 def delete_list_object_from_database(*, session: Session, list_id: int) -> None:
-    list_obj = select_list_obj_by_id(session=session, list_id=list_id)
+    list_obj = select_list_object_by_id(session=session, list_id=list_id)
 
     if list_obj is None:
         raise ListNotFoundExeption(list_id=str(list_id))
@@ -98,7 +98,7 @@ def insert_section_id_to_list_object_in_database(
     section_id: int,
     index: int,
 ) -> None:
-    list_obj = select_list_obj_by_id(session=session, list_id=list_id)
+    list_obj = select_list_object_by_id(session=session, list_id=list_id)
 
     if list_obj is None:
         raise ListNotFoundExeption(list_id=str(list_id))
@@ -113,7 +113,7 @@ def insert_section_id_to_list_object_in_database(
 def remove_section_id_from_list_object_in_database(
     *, session: Session, list_id: int, section_id: int  # keyword arguments only
 ) -> None:
-    list_obj = select_list_obj_by_id(session=session, list_id=list_id)
+    list_obj = select_list_object_by_id(session=session, list_id=list_id)
 
     if list_obj is None:
         raise ListNotFoundExeption(list_id=str(list_id))

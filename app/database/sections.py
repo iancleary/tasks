@@ -57,6 +57,7 @@ def update_section_object_in_database(
             "id": section_object.id,
             "name": section_object.name,
             "items": section_object.items,
+            "list_id": section_object.list_id,
         }
     )
     stmt = stmt.where(SectionObject.id == section_object.id)
