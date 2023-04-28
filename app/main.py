@@ -4,8 +4,8 @@ from typing import Union
 
 import uvicorn
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -67,7 +67,7 @@ class PydanticHealthCheck(BaseModel):
 
 
 @app.get("/health")
-def health_check() -> PydanticHealthCheck:
+def health_check() -> JSONResponse:
     health_check = PydanticHealthCheck(
         status="pass",
         details={"uptime": {"time": START_TIME}},
