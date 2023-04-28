@@ -4,7 +4,10 @@ from typing import Union
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 import app.database.core.tables as tables
 from app.env import env
@@ -57,16 +60,18 @@ PORT = int(os.getenv("PORT", 8000))
 LOG_LEVEL = os.getenv("LOG_LEVEL", "info")
 
 
+class PydanticHealthCheck(BaseModel):
+    status: str
+    details: dict[str, Union[str, int, dict[str, str]]]
+    env: dict[str, Union[str, int, list[str]]]
+
+
 @app.get("/health")
-def health_check() -> dict[str, Union[str, dict[str, Union[str, int, dict[str, str]]]]]:
-    return {
-        "status": "pass",
-        "details": {
-            "uptime": {
-                "time": START_TIME,
-            }
-        },
-        "env": {
+def health_check() -> JSONResponse:
+    health_check = PydanticHealthCheck(
+        status="pass",
+        details={"uptime": {"time": START_TIME}},
+        env={
             "HOST": HOST,
             "PORT": PORT,
             "LOG_LEVEL": LOG_LEVEL,
@@ -75,7 +80,9 @@ def health_check() -> dict[str, Union[str, dict[str, Union[str, int, dict[str, s
             "ALLOWED_METHODS": ALLOWED_METHODS,
             "ALLOWED_HEADERS": ALLOWED_HEADERS,
         },
-    }
+    )
+    json_compatible_health_check = jsonable_encoder(health_check)
+    return JSONResponse(content=json_compatible_health_check)
 
 
 if __name__ == "__main__":
