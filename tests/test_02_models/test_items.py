@@ -7,22 +7,22 @@ from app.models.items import PydanticItem
 from app.models.items import Status
 
 
-def test_pydantic_item_list() -> None:
-    example_pydantic_item_list = PydanticItem(
+def test_pydantic_item() -> None:
+    example_pydantic_item = PydanticItem(
         id=1,
         name="test",
     )
-    assert isinstance(example_pydantic_item_list, PydanticItem)
-    assert isinstance(example_pydantic_item_list, BaseModel)
+    assert isinstance(example_pydantic_item, PydanticItem)
+    assert isinstance(example_pydantic_item, BaseModel)
 
 
-def test_list_object_defaults() -> None:
+def test_item_object_defaults() -> None:
     list_object = ItemObject(name="test")
     assert isinstance(list_object, ItemObject)
     assert list_object.name == "test"
-    assert isinstance(list_object.created_date, float)
-    assert list_object.resolution_date is None
-    assert list_object.deleted_date is None
+    assert isinstance(list_object.created_timestamp, float)
+    assert list_object.resolution_timestamp is None
+    assert list_object.deleted_timestamp is None
     assert list_object.status == Status.OPEN
     assert list_object.active == Active.YES
     assert list_object.description == Description.DEFAULT
