@@ -1,22 +1,19 @@
 import datetime
 from enum import IntEnum
-from typing import Union
-
-
-# doesn't exist in python3.10-
 from enum import StrEnum
+from typing import Union
 
 from pydantic import BaseModel
 from sqlalchemy import REAL
-from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
-from app.models import BASE
-from app.models.utils import utc_to_local
+from app.models import Base
+from app.models.utils.datetime import utc_to_local
 
 
-# doesn't exist in python3.10-
 class Description(StrEnum):
     DEFAULT = ""
 
@@ -49,38 +46,38 @@ UNSET_DATE = 0.0
 
 
 # mypy: ignore-errors
-class Item(BASE):
+class ItemObject(Base):
     __tablename__ = "items"
-    id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(String)
-    created_date = Column(REAL)
-    resolution_date = Column(REAL, default=UNSET_DATE)
-    deleted_date = Column(REAL, default=UNSET_DATE)
-    status = Column(Integer, default=Status.OPEN)
-    active = Column(Integer, default=Active.YES)
-    description = Column(String, default=Description.DEFAULT)
+    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
+    name: Mapped[str] = mapped_column(String)
+    created_timestamp: Mapped[float] = mapped_column(REAL)
+    resolution_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
+    deleted_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
+    status: Mapped[int] = mapped_column(Integer, default=Status.OPEN)
+    active: Mapped[int] = mapped_column(Integer, default=Active.YES)
+    description: Mapped[str] = mapped_column(String, default=Description.DEFAULT)
 
     def __init__(
         self,
         name: str,
-        created_date: float = None,
-        resolution_date: float = None,
-        deleted_date: float = None,
-        description: str = "",
-        active: int = None,
+        created_timestamp: float = None,
+        resolution_timestamp: float = None,
+        deleted_timestamp: float = None,
+        description: str = Description.DEFAULT,
+        status: int = Status.OPEN,
+        active: int = Active.YES,
     ) -> None:
         self.name = name
 
-        self.resolution_date = resolution_date
-
-        self.deleted_date = deleted_date
+        self.resolution_timestamp = resolution_timestamp
+        self.deleted_timestamp = deleted_timestamp
 
         if description is None:
             self.description = Description.DEFAULT
         else:
             self.description = description
 
-        if created_date is None:
+        if created_timestamp is None:
             # store data in UTC.
             #
             # timezone is permitted to be handled by:
@@ -102,28 +99,51 @@ class Item(BASE):
             # >>> datetime.datetime.utcnow().timestamp()
             # 1675121142.531571
             #
-            self.created_date = datetime.datetime.utcnow().timestamp()
+            self.created_timestamp = datetime.datetime.utcnow().timestamp()
         else:
-            self.created_date = datetime.datetime.fromtimestamp(self.created_date)
+            self.created_timestamp = created_timestamp
 
-        if self.resolution_date is None:
-            self.resolution_date = None
+        if self.resolution_timestamp is None:
+            self.resolution_timestamp = None
         else:
-            self.resolution_date = datetime.datetime.fromtimestamp(self.resolution_date)
+            self.resolution_timestamp = resolution_timestamp
 
-        if self.deleted_date is None:
-            self.deleted_date = None
+        if self.deleted_timestamp is None:
+            self.deleted_timestamp = None
         else:
-            self.deleted_date = datetime.datetime.fromtimestamp(self.deleted_date)
+            self.deleted_timestamp = deleted_timestamp
         # also need to defined behavior for columns created after the database
         # even though they have default values in the application code,
         # they might not have a value in a new database column,
         # so we must handle these cases below
 
+        if status is None:
+            self.status = Status.OPEN
+        else:
+            self.status = status
+
         if active is None:
             self.active = Active.YES
         else:
             self.active = active
+
+    @property
+    def created_datetime(self) -> datetime.datetime:
+        return datetime.datetime.fromtimestamp(self.created_timestamp)
+
+    @property
+    def resolution_datetime(self) -> datetime.datetime:
+        if self.resolution_timestamp is None:
+            return None
+        else:
+            return datetime.datetime.fromtimestamp(self.resolution_timestamp)
+
+    @property
+    def deleted_datetime(self) -> datetime.datetime:
+        if self.deleted_timestamp is None:
+            return None
+        else:
+            return datetime.datetime.fromtimestamp(self.deleted_timestamp)
 
 
 class PydanticItem(BaseModel):

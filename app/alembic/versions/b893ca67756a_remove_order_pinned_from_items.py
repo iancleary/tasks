@@ -5,8 +5,9 @@ Revises: 96c0c25be6e5
 Create Date: 2023-02-10 11:44:15.492209
 
 """
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 
 def column_exists(table_name, column_name):

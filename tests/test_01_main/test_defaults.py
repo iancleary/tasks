@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 
+from app.main import ALLOW_ORIGINS
+from app.main import ALLOWED_CREDENTIALS
+from app.main import ALLOWED_HEADERS
+from app.main import ALLOWED_METHODS
 from app.main import app
-
-from app.main import allow_credentials
-from app.main import allow_headers
-from app.main import allow_methods
-from app.main import allow_origins
 
 
 def test_app() -> None:
@@ -13,19 +12,19 @@ def test_app() -> None:
 
 
 def test_allow_credentials() -> None:
-    assert allow_credentials is True
+    assert ALLOWED_CREDENTIALS is True
 
 
 def test_allow_headers() -> None:
-    assert allow_headers == ["Access-Control-Allow-Origin"]
+    assert ALLOWED_HEADERS == ["Access-Control-Allow-Origin"]
 
 
 def test_allow_methods() -> None:
-    assert allow_methods == ["*"]
+    assert ALLOWED_METHODS == ["*"]
 
 
 def test_allow_origins() -> None:
-    assert allow_origins == [
+    assert ALLOW_ORIGINS == [
         "http://localhost",
         "http://localhost:3000",
     ]

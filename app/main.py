@@ -1,19 +1,21 @@
 import os
 from datetime import datetime
+from typing import Union
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import app.database.core.tables as tables
 from app.env import env
-from app.database import tables
-from app.routers import items
-from app.routers import projects
+
+# from app.routers import items
+# from app.routers import projects
 
 
 app = FastAPI()
 
-allow_origins = env.list(
+ALLOW_ORIGINS = env.list(
     name="ALLOW_ORIGINS",
     subcast=str,
     default=[
@@ -22,15 +24,15 @@ allow_origins = env.list(
     ],
 )
 
-allow_credentials = env.bool(name="ALLOWED_CREDENTIALS", default=True)
+ALLOWED_CREDENTIALS = env.bool(name="ALLOWED_CREDENTIALS", default=True)
 
-allow_methods = env.list(
+ALLOWED_METHODS = env.list(
     name="ALLOWED_METHODS",
     subcast=str,
     default=["*"],
 )
 
-allow_headers = env.list(
+ALLOWED_HEADERS = env.list(
     name="ALLOWED_HEADERS",
     subcast=str,
     default=["Access-Control-Allow-Origin"],
@@ -38,33 +40,43 @@ allow_headers = env.list(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allow_origins,
-    allow_credentials=allow_credentials,
-    allow_methods=allow_methods,
-    allow_headers=allow_headers,
+    allow_origins=ALLOW_ORIGINS,
+    allow_credentials=ALLOWED_CREDENTIALS,
+    allow_methods=ALLOWED_METHODS,
+    allow_headers=ALLOWED_HEADERS,
 )
 
-app.include_router(projects.router)
-app.include_router(items.router)
+# app.include_router(projects.router)
+# app.include_router(items.router)
 
 tables.create_tables()
 
+START_TIME = datetime.utcnow().isoformat()
+HOST = os.getenv("HOST", "0.0.0.0")
+PORT = int(os.getenv("PORT", 8000))
+LOG_LEVEL = os.getenv("LOG_LEVEL", "info")
 
-@app.get("/")
-def read_root() -> dict[str, str]:
-    return {"msg": "Hello World"}
 
-
-@app.get("/")
-def debug_time() -> dict[str, str]:
-    now = datetime.now()
-
-    current_time = now.strftime("%H:%M:%S")
-    return {"time": current_time}
+@app.get("/health")
+def health_check() -> dict[str, Union[str, dict[str, Union[str, int, dict[str, str]]]]]:
+    return {
+        "status": "pass",
+        "details": {
+            "uptime": {
+                "time": START_TIME,
+            }
+        },
+        "env": {
+            "HOST": HOST,
+            "PORT": PORT,
+            "LOG_LEVEL": LOG_LEVEL,
+            "ALLOW_ORIGINS": ALLOW_ORIGINS,
+            "ALLOWED_CREDENTIALS": ALLOWED_CREDENTIALS,
+            "ALLOWED_METHODS": ALLOWED_METHODS,
+            "ALLOWED_HEADERS": ALLOWED_HEADERS,
+        },
+    }
 
 
 if __name__ == "__main__":
-    host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", 8000))
-    log_level = os.getenv("LOG_LEVEL", "info")
-    uvicorn.run(app, host=host, port=port, log_level=log_level)
+    uvicorn.run(app, host=HOST, port=PORT, log_level=LOG_LEVEL)

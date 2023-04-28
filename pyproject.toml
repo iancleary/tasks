@@ -1,22 +1,19 @@
 [project]
 name = ""
-version = ""
 description = ""
 authors = [
-    {name = "Ian Cleary", email = "hello@iancleary.me"},
+    {name = "Ian Cleary", email = "github@iancleary.me"},
 ]
 dependencies = [
     "fastapi==0.95.1",
-    "SQLAlchemy==1.4.46",
-    "uvicorn[standard]==0.20.0",
+    "SQLAlchemy==2.0.10",
+    "uvicorn[standard]==0.21.1",
     "gunicorn==20.1.0",
-    "fastapi-restful[session]==0.4.3",
     "environs==9.5.0",
-    "alembic>=1.9.2",
+    "alembic==1.10.3",
 ]
 requires-python = ">=3.11"
 license = {text = "MIT"}
-[project.optional-dependencies]
 
 [tool.pdm]
 [tool.pdm.dev-dependencies]
@@ -27,6 +24,7 @@ dev = [
     "httpx==0.23.1",
     "ruff==0.0.223",
     "pytest-pretty>=1.1.0",
+    "isort==5.12.0",
 ]
 
 [tool.isort]
