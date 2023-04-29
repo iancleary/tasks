@@ -1,10 +1,8 @@
 import datetime
-from enum import IntEnum
 from enum import StrEnum
-from typing import Union
 
-from pydantic import BaseModel
 from sqlalchemy import REAL
+from sqlalchemy import Boolean
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped
@@ -16,19 +14,6 @@ from app.models.utils.datetime import utc_to_local
 
 class Description(StrEnum):
     DEFAULT = ""
-
-
-class Status(IntEnum):
-    # These are not ordered...
-    # The only thing that matters
-    # is that they are unique
-    OPEN = 0
-    COMPLETED = 1
-
-
-class Active(IntEnum):
-    NO = 0
-    YES = 1
 
 
 # This will store as a value of 0.0,
@@ -53,8 +38,8 @@ class ItemObject(Base):
     created_timestamp: Mapped[float] = mapped_column(REAL)
     resolution_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
     deleted_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
-    status: Mapped[int] = mapped_column(Integer, default=Status.OPEN)
-    active: Mapped[int] = mapped_column(Integer, default=Active.YES)
+    is_open: Mapped[int] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     description: Mapped[str] = mapped_column(String, default=Description.DEFAULT)
 
     def __init__(
@@ -64,8 +49,8 @@ class ItemObject(Base):
         resolution_timestamp: float = None,
         deleted_timestamp: float = None,
         description: str = Description.DEFAULT,
-        status: int = Status.OPEN,
-        active: int = Active.YES,
+        is_open: bool = True,
+        is_active: bool = True,
     ) -> None:
         self.name = name
 
@@ -117,15 +102,9 @@ class ItemObject(Base):
         # they might not have a value in a new database column,
         # so we must handle these cases below
 
-        if status is None:
-            self.status = Status.OPEN
-        else:
-            self.status = status
+        self.is_open = is_open
 
-        if active is None:
-            self.active = Active.YES
-        else:
-            self.active = active
+        self.is_active = is_active
 
     @property
     def created_datetime(self) -> datetime.datetime:
@@ -144,17 +123,6 @@ class ItemObject(Base):
             return None
         else:
             return datetime.datetime.fromtimestamp(self.deleted_timestamp)
-
-
-class PydanticItem(BaseModel):
-    id: int
-    name: Union[str, None]
-    created_date: datetime.datetime = None
-    description: Union[str, None] = Description.DEFAULT
-    resolution_date: datetime.datetime = None
-    deleted_date: datetime.datetime = None
-    status: int = Status.OPEN
-    active: int = Active.YES
 
 
 def convert_utc_to_local(item: dict):

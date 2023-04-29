@@ -16,7 +16,7 @@ DATABASE_URI = str(os.getenv("DATABASE_URI"))
 # but would not want a venv (outside of docker for testing) to have it.
 
 ENGINE = create_engine(DATABASE_URI)
-SESSION = sessionmaker(ENGINE)
+SESSION = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
 
 
 # create functions for when you need to use the engine or session directly

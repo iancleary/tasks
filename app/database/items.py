@@ -65,8 +65,8 @@ def update_item_object_in_database(
             "resolution_timestamp": item_object.resolution_timestamp,
             "deleted_timestamp": item_object.deleted_timestamp,
             "description": item_object.resolution_timestamp,
-            "status": item_object.status,
-            "active": item_object.active,
+            "is_open": item_object.is_open,
+            "is_active": item_object.is_active,
         }
     )
     stmt = stmt.where(ItemObject.id == item_object.id)
