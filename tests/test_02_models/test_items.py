@@ -18,10 +18,10 @@ def test_item_object_defaults() -> None:
     assert isinstance(list_object, ItemObject)
     assert list_object.name == "test"
     assert isinstance(list_object.created_timestamp, float)
-    assert list_object.resolution_timestamp is None
+    assert list_object.completed_timestamp is None
     assert list_object.deleted_timestamp is None
-    assert list_object.is_open is True
-    assert list_object.is_active is True
+    assert list_object.is_completed is False
+    assert list_object.is_deleted is False
     assert list_object.description == Description.DEFAULT
     assert list_object.id is None
     # list_object.id is not set yet as it is not committed to the database

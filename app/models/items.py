@@ -36,25 +36,25 @@ class ItemObject(Base):
     id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     name: Mapped[str] = mapped_column(String)
     created_timestamp: Mapped[float] = mapped_column(REAL)
-    resolution_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
+    completed_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
     deleted_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
-    is_open: Mapped[int] = mapped_column(Boolean, default=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_completed: Mapped[int] = mapped_column(Boolean, default=False)
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
     description: Mapped[str] = mapped_column(String, default=Description.DEFAULT)
 
     def __init__(
         self,
         name: str,
         created_timestamp: float = None,
-        resolution_timestamp: float = None,
+        completed_timestamp: float = None,
         deleted_timestamp: float = None,
         description: str = Description.DEFAULT,
-        is_open: bool = True,
-        is_active: bool = True,
+        is_completed: bool = False,
+        is_deleted: bool = False,
     ) -> None:
         self.name = name
 
-        self.resolution_timestamp = resolution_timestamp
+        self.completed_timestamp = completed_timestamp
         self.deleted_timestamp = deleted_timestamp
 
         if description is None:
@@ -88,10 +88,10 @@ class ItemObject(Base):
         else:
             self.created_timestamp = created_timestamp
 
-        if self.resolution_timestamp is None:
-            self.resolution_timestamp = None
+        if self.completed_timestamp is None:
+            self.completed_timestamp = None
         else:
-            self.resolution_timestamp = resolution_timestamp
+            self.resolutiocompleted_timestampn_timestamp = completed_timestamp
 
         if self.deleted_timestamp is None:
             self.deleted_timestamp = None
@@ -102,20 +102,20 @@ class ItemObject(Base):
         # they might not have a value in a new database column,
         # so we must handle these cases below
 
-        self.is_open = is_open
+        self.is_completed = is_completed
 
-        self.is_active = is_active
+        self.is_deleted = is_deleted
 
     @property
     def created_datetime(self) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(self.created_timestamp)
 
     @property
-    def resolution_datetime(self) -> datetime.datetime:
-        if self.resolution_timestamp is None:
+    def completed_datetime(self) -> datetime.datetime:
+        if self.completed_timestamp is None:
             return None
         else:
-            return datetime.datetime.fromtimestamp(self.resolution_timestamp)
+            return datetime.datetime.fromtimestamp(self.completed_timestamp)
 
     @property
     def deleted_datetime(self) -> datetime.datetime:
