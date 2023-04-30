@@ -1,10 +1,8 @@
 import datetime
-from enum import IntEnum
 from enum import StrEnum
-from typing import Union
 
-from pydantic import BaseModel
 from sqlalchemy import REAL
+from sqlalchemy import Boolean
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped
@@ -16,19 +14,6 @@ from app.models.utils.datetime import utc_to_local
 
 class Description(StrEnum):
     DEFAULT = ""
-
-
-class Status(IntEnum):
-    # These are not ordered...
-    # The only thing that matters
-    # is that they are unique
-    OPEN = 0
-    COMPLETED = 1
-
-
-class Active(IntEnum):
-    NO = 0
-    YES = 1
 
 
 # This will store as a value of 0.0,
@@ -51,25 +36,25 @@ class ItemObject(Base):
     id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     name: Mapped[str] = mapped_column(String)
     created_timestamp: Mapped[float] = mapped_column(REAL)
-    resolution_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
+    completed_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
     deleted_timestamp: Mapped[float] = mapped_column(REAL, default=UNSET_DATE)
-    status: Mapped[int] = mapped_column(Integer, default=Status.OPEN)
-    active: Mapped[int] = mapped_column(Integer, default=Active.YES)
+    is_completed: Mapped[int] = mapped_column(Boolean, default=False)
+    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
     description: Mapped[str] = mapped_column(String, default=Description.DEFAULT)
 
     def __init__(
         self,
         name: str,
         created_timestamp: float = None,
-        resolution_timestamp: float = None,
+        completed_timestamp: float = None,
         deleted_timestamp: float = None,
         description: str = Description.DEFAULT,
-        status: int = Status.OPEN,
-        active: int = Active.YES,
+        is_completed: bool = False,
+        is_deleted: bool = False,
     ) -> None:
         self.name = name
 
-        self.resolution_timestamp = resolution_timestamp
+        self.completed_timestamp = completed_timestamp
         self.deleted_timestamp = deleted_timestamp
 
         if description is None:
@@ -103,10 +88,10 @@ class ItemObject(Base):
         else:
             self.created_timestamp = created_timestamp
 
-        if self.resolution_timestamp is None:
-            self.resolution_timestamp = None
+        if self.completed_timestamp is None:
+            self.completed_timestamp = None
         else:
-            self.resolution_timestamp = resolution_timestamp
+            self.resolutiocompleted_timestampn_timestamp = completed_timestamp
 
         if self.deleted_timestamp is None:
             self.deleted_timestamp = None
@@ -117,26 +102,20 @@ class ItemObject(Base):
         # they might not have a value in a new database column,
         # so we must handle these cases below
 
-        if status is None:
-            self.status = Status.OPEN
-        else:
-            self.status = status
+        self.is_completed = is_completed
 
-        if active is None:
-            self.active = Active.YES
-        else:
-            self.active = active
+        self.is_deleted = is_deleted
 
     @property
     def created_datetime(self) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(self.created_timestamp)
 
     @property
-    def resolution_datetime(self) -> datetime.datetime:
-        if self.resolution_timestamp is None:
+    def completed_datetime(self) -> datetime.datetime:
+        if self.completed_timestamp is None:
             return None
         else:
-            return datetime.datetime.fromtimestamp(self.resolution_timestamp)
+            return datetime.datetime.fromtimestamp(self.completed_timestamp)
 
     @property
     def deleted_datetime(self) -> datetime.datetime:
@@ -144,17 +123,6 @@ class ItemObject(Base):
             return None
         else:
             return datetime.datetime.fromtimestamp(self.deleted_timestamp)
-
-
-class PydanticItem(BaseModel):
-    id: int
-    name: Union[str, None]
-    created_date: datetime.datetime = None
-    description: Union[str, None] = Description.DEFAULT
-    resolution_date: datetime.datetime = None
-    deleted_date: datetime.datetime = None
-    status: int = Status.OPEN
-    active: int = Active.YES
 
 
 def convert_utc_to_local(item: dict):

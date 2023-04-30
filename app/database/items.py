@@ -62,11 +62,11 @@ def update_item_object_in_database(
             "id": item_object.id,
             "name": item_object.name,
             "created_timestamp": item_object.created_timestamp,
-            "resolution_timestamp": item_object.resolution_timestamp,
+            "completed_timestamp": item_object.completed_timestamp,
             "deleted_timestamp": item_object.deleted_timestamp,
-            "description": item_object.resolution_timestamp,
-            "status": item_object.status,
-            "active": item_object.active,
+            "description": item_object.description,
+            "is_completed": item_object.is_completed,
+            "is_deleted": item_object.is_deleted,
         }
     )
     stmt = stmt.where(ItemObject.id == item_object.id)
