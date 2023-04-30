@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database.core import SESSION
 from app.database.lists import select_all_list_objects
-from app.schemas import ListObject
+from app.schemas import ListObject as ListSchema
 
 router = APIRouter()
 
@@ -21,9 +21,10 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-# mypy: ignore-errors
 @router.get("/all")
-def get_items(db: Session = Depends(get_db), response_model=list[ListObject]):
+def get_items(  # type:ignore
+    db: Session = Depends(get_db), response_model=list[ListSchema]
+):
     items = select_all_list_objects(session=db)
     if items is None:
         raise HTTPException(status_code=404, detail="No lists found")
