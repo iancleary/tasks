@@ -11,12 +11,14 @@ from pydantic import BaseModel
 
 import app.database.core.tables as tables
 from app.env import env
+from app.routers.lists import router as lists_router
 
 # from app.routers import items
 # from app.routers import projects
 
 
 app = FastAPI()
+app.include_router(lists_router, prefix="/lists", tags=["lists"])
 
 ALLOW_ORIGINS = env.list(
     name="ALLOW_ORIGINS",

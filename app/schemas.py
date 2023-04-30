@@ -1,4 +1,5 @@
 from typing import Union
+
 from pydantic import BaseModel
 
 from app.models.items import Description
@@ -52,9 +53,10 @@ class ListCreate(ListBase):
     pass
 
 
-class List(ListBase):
+# deconflict with the List object in the Python standard library typing module
+class ListObject(ListBase):
     id: int
-    sections: list[Section] = []
+    sections: str = ""
 
     class Config:
         orm_mode = True
