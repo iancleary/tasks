@@ -72,3 +72,11 @@ prod-down:
 	docker-compose {{PROD_DOCKER_COMPOSE}} down || docker compose {{PROD_DOCKER_COMPOSE}} down || podman-compose {{PROD_DOCKER_COMPOSE}} down
 
 prod-stop: prod-down
+
+# Open the URL for issues
+issues:
+	open https://github.com/iancleary/tasks/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc
+
+# Open the URL for pull requests
+prs:
+	open https://github.com/iancleary/tasks/pulls?q=is%3Apr+is%3Aopen+sort%3Aupdated-desc
