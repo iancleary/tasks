@@ -12,5 +12,6 @@ def test_routes() -> None:
     assert api_route_paths == [
         "/lists/all",
         "/lists/{list_id}",
+        "/lists/",
         "/health",
     ]
