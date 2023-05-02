@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database.core import SESSION
 from app.database.lists import select_all_list_objects
+from app.database.lists import select_list_object_by_id
 from app.schemas import ListObject as ListSchema
 
 router = APIRouter()
@@ -31,3 +32,14 @@ def get_items(  # type:ignore
 
     # Fastapi converts from ListObject to ListSchema
     return items
+
+
+@router.get("/{list_id}")
+def get_list(  # type:ignore
+    list_id: int, db: Session = Depends(get_db), response_model=ListSchema
+):
+    list = select_list_object_by_id(session=db, list_id=list_id)
+    if list is None:
+        raise HTTPException(status_code=404, detail="List not found")
+
+    return list
