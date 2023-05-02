@@ -1,5 +1,5 @@
 repos:
-# export python requirements
+# export the lockfile to requirements.txt
 - repo: https://github.com/pdm-project/pdm
   rev: 2.5.3 # a PDM release exposing the hook
   hooks:
