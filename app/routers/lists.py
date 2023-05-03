@@ -54,7 +54,7 @@ def update_list(  # type:ignore
     list: ListCreate,
     list_id: int,
     database_session: Session = DatabaseSession,
-) -> None:
+) -> str:
     with database_session:
         list_object = select_list_object_by_id(
             session=database_session, list_id=list_id
@@ -64,8 +64,8 @@ def update_list(  # type:ignore
 
         # update name
         list_object.name = list.name
-        updated_list_object = update_list_object_in_database(
+        updated_list_object_name = update_list_object_in_database(
             session=database_session, list_object=list_object
         )
         database_session.commit()
-    return updated_list_object
+    return updated_list_object_name
