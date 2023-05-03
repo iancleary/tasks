@@ -2,7 +2,9 @@ from fastapi import APIRouter
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.database.lists import ListNotFoundExeption
 from app.database.lists import create_new_list_object_in_database
+from app.database.lists import delete_list_object_from_database
 from app.database.lists import select_all_list_objects
 from app.database.lists import select_list_object_by_id
 from app.database.lists import update_list_object_in_database
@@ -44,7 +46,9 @@ def get_list(  # type:ignore
 ):
     list_object = select_list_object_by_id(session=database_session, list_id=list_id)
     if list_object is None:
-        raise HTTPException(status_code=404, detail="List not found")
+        raise HTTPException(
+            status_code=404, detail=f"List with id {list_id} not found."
+        )
 
     return list_object
 
@@ -60,7 +64,9 @@ def update_list(  # type:ignore
             session=database_session, list_id=list_id
         )
         if list_object is None:
-            raise HTTPException(status_code=404, detail="List not found")
+            raise HTTPException(
+                status_code=404, detail=f"List with id {list_id} not found."
+            )
 
         # update name
         list_object.name = list.name
@@ -69,3 +75,20 @@ def update_list(  # type:ignore
         )
         database_session.commit()
     return updated_list_object_name
+
+
+@router.delete("/{list_id}")
+def delete_list(  # type:ignore
+    list_id: int,
+    database_session: Session = DatabaseSession,
+) -> None:
+    with database_session:
+        try:
+            delete_list_object_from_database(session=database_session, list_id=list_id)
+        except Exception as e:
+            if type(e) == ListNotFoundExeption:
+                raise HTTPException(status_code=404, detail=str(e))
+            else:
+                raise HTTPException(status_code=500, detail=str(e))
+        database_session.commit()
+    return None
