@@ -48,9 +48,7 @@ def select_all_list_objects(
     return all_list_objects
 
 
-def update_list_object_in_database(
-    *, session: Session, list_object: ListObject
-) -> None:
+def update_list_object_in_database(*, session: Session, list_object: ListObject) -> str:
     stmt = update(ListObject)
     stmt = stmt.values(
         {
@@ -60,7 +58,10 @@ def update_list_object_in_database(
         }
     )
     stmt = stmt.where(ListObject.id == list_object.id)
-    session.execute(stmt)
+    stmt = stmt.returning(ListObject.name)
+    updated_list_obj_iterator = session.execute(stmt)
+    updated_list_obj_name = updated_list_obj_iterator.scalar_one()
+    return updated_list_obj_name
 
 
 def delete_list_object_from_database(*, session: Session, list_id: int) -> None:
