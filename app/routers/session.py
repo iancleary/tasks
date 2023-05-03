@@ -8,11 +8,11 @@ from app.database.core import SESSION
 
 
 def get_db() -> Generator[Session, None, None]:
-    db = SESSION()
+    database_session = SESSION()
     try:
-        yield db
+        yield database_session
     finally:
-        db.close()
+        database_session.close()
 
 
 DatabaseSession = Depends(get_db)
