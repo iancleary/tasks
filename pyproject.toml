@@ -22,8 +22,8 @@ dev = [
     "black==22.10.0",
     "mypy==0.990",
     "httpx==0.23.1",
-    "ruff==0.0.223",
-    "pytest-pretty>=1.1.0",
+    "ruff==0.0.225",
+    "pytest-pretty==1.2.0",
     "isort==5.12.0",
 ]
 
