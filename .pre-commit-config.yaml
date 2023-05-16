@@ -1,14 +1,14 @@
 repos:
 # export the lockfile to requirements.txt
 - repo: https://github.com/pdm-project/pdm
-  rev: 2.6.0 # a PDM release exposing the hook
+  rev: 2.6.1 # a PDM release exposing the hook
   hooks:
     - id: pdm-export
       # command arguments, e.g.:
       args: ['-o', 'docker-images/requirements.txt', '--without-hashes']
       files: ^pdm.lock$
 - repo: https://github.com/pdm-project/pdm
-  rev: 2.6.0 # a PDM release exposing the hook
+  rev: 2.6.1 # a PDM release exposing the hook
   hooks:
     - id: pdm-lock-check
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -22,6 +22,6 @@ repos:
   hooks:
     - id: black
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.265
+  rev: v0.0.267
   hooks:
     - id: ruff
