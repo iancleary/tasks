@@ -8,6 +8,7 @@ from app.database.lists import delete_list_object_from_database
 from app.database.lists import select_all_list_objects
 from app.database.lists import select_list_object_by_id
 from app.database.lists import update_list_object_in_database
+from app.models.lists import ListObject
 from app.routers.session import DatabaseSession
 from app.schemas import ListCreate
 from app.schemas import ListObject as ListSchema
@@ -15,8 +16,8 @@ from app.schemas import ListObject as ListSchema
 router = APIRouter()
 
 
-@router.post("/")
-def create_list(  # type:ignore
+@router.post("/", response_model=int)
+def create_list(
     list: ListCreate,
     database_session: Session = DatabaseSession,
 ) -> int:
@@ -28,10 +29,10 @@ def create_list(  # type:ignore
     return new_list_object_id
 
 
-@router.get("/all")
-def get_items(  # type:ignore
-    database_session: Session = DatabaseSession, response_model=list[ListSchema]
-):
+@router.get("/all", response_model=list[ListSchema])
+def get_items(
+    database_session: Session = DatabaseSession,
+) -> list[ListObject]:
     items = select_all_list_objects(session=database_session)
     if items is None:
         raise HTTPException(status_code=404, detail="No lists found")
@@ -40,10 +41,8 @@ def get_items(  # type:ignore
     return items
 
 
-@router.get("/{list_id}")
-def get_list(  # type:ignore
-    list_id: int, database_session: Session = DatabaseSession, response_model=ListSchema
-):
+@router.get("/{list_id}", response_model=ListSchema)
+def get_list(list_id: int, database_session: Session = DatabaseSession) -> ListObject:
     list_object = select_list_object_by_id(session=database_session, list_id=list_id)
     if list_object is None:
         raise HTTPException(
@@ -53,8 +52,8 @@ def get_list(  # type:ignore
     return list_object
 
 
-@router.patch("/{list_id}")
-def update_list(  # type:ignore
+@router.patch("/{list_id}", response_model=str)
+def update_list(
     list: ListCreate,
     list_id: int,
     database_session: Session = DatabaseSession,
@@ -78,7 +77,7 @@ def update_list(  # type:ignore
 
 
 @router.delete("/{list_id}")
-def delete_list(  # type:ignore
+def delete_list(
     list_id: int,
     database_session: Session = DatabaseSession,
 ) -> None:
