@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - '_env/prod.env'
+      - '_env/example.env'
     ports:
       - "8000:8000"
     volumes:
