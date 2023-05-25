@@ -144,7 +144,7 @@ docker-images/app
 docker-images/requirements.txt
 
 # test
-data/test.db
+data/
 
 # Docker.compone.prod
 docker-compose.prod.yml
