@@ -25,9 +25,10 @@ def create_new_item_object_in_database(
     stmt = insert(ItemObject).values(
         name=name, created_timestamp=new_item_object.created_timestamp
     )
-    new_item_object_iterator = session.execute(stmt)
+
+    cursor_result = session.execute(stmt)  # type: ignore
     # https://docs.sqlalchemy.org/en/20/tutorial/data_insert.html#executing-the-statement
-    new_item_object_id = new_item_object_iterator.inserted_primary_key[0]
+    new_item_object_id = cursor_result.inserted_primary_key[0]  # type: ignore
     return new_item_object_id
 
 

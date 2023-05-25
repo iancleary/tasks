@@ -22,9 +22,9 @@ def create_new_section_object_in_database(
     *, session: Session, name: str, list_id: int  # keyword arguments only
 ) -> int:
     stmt = insert(SectionObject).values(name=name, list_id=list_id)
-    new_section_obj_iterator = session.execute(stmt)
+    cursor_result = session.execute(stmt)  # type: ignore
     # https://docs.sqlalchemy.org/en/20/tutorial/data_insert.html#executing-the-statement
-    new_section_obj_id = new_section_obj_iterator.inserted_primary_key[0]
+    new_section_obj_id = cursor_result.inserted_primary_key[0]  # type: ignore
     return new_section_obj_id
 
 
