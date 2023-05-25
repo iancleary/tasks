@@ -21,11 +21,10 @@ class SectionNotFoundExeption(Exception):
 def create_new_section_object_in_database(
     *, session: Session, name: str, list_id: int  # keyword arguments only
 ) -> int:
-    new_section_obj_iterator = session.execute(
-        insert(SectionObject).returning(SectionObject.id),
-        {"name": name, "list_id": list_id},
-    )
-    new_section_obj_id = new_section_obj_iterator.scalar_one()
+    stmt = insert(SectionObject).values(name=name, list_id=list_id)
+    new_section_obj_iterator = session.execute(stmt)
+    # https://docs.sqlalchemy.org/en/20/tutorial/data_insert.html#executing-the-statement
+    new_section_obj_id = new_section_obj_iterator.inserted_primary_key[0]
     return new_section_obj_id
 
 

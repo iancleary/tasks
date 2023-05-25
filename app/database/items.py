@@ -22,14 +22,12 @@ def create_new_item_object_in_database(
 ) -> int:
     new_item_object = ItemObject(name=name)
 
-    new_item_object_iterator = session.execute(
-        insert(ItemObject).returning(ItemObject.id),
-        {
-            "name": new_item_object.name,
-            "created_timestamp": new_item_object.created_timestamp,
-        },
+    stmt = insert(ItemObject).values(
+        name=name, created_timestamp=new_item_object.created_timestamp
     )
-    new_item_object_id = new_item_object_iterator.scalar_one()
+    new_item_object_iterator = session.execute(stmt)
+    # https://docs.sqlalchemy.org/en/20/tutorial/data_insert.html#executing-the-statement
+    new_item_object_id = new_item_object_iterator.inserted_primary_key[0]
     return new_item_object_id
 
 
