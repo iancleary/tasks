@@ -21,10 +21,10 @@ class ListNotFoundExeption(Exception):
 def create_new_list_object_in_database(
     *, session: Session, name: str  # keyword arguments only
 ) -> int:
-    new_list_object_iterator = session.execute(
-        insert(ListObject).returning(ListObject.id), {"name": name}
-    )
-    new_list_object_id = new_list_object_iterator.scalar_one()
+    stmt = insert(ListObject).values(name=name)
+    cursor_result = session.execute(stmt)  # type: ignore
+    # https://docs.sqlalchemy.org/en/20/tutorial/data_insert.html#executing-the-statement
+    new_list_object_id = cursor_result.inserted_primary_key[0]  # type: ignore
     return new_list_object_id
 
 

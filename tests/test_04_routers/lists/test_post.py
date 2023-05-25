@@ -18,3 +18,4 @@ def test_post_new_list() -> None:
     assert isinstance(response.json(), int)
     new_list_id = response.json()
     assert isinstance(new_list_id, int)
+    assert new_list_id > 0
