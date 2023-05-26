@@ -90,19 +90,31 @@ This application subscribes to the [twelve-factor app methodology for configurat
 As such, all important configuration is handled by the environment (`.env`):
 
 ```env
-DATABSE_URI=sqlite:////data/prod.db
+DATABASE_URI=sqlite:////data/prod.db
 HOST=0.0.0.0
 PORT=8000
-ALLOW_ORIGINS=http://localhost,http://localhost:3000
+ALLOW_ORIGINS=http://localhost,http://localhost:3000,app://.
 ALLOWED_CREDENTIALS=True
 ALLOWED_METHODS=*
 ALLOWED_HEADERS=Access-Control-Allow-Origin
 TIMEZONE=America/Phoenix
 ```
 
+### ALLOW_ORIGINS
+
+`app://.` is an example from an electron application, so the protocol is not HTTP.  This is like slack://
+
+I just used the developers tools to check what the CORS Rejection when this application didn't have it in the ALLOW_ORIGINS list.
+
+### Database URI
+
 When using docker and a local database mounted into the container, it is recommended for the DATABASE_URI to contain an absolute path.
 
-> Timezones, please see the link: [List of Timezones on Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+> For DATABASE_URI and sqlite, 4 / is an absolute path, 3 / is a relative path.
+
+### Timezones
+
+Please see the link: [List of Timezones on Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
 
 ## Deployment
 
