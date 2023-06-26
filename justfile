@@ -26,21 +26,22 @@ clean:
 
 # lint the code
 lint:
-	pdm run -v scripts/lint.sh
+	scripts/lint.sh
 
 # format the code
 format:
-	pdm run -v scripts/format-imports.sh
+	scripts/format-imports.sh
 
 # Test app with pytest outside of docker (with fresh data/test.db from tests/conftest.py)
 test:
-	SQLALCHEMY_WARN_20=1 pdm run -v pytest -vv  tests
+	pytest -vv  tests
 
 pre-commit:
 	pre-commit run --all-files
 
 # Format and then run lint and test targets (like CI does)
 ci: format lint test pre-commit
+	rm data/test.db
 
 # Make the latest build of the image
 build: requirements copy

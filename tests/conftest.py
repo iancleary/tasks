@@ -72,4 +72,9 @@ def pytest_unconfigure(config: Config) -> None:
     # Delete Test Database File
     TEST_DATABASE_FILE = pathlib.Path(TEST_DATABASE)
     if TEST_DATABASE_FILE.exists():
-        TEST_DATABASE_FILE.unlink()
+        try:
+            TEST_DATABASE_FILE.unlink()
+        except PermissionError:
+            # Issue on Windows, where file is still in use
+            # Remove file in `just ci` instead
+            pass
