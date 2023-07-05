@@ -1,7 +1,7 @@
 import datetime
 import zoneinfo
 
-from app.env import env
+from fastapi_cors.env import env
 
 TIMEZONE = allow_origins = env.str(
     name="TIMEZONE",
