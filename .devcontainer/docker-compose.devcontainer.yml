@@ -1,0 +1,18 @@
+version: '3'
+services:
+  tasks-devcontainer:
+    image: "ghcr.io/iancleary/devcontainer:v0.0.18"
+    volumes:
+      # paths are relative to the first docker-compose file listed in devcontainer.json
+      # since this is the only one, paths are relative to this file
+      # Mounts the project root (one level up) to '/workspace'
+      - ..:/workspace:cached
+
+    # [Optional] Required for ptrace-based debuggers like C++, Go, and Rust
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"
