@@ -1,9 +1,9 @@
 from fastapi import FastAPI
+from fastapi_cors.env import ALLOW_ORIGINS
+from fastapi_cors.env import ALLOWED_CREDENTIALS
+from fastapi_cors.env import ALLOWED_HEADERS
+from fastapi_cors.env import ALLOWED_METHODS
 
-from app.main import ALLOW_ORIGINS
-from app.main import ALLOWED_CREDENTIALS
-from app.main import ALLOWED_HEADERS
-from app.main import ALLOWED_METHODS
 from app.main import app
 
 

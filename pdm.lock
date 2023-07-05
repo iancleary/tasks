@@ -84,12 +84,23 @@ dependencies = [
 
 [[package]]
 name = "fastapi"
-version = "0.95.2"
+version = "0.99.1"
 requires_python = ">=3.7"
 summary = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 dependencies = [
-    "pydantic!=1.7,!=1.7.1,!=1.7.2,!=1.7.3,!=1.8,!=1.8.1,<2.0.0,>=1.6.2",
+    "pydantic!=1.8,!=1.8.1,<2.0.0,>=1.7.4",
     "starlette<0.28.0,>=0.27.0",
+    "typing-extensions>=4.5.0",
+]
+
+[[package]]
+name = "fastapi-cors"
+version = "0.0.4"
+requires_python = ">=3.11"
+summary = "Simple env support of CORS settings for Fastapi applications"
+dependencies = [
+    "environs>=9.5.0",
+    "fastapi>=0.99.1",
 ]
 
 [[package]]
@@ -461,7 +472,7 @@ summary = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev"]
-content_hash = "sha256:afacd2a46535884243510ce1c9b27c659791c01aab289d7658d43184aff80dff"
+content_hash = "sha256:42d64ecff2e9ee74265b16ac4fba3537ce9b022be33e1435045d7121e424d280"
 
 [metadata.files]
 "alembic 1.11.1" = [
@@ -523,9 +534,13 @@ content_hash = "sha256:afacd2a46535884243510ce1c9b27c659791c01aab289d7658d43184a
     {url = "https://files.pythonhosted.org/packages/ca/5e/f0f217dc393372681bfe05c50f06a212e78d0a3fee907a74ab451ec1dcdb/environs-9.5.0-py2.py3-none-any.whl", hash = "sha256:1e549569a3de49c05f856f40bce86979e7d5ffbbc4398e7f338574c220189124"},
     {url = "https://files.pythonhosted.org/packages/d4/e3/c3c6c76f3dbe3e019e9a451b35bf9f44690026a5bb1232f7b77097b72ff5/environs-9.5.0.tar.gz", hash = "sha256:a76307b36fbe856bdca7ee9161e6c466fd7fcffc297109a118c59b54e27e30c9"},
 ]
-"fastapi 0.95.2" = [
-    {url = "https://files.pythonhosted.org/packages/4e/1a/04887c641b67e6649bde845b9a631f73a7abfbe3afda83957e09b95d88eb/fastapi-0.95.2-py3-none-any.whl", hash = "sha256:d374dbc4ef2ad9b803899bd3360d34c534adc574546e25314ab72c0c4411749f"},
-    {url = "https://files.pythonhosted.org/packages/75/e1/976b2e281bdfb0b6690b5d3c2d932d309729e49305ef5449be381e0672a3/fastapi-0.95.2.tar.gz", hash = "sha256:4d9d3e8c71c73f11874bcf5e33626258d143252e329a01002f767306c64fb982"},
+"fastapi 0.99.1" = [
+    {url = "https://files.pythonhosted.org/packages/22/93/42b9998a6e28eaee90724db439e27a66b7dc6a5b9e85499add1e042141e2/fastapi-0.99.1.tar.gz", hash = "sha256:ac78f717cd80d657bd183f94d33b9bda84aa376a46a9dab513586b8eef1dc6fc"},
+    {url = "https://files.pythonhosted.org/packages/73/eb/03b691afa0b5ffa1e93ed34f97ec1e7855c758efbdcfb16c209af0b0506b/fastapi-0.99.1-py3-none-any.whl", hash = "sha256:976df7bab51ac7beda9f68c4513b8c4490b5c1135c72aafd0a5ee4023ec5282e"},
+]
+"fastapi-cors 0.0.4" = [
+    {url = "https://files.pythonhosted.org/packages/45/a5/b3066cc979419ecbffa6835d6bbf369e28cb82634d0547a49d9de91d2bcd/fastapi_cors-0.0.4-py3-none-any.whl", hash = "sha256:f4db63e1673f495cbde5d8310eee37fdcdf2d19582b11e2093764249508eda30"},
+    {url = "https://files.pythonhosted.org/packages/e1/52/70133ef4093697a11709205bdea8cd240144110b989333209e2a2f037e82/fastapi-cors-0.0.4.tar.gz", hash = "sha256:410a676b0be267b2f90b18a80ea91792d1c37855f911990bdfe5a10eb947e7b7"},
 ]
 "filelock 3.12.2" = [
     {url = "https://files.pythonhosted.org/packages/00/0b/c506e9e44e4c4b6c89fcecda23dc115bf8e7ff7eb127e0cb9c114cbc9a15/filelock-3.12.2.tar.gz", hash = "sha256:002740518d8aa59a26b0c76e10fb8c6e15eae825d34b6fdf670333fd7b938d81"},
