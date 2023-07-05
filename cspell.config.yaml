@@ -1,0 +1,15 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - devcontainer
+  - exitstatus
+  - iancleary
+  - jsonable
+  - sessionfinish
+  - sessionstart
+  - subcast
+  - unconfigure
+ignoreWords: []
+import: []

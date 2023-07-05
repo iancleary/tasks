@@ -19,5 +19,8 @@
         "activityBar.background": "#04342D",
         "titleBar.activeBackground": "#05493F",
         "titleBar.activeForeground": "#ECFEFB"
+    },
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json": "file:///home/iancleary/Development/tasks/cspell.config.yaml"
     }
 }
