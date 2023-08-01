@@ -1,14 +1,14 @@
 repos:
 # export the lockfile to requirements.txt
 - repo: https://github.com/pdm-project/pdm
-  rev: 2.8.0a2 # a PDM release exposing the hook
+  rev: 2.8.2 # a PDM release exposing the hook
   hooks:
     - id: pdm-export
       # command arguments, e.g.:
       args: ['-o', 'docker-images/requirements.txt', '--without-hashes']
       files: ^pdm.lock$
 - repo: https://github.com/pdm-project/pdm
-  rev: 2.8.0a2 # a PDM release exposing the hook
+  rev: 2.8.2 # a PDM release exposing the hook
   hooks:
     - id: pdm-lock-check
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -18,10 +18,10 @@ repos:
     - id: end-of-file-fixer
     - id: trailing-whitespace
 - repo: https://github.com/psf/black
-  rev: 23.3.0
+  rev: 23.7.0
   hooks:
     - id: black
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.0.276
+  rev: v0.0.281
   hooks:
     - id: ruff
