@@ -3,9 +3,12 @@ ignorePaths: []
 dictionaryDefinitions: []
 dictionaries: []
 words:
+  - devbox
+  - Devbox
   - devcontainer
   - exitstatus
   - iancleary
+  - jetpack
   - jsonable
   - nixpkgs
   - sessionfinish
