@@ -17,22 +17,24 @@ copy:
 
 # clean pdm exported requirements.txt
 clean:
-    scripts/clean.sh
+	rm docker-images/requirements.txt
+	rm -rf docker-images/app/
 
 # lint the code
 lint:
-	scripts/lint.sh
+	pdm run scripts/lint.sh
 
 # format the code
 format:
-	scripts/format-imports.sh
+	pdm run ruff --fix ./
+	pdm run black ./
 
 # Test app with pytest outside of docker (with fresh data/test.db from tests/conftest.py)
 test:
-	pytest -vv  tests
+	pdm run pytest -vv tests
 
 pre-commit:
-	pre-commit run --all-files
+	pdm run pre-commit run --all-files
 
 # Format and then run lint and test targets (like CI does)
 ci: format lint test pre-commit

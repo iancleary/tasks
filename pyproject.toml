@@ -30,23 +30,6 @@ dev = [
     "pre-commit>=3.3.3",
 ]
 
-[tool.isort]
-src_paths = ["app", "test"]
-force_single_line = true
-include_trailing_comma = true
-force_grid_wrap = 0
-combine_as_imports = true
-line_length = 88
-
-[tool.autoflake]
-remove-all-unused-imports = true
-recursive = true
-remove-unused-variables = true
-in-place = true
-expand-star-imports = true
-exclude = "__init__.py"
-remove-duplicate-keys = true
-
 [tool.ruff]
 line-length = 88
 
