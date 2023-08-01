@@ -7,12 +7,7 @@ hostname := `uname -n`
 
 PROD_DOCKER_COMPOSE := "docker-compose.prod.yml"
 
-# Create a venv (python3 -m venv venv)
-venv:
-    python3.11 -m venv venv
-    echo "source venv/bin/activate"
-
-# Export the pdm requirements to a txt file
+# Export the pdm requirements to a txt files
 requirements:
     scripts/create_production_requirements.sh
 

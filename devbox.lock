@@ -1,0 +1,16 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "just": {
+      "resolved": "github:NixOS/nixpkgs/f80ac848e3d6f0c12c52758c0f25c10c97ca3b62#just"
+    },
+    "python311": {
+      "plugin_version": "0.0.1",
+      "resolved": "github:NixOS/nixpkgs/f80ac848e3d6f0c12c52758c0f25c10c97ca3b62#python311"
+    },
+    "python311Packages.pip": {
+      "plugin_version": "0.0.1",
+      "resolved": "github:NixOS/nixpkgs/f80ac848e3d6f0c12c52758c0f25c10c97ca3b62#python311Packages.pip"
+    }
+  }
+}
