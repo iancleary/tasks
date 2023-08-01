@@ -7,6 +7,6 @@ set -x
 # avoid duplicate app module mypy errors
 scripts/clean_app.sh
 
-mypy ./
-black ./ --check
-ruff ./
+pdm run mypy ./
+pdm run black ./ --check
+pdm run ruff ./
