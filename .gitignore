@@ -148,3 +148,5 @@ data/
 
 # Docker.compone.prod
 docker-compose.prod.yml
+
+.devbox/

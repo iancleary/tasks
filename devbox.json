@@ -1,10 +1,14 @@
 {
   "packages": [
     "python311",
-    "python@3.11"
+    "python311Packages.pip",
+    "just"
   ],
   "shell": {
-    "init_hook": null
+    "init_hook": "source $VENV_DIR/bin/activate",
+    "scripts": {
+      "pdm": "pip install pdm && pdm install"
+    }
   },
   "nixpkgs": {
     "commit": "f80ac848e3d6f0c12c52758c0f25c10c97ca3b62"

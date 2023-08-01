@@ -1,13 +1,19 @@
 {
-  "image": "ghcr.io/iancleary/devcontainer:v0.0.18",
-  "remoteUser": "vscode",
+  "name": "Devbox Remote Container",
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": ".."
+  },
   "customizations": {
     "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/code/.devbox/nix/profile/default/bin/python3"
+      },
       "extensions": [
-        "streetsidesoftware.code-spell-checker",
-        "ms-python.python",
-        "github.vscode-github-actions"
+        "jetpack-io.devbox",
+        "ms-python.python"
       ]
     }
-  }
+  },
+  "remoteUser": "devbox"
 }

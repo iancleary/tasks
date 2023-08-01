@@ -7,9 +7,11 @@ words:
   - exitstatus
   - iancleary
   - jsonable
+  - nixpkgs
   - sessionfinish
   - sessionstart
   - subcast
   - unconfigure
+  - VENV
 ignoreWords: []
 import: []
