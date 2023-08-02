@@ -38,7 +38,6 @@ pre-commit:
 
 # Format and then run lint and test targets (like CI does)
 ci: format lint test pre-commit
-	rm data/test.db
 
 # Make the latest build of the image
 build: requirements copy
