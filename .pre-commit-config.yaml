@@ -5,7 +5,7 @@ repos:
   hooks:
     - id: pdm-export
       # command arguments, e.g.:
-      args: ['-o', 'docker-images/requirements.txt', '--without-hashes']
+      args: ['-o', 'docker-images/requirements.txt', '--without-hashes', '--production']
       files: ^pdm.lock$
 - repo: https://github.com/pdm-project/pdm
   rev: 2.8.2 # a PDM release exposing the hook
