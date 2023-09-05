@@ -1,8 +1,8 @@
 {
   "packages": [
-    "python311",
-    "python311Packages.pip",
-    "just"
+    "python311@latest",
+    "python311Packages.pip@latest",
+    "just@latest"
   ],
   "shell": {
     "init_hook": "source $VENV_DIR/bin/activate",

@@ -1,16 +1,25 @@
 {
   "lockfile_version": "1",
   "packages": {
-    "just": {
-      "resolved": "github:NixOS/nixpkgs/f80ac848e3d6f0c12c52758c0f25c10c97ca3b62#just"
+    "just@latest": {
+      "last_modified": "2023-06-30T04:44:22Z",
+      "resolved": "github:NixOS/nixpkgs/3c614fbc76fc152f3e1bc4b2263da6d90adf80fb#just",
+      "source": "devbox-search",
+      "version": "1.14.0"
     },
-    "python311": {
+    "python311@latest": {
+      "last_modified": "2023-06-30T04:44:22Z",
       "plugin_version": "0.0.1",
-      "resolved": "github:NixOS/nixpkgs/f80ac848e3d6f0c12c52758c0f25c10c97ca3b62#python311"
+      "resolved": "github:NixOS/nixpkgs/3c614fbc76fc152f3e1bc4b2263da6d90adf80fb#python311",
+      "source": "devbox-search",
+      "version": "3.11.4"
     },
-    "python311Packages.pip": {
+    "python311Packages.pip@latest": {
+      "last_modified": "2023-05-18T17:48:07Z",
       "plugin_version": "0.0.1",
-      "resolved": "github:NixOS/nixpkgs/f80ac848e3d6f0c12c52758c0f25c10c97ca3b62#python311Packages.pip"
+      "resolved": "github:NixOS/nixpkgs/7721e0d2c1845c24eafd5a016b9d349187c48097#python311Packages.pip",
+      "source": "devbox-search",
+      "version": "23.0.1"
     }
   }
 }
